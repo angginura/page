@@ -3,559 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JualHosting.com - Hosting Performa Monster</title>
+    <title>Toko Ban SM Raja - Pusat Ban Berkualitas Medan</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Library Three.js dari CDN yang stabil -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        primary: '#0066FF',
-                        secondary: '#00D1FF',
+                        primary: '#facc15', // Yellow
+                        secondary: '#1e293b', // Slate
                     }
                 }
             }
         }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            transition: background-color 0.3s ease;
-        }
-        #canvas-container {
-            width: 100%;
-            height: 550px; 
-            cursor: grab;
-        }
-        #canvas-container:active {
-            cursor: grabbing;
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .dark .glass-card {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .floating {
-            animation: floating 3s ease-in-out infinite;
-        }
-        @keyframes floating {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        /* Penunjuk pemuatan (Loading spinner) */
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #0066FF;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Reka bentuk suis tema (Theme Switcher design) */
-        #theme-toggle {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            height: 2rem;
-            width: 3.5rem;
-            border-radius: 9999px;
-            padding: 0.25rem;
-            background-color: #cbd5e1;
-            transition: background-color 0.3s ease;
-            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-        }
-        .dark #theme-toggle {
-            background-color: #1e293b;
-        }
-        #toggle-knob {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 1.5rem;
-            width: 1.5rem;
-            border-radius: 9999px;
-            background-color: white;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transform: translateX(0);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
-        }
-        .dark #toggle-knob {
-            transform: translateX(1.5rem);
-            background-color: #0066FF;
-        }
-        .logo-cloud img {
-            filter: grayscale(100%);
-            transition: all 0.3s ease;
-            opacity: 0.6;
-        }
-        .logo-cloud img:hover {
-            filter: grayscale(0%);
-            opacity: 1;
-            transform: scale(1.1);
-        }
+        .transition-all { transition: all 0.3s ease; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-white transition-colors duration-500">
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-white transition-colors duration-300">
 
-    <!-- Navigasi -->
-    <nav class="fixed w-full z-50 transition-all duration-300 glass-card">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <div class="flex items-center gap-2">
-                    <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl">JH</div>
-                    <span class="text-xl font-extrabold tracking-tight">JualHosting<span class="text-primary">.com</span></span>
-                </div>
+    <!-- Header / Navbar -->
+    <nav class="fixed w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm border-b border-slate-200 dark:border-slate-800">
+        <div class="container mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-dot text-primary text-2xl"></i>
+                <span class="font-black text-xl tracking-tighter italic">BAN <span class="text-primary uppercase">SM RAJA</span></span>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <!-- Dark Mode Toggle -->
+                <button id="theme-toggle" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:ring-2 ring-primary transition-all">
+                    <i id="theme-toggle-dark-icon" class="hidden fa-solid fa-moon"></i>
+                    <i id="theme-toggle-light-icon" class="hidden fa-solid fa-sun"></i>
+                </button>
                 
-                <div class="hidden md:flex space-x-8 font-medium items-center">
-                    <a href="#" data-i18n="nav-home" class="hover:text-primary transition text-sm">Beranda</a>
-                    <a href="#hosting" data-i18n="nav-hosting" class="hover:text-primary transition text-sm">Hosting</a>
-                    <div class="flex flex-col items-center group">
-                        <a href="#vps" data-i18n="nav-vps" class="hover:text-primary transition text-sm">VPS</a>
-                        <span data-i18n="coming-soon" class="text-[8px] text-primary font-bold uppercase tracking-tighter -mt-0.5 opacity-80 group-hover:opacity-100 transition-opacity">Coming Soon</span>
-                    </div>
-                    <a href="#kontak" data-i18n="nav-contact" class="hover:text-primary transition text-sm">Kontak</a>
-                </div>
-
-                <div class="flex items-center gap-4">
-                    <button id="theme-toggle" aria-label="Tukar Mod Siang/Malam">
-                        <div id="toggle-knob">
-                            <svg id="sun-icon" class="w-4 h-4 text-orange-500" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464l-.707-.707a1 1 0 00-1.414 1.414l.707.707a1 1 0 001.414-1.414zm2.12 10.607a1 1 0 010-1.414l.706-.707a1 1 0 111.414 1.414l-.707.707a1 1 0 01-1.414 0zM5 9a1 1 0 100 2h1a1 1 0 100-2H5z"></path></svg>
-                            <svg id="moon-icon" class="w-4 h-4 text-white hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                        </div>
-                    </button>
-                    <a href="#" data-i18n="btn-login" class="bg-primary hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold transition">Login</a>
-                </div>
+                <a href="https://wa.me/6281277457431" class="hidden md:flex items-center gap-2 bg-primary text-slate-950 px-4 py-2 rounded-full font-bold text-sm hover:scale-105 transition-all">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    HUBUNGI KAMI
+                </a>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative pt-32 pb-10 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
+    <section class="relative min-h-screen flex items-center pt-20">
+        <div class="absolute inset-0 z-0 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1542128962-9d50ad7bf6e4?q=80&w=2070&auto=format&fit=crop" 
+                 alt="Background Ban" 
+                 class="w-full h-full object-cover opacity-20 dark:opacity-10 scale-110">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-slate-50 dark:to-slate-950"></div>
+        </div>
+
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-3xl">
+                <span class="inline-block px-3 py-1 bg-primary/20 text-primary rounded-full text-xs font-bold mb-4 tracking-widest uppercase">
+                    Pusat Ban Medan
+                </span>
+                <h1 class="text-5xl md:text-7xl font-black mb-6 leading-tight">
+                    Ban Awet, <br>Perjalanan <span class="text-primary">Nyaman.</span>
+                </h1>
+                <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-xl">
+                    Sedia berbagai merk ban internasional & lokal di <strong>Jl. Sisingamangaraja No. 4</strong>. Melayani pemasangan profesional, balancing, dan pengisian nitrogen.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="https://wa.me/6281277457431?text=Halo%20Toko%20Ban%20SM%20Raja,%20saya%20ingin%20tanya%20stok%20ban" 
+                       class="flex items-center justify-center gap-3 bg-green-600 hover:bg-green-500 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-xl shadow-green-600/20 transition-all">
+                        <i class="fa-brands fa-whatsapp text-2xl"></i>
+                        Konsultasi via WA
+                    </a>
+                    <a href="#lokasi" class="flex items-center justify-center gap-2 border-2 border-slate-300 dark:border-slate-700 px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+                        Cek Lokasi
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brands Section -->
+    <section class="py-12 bg-white dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800">
+        <div class="container mx-auto px-4">
+            <p class="text-center text-sm font-semibold text-slate-400 mb-8 uppercase tracking-widest">Merk Ban Tersedia</p>
+            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all">
+                <span class="text-2xl font-bold">BRIDGESTONE</span>
+                <span class="text-2xl font-bold">MICHELIN</span>
+                <span class="text-2xl font-bold">DUNLOP</span>
+                <span class="text-2 sm:text-2xl font-bold">GT RADIAL</span>
+                <span class="text-2xl font-bold">HANKOOK</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="py-24 container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-black mb-4 uppercase">Layanan Unggulan</h2>
+            <div class="w-20 h-1 bg-primary mx-auto"></div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Service 1 -->
+            <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 group hover:-translate-y-2 transition-all">
+                <div class="w-14 h-14 bg-primary/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-primary transition-all">
+                    <i class="fa-solid fa-screwdriver-wrench text-primary text-2xl group-hover:text-slate-950"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3">Ganti Ban Cepat</h3>
+                <p class="text-slate-600 dark:text-slate-400">Pemasangan menggunakan mesin otomatis untuk menjaga kualitas velg kendaraan Anda tetap mulus.</p>
+            </div>
+            <!-- Service 2 -->
+            <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 group hover:-translate-y-2 transition-all">
+                <div class="w-14 h-14 bg-primary/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-primary transition-all">
+                    <i class="fa-solid fa-scale-balanced text-primary text-2xl group-hover:text-slate-950"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3">Balancing & Spooring</h3>
+                <p class="text-slate-600 dark:text-slate-400">Pastikan kestabilan kemudi Anda agar ban tidak cepat habis tidak rata dan berkendara lebih aman.</p>
+            </div>
+            <!-- Service 3 -->
+            <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 group hover:-translate-y-2 transition-all">
+                <div class="w-14 h-14 bg-primary/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-primary transition-all">
+                    <i class="fa-solid fa-wind text-primary text-2xl group-hover:text-slate-950"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3">Nitrogen Murni</h3>
+                <p class="text-slate-600 dark:text-slate-400">Menjaga suhu ban tetap stabil, lebih empuk saat melaju, dan memperpanjang umur ban kendaraan.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Location & Contact -->
+    <section id="lokasi" class="py-24 bg-slate-100 dark:bg-slate-900">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div>
-                    <span data-i18n="hero-tag" class="inline-block py-1 px-4 rounded-full bg-primary/10 text-primary text-sm font-bold mb-4">#1 Hosting Indonesia</span>
-                    <h1 class="text-5xl lg:text-7xl font-extrabold mb-6 leading-tight">
-                        <span data-i18n="hero-title-prefix">Power of the</span> <span class="text-primary">SSD NVME</span> <span data-i18n="hero-title-suffix">for Your Website.</span>
-                    </h1>
-                    <p data-i18n="hero-desc" class="text-lg text-slate-600 dark:text-slate-400 mb-8 max-w-lg">
-                        Server monster dengan performa secepat hiu. Keamanan tingkat tinggi dan dukungan teknis 24/7 untuk kesuksesan bisnismu.
+                    <h2 class="text-4xl font-black mb-6 uppercase italic">Kunjungi <span class="text-primary">Toko Kami</span></h2>
+                    <p class="text-lg text-slate-600 dark:text-slate-400 mb-8">
+                        Kami berlokasi di pusat kota Medan dengan akses yang sangat mudah dijangkau.
                     </p>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <button data-i18n="btn-start" class="bg-primary hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition shadow-xl shadow-primary/30">Mulai Sekarang</button>
-                        <button data-i18n="btn-plans" class="border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 px-8 py-4 rounded-xl font-bold text-lg transition">Lihat Paket</button>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-md shrink-0">
+                                <i class="fa-solid fa-location-dot text-red-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Alamat Lengkap</h4>
+                                <p class="text-slate-600 dark:text-slate-400 italic">Jl. Sisingamangaraja No. 4, Medan, Sumatera Utara.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-md shrink-0">
+                                <i class="fa-solid fa-clock text-blue-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Jam Operasional</h4>
+                                <p class="text-slate-600 dark:text-slate-400">Senin - Sabtu: 08:00 - 18:00 WIB</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-md shrink-0">
+                                <i class="fa-solid fa-phone text-green-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">WhatsApp / Telp</h4>
+                                <p class="text-slate-600 dark:text-slate-400">0812-7745-7431</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Kawasan Model 3D -->
-                <div class="relative">
-                    <div class="absolute inset-0 bg-primary/20 blur-[120px] rounded-full"></div>
-                    <div class="relative glass-card rounded-3xl p-4 floating border-white/20">
-                        <div class="flex justify-between items-center px-4 py-2 border-b border-white/10 mb-4">
-                            <span class="text-xs font-mono text-slate-400">HARDWARE 3D PREVIEW: JUALHOSTING.COM SERVER BUILD</span>
-                            <div class="flex gap-1">
-                                <div class="w-2 h-2 rounded-full bg-red-500"></div>
-                                <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
-                                <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                            </div>
-                        </div>
-                        <div id="canvas-container" class="relative flex items-center justify-center">
-                            <div id="canvas-loader" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-100/50 dark:bg-slate-900/50 rounded-2xl">
-                                <div class="loader mb-4"></div>
-                                <p data-i18n="loading-3d" class="text-xs font-bold animate-pulse">Memuat Hardware 3D...</p>
-                            </div>
-                        </div>
-                        <p data-i18n="3d-instruction" class="text-center text-xs text-slate-500 mt-2">Gunakan mouse untuk memutar interior PC Server JualHosting.com</p>
+                <div class="rounded-3xl overflow-hidden shadow-2xl h-96 bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
+                    <!-- Placeholder for Map -->
+                    <div class="text-center p-8">
+                        <i class="fa-solid fa-map-location-dot text-6xl text-slate-400 mb-4"></i>
+                        <p class="text-slate-500">Google Maps akan tampil di sini.</p>
+                        <a href="https://www.google.com/maps/search/Jl.+SM+Raja+No.+4+Medan" target="_blank" class="mt-4 inline-block text-primary font-bold underline">Buka di Maps Sekarang</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Logo Section -->
-    <section class="py-12 bg-white/30 dark:bg-slate-900/30 border-y border-slate-200 dark:border-slate-800">
-        <div class="max-w-7xl mx-auto px-4">
-            <p class="text-center text-sm font-bold text-slate-500 mb-8 uppercase tracking-widest">Didukung Oleh Teknologi Infrastruktur Terbaik</p>
-            <div class="logo-cloud flex flex-wrap justify-center items-center gap-8 md:gap-16">
-                <img src="https://cdn.simpleicons.org/cpanel/FF6C2C" alt="cPanel" class="h-10 w-auto" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/d/df/CPanel_logo.svg'">
-                <img src="https://cdn.simpleicons.org/wordpress/21759B" alt="WordPress" class="h-10 w-auto">
-                <img src="https://cdn.simpleicons.org/mysql/4479A1" alt="MySQL" class="h-10 w-auto">
-                <img src="https://cdn.simpleicons.org/python/3776AB" alt="Python" class="h-10 w-auto">
-                <img src="https://cdn.simpleicons.org/nodedotjs/339933" alt="Node.js" class="h-10 w-auto">
-            </div>
-        </div>
-    </section>
-
-    <!-- Harga -->
-    <section id="hosting" class="py-20 bg-slate-100 dark:bg-slate-900/50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-extrabold mb-4"><span data-i18n="pricing-title">Pilih Paket</span> <span class="text-primary">Hosting</span></h2>
-                <p data-i18n="pricing-desc" class="text-slate-600 dark:text-slate-400">Harga kompetitif dengan fitur premium yang lengkap.</p>
-            </div>
-            
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl hover:scale-105 transition duration-300 border border-transparent hover:border-primary/20">
-                    <h3 class="text-xl font-bold mb-2">Starter</h3>
-                    <div class="text-3xl font-bold mb-6">Rp 15.000<span class="text-sm font-normal text-slate-500">/bln</span></div>
-                    <ul class="space-y-4 mb-8 text-slate-600 dark:text-slate-400 text-sm">
-                        <li>✅ 1 Website</li>
-                        <li>✅ 10GB SSD Storage</li>
-                        <li>✅ Unlimited Bandwidth</li>
-                        <li>✅ Free SSL Certificate</li>
-                    </ul>
-                    <button data-i18n="btn-choose" class="w-full py-3 rounded-xl border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition">Pilih Paket</button>
-                </div>
-
-                <div class="bg-primary p-8 rounded-3xl shadow-2xl shadow-primary/40 text-white scale-110 relative overflow-hidden">
-                    <div data-i18n="best-seller" class="absolute top-4 right-4 bg-white/20 px-3 py-1 rounded-full text-xs font-bold uppercase">Terlaris</div>
-                    <h3 class="text-xl font-bold mb-2 text-blue-100">Professional</h3>
-                    <div class="text-3xl font-bold mb-6">Rp 45.000<span class="text-sm font-normal text-blue-200">/bln</span></div>
-                    <ul class="space-y-4 mb-8 text-blue-50 text-sm">
-                        <li>✅ 10 Website</li>
-                        <li>✅ 50GB SSD Storage</li>
-                        <li>✅ Unlimited Bandwidth</li>
-                        <li>✅ Managed WP Tools</li>
-                        <li>✅ Premium Support</li>
-                    </ul>
-                    <button data-i18n="btn-choose" class="w-full py-3 rounded-xl bg-white text-primary font-bold hover:bg-blue-50 transition">Pilih Paket</button>
-                </div>
-
-                <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl hover:scale-105 transition duration-300 border border-transparent hover:border-primary/20">
-                    <h3 class="text-xl font-bold mb-2">Enterprise</h3>
-                    <div class="text-3xl font-bold mb-6">Rp 99.000<span class="text-sm font-normal text-slate-500">/bln</span></div>
-                    <ul class="space-y-4 mb-8 text-slate-600 dark:text-slate-400 text-sm">
-                        <li>✅ Unlimited Website</li>
-                        <li>✅ 200GB SSD Storage</li>
-                        <li>✅ Dedicated Resources</li>
-                        <li>✅ Backup Harian</li>
-                    </ul>
-                    <button data-i18n="btn-choose" class="w-full py-3 rounded-xl border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition">Pilih Paket</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Widget WhatsApp -->
-    <a href="https://wa.me/6281277457431" target="_blank" class="fixed bottom-6 right-6 z-[60] group">
-        <div class="flex items-center gap-3">
-            <div class="bg-white dark:bg-slate-800 px-4 py-2 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0">
-                <p data-i18n="wa-help" class="text-xs font-bold text-slate-900 dark:text-white">Butuh Bantuan?</p>
-                <p data-i18n="wa-chat" class="text-[10px] text-slate-500">Chat Admin Sekarang</p>
-            </div>
-            <div class="bg-emerald-500 p-4 rounded-full shadow-2xl shadow-emerald-500/50 hover:scale-110 transition duration-300">
-                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                </svg>
-            </div>
-        </div>
-    </a>
-
     <!-- Footer -->
-    <footer id="kontak" class="py-12 border-t border-slate-200 dark:border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="text-slate-500">© 2025 JualHosting.com. Hak Cipta Terpelihara.</p>
+    <footer class="py-12 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex justify-center items-center gap-2 mb-6">
+                <i class="fa-solid fa-circle-dot text-primary text-xl"></i>
+                <span class="font-black text-lg tracking-tighter italic">TOKO BAN <span class="text-primary uppercase">SM RAJA</span></span>
+            </div>
+            <p class="text-slate-500 text-sm">© 2025 Toko Ban SM Raja. Solusi Ban Terbaik di Medan.</p>
         </div>
     </footer>
 
+    <!-- Mobile Floating WA -->
+    <a href="https://wa.me/6281277457431" class="md:hidden fixed bottom-6 right-6 w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center shadow-2xl z-[100] animate-bounce">
+        <i class="fa-brands fa-whatsapp text-3xl"></i>
+    </a>
+
+    <!-- Theme Switcher Logic -->
     <script>
-        // KAMUS TRANSLASI
-        const translations = {
-            id: {
-                'nav-home': 'Beranda',
-                'nav-hosting': 'Hosting',
-                'nav-vps': 'VPS',
-                'nav-contact': 'Kontak',
-                'coming-soon': 'Segera Hadir',
-                'btn-login': 'Masuk',
-                'hero-tag': '#1 Hosting Indonesia',
-                'hero-title-prefix': 'Tenaga',
-                'hero-title-suffix': 'Untuk Web Anda.',
-                'hero-desc': 'Server monster dengan performa secepat hiu. Keamanan tingkat tinggi dan dukungan teknis 24/7 untuk kesuksesan bisnismu.',
-                'btn-start': 'Mulai Sekarang',
-                'btn-plans': 'Lihat Paket',
-                'loading-3d': 'Memuat Perangkat Keras 3D...',
-                '3d-instruction': 'Gunakan mouse untuk memutar interior PC Server JualHosting',
-                'pricing-title': 'Pilih Paket',
-                'pricing-desc': 'Harga kompetitif dengan fitur premium yang lengkap.',
-                'best-seller': 'Terlaris',
-                'btn-choose': 'Pilih Paket',
-                'wa-help': 'Butuh Bantuan?',
-                'wa-chat': 'Chat Admin Sekarang'
-            },
-            en: {
-                'nav-home': 'Home',
-                'nav-hosting': 'Hosting',
-                'nav-vps': 'VPS',
-                'nav-contact': 'Contact',
-                'coming-soon': 'Coming Soon',
-                'btn-login': 'Login',
-                'hero-tag': '#1 Indonesia Hosting',
-                'hero-title-prefix': 'Power of',
-                'hero-title-suffix': 'for Your Website.',
-                'hero-desc': 'Monster server with shark-speed performance. High-level security and 24/7 technical support for your business success.',
-                'btn-start': 'Get Started',
-                'btn-plans': 'View Plans',
-                'loading-3d': 'Loading 3D Hardware...',
-                '3d-instruction': 'Use mouse to view JualHosting PC Server interior',
-                'pricing-title': 'Choose Your',
-                'pricing-desc': 'Competitive pricing with complete premium features.',
-                'best-seller': 'Popular',
-                'btn-choose': 'Select Plan',
-                'wa-help': 'Need Help?',
-                'wa-chat': 'Chat With Admin'
-            }
-        };
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+        const themeToggleBtn = document.getElementById('theme-toggle');
 
-        // AUTO TEMA & BAHASA
-        function applySettings() {
-            const userLang = navigator.language || navigator.userLanguage;
-            const lang = userLang.startsWith('id') ? 'id' : 'en';
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (translations[lang][key]) el.textContent = translations[lang][key];
-            });
+        // Check preference on load
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            themeToggleLightIcon.classList.remove('hidden');
+        } else {
+            document.documentElement.classList.remove('dark');
+            themeToggleDarkIcon.classList.remove('hidden');
+        }
 
-            const hour = new Date().getHours();
-            const isNight = hour < 6 || hour >= 18;
-            if (isNight) {
-                document.documentElement.classList.add('dark');
-                updateIcons(true);
+        themeToggleBtn.addEventListener('click', function() {
+            // Toggle icons
+            themeToggleDarkIcon.classList.toggle('hidden');
+            themeToggleLightIcon.classList.toggle('hidden');
+
+            // Toggle theme
+            if (localStorage.getItem('color-theme')) {
+                if (localStorage.getItem('color-theme') === 'light') {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                }
             } else {
-                document.documentElement.classList.remove('dark');
-                updateIcons(false);
-            }
-        }
-
-        const themeToggle = document.getElementById('theme-toggle');
-        const sunIcon = document.getElementById('sun-icon');
-        const moonIcon = document.getElementById('moon-icon');
-        const html = document.documentElement;
-
-        const updateIcons = (isDark) => {
-            if (isDark) {
-                sunIcon.classList.add('hidden');
-                moonIcon.classList.remove('hidden');
-            } else {
-                sunIcon.classList.remove('hidden');
-                moonIcon.classList.add('hidden');
-            }
-        };
-
-        themeToggle.addEventListener('click', () => {
-            html.classList.toggle('dark');
-            const isDark = html.classList.contains('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            updateIcons(isDark);
-        });
-
-        // Adegan 3D
-        let scene, camera, renderer, pcGroup;
-        let fans = [];
-        let isDragging = false;
-        let previousMouseX = 0;
-        let previousMouseY = 0;
-
-        function tryInit3D(retries = 20) {
-            const loaderEl = document.getElementById('canvas-loader');
-            if (typeof THREE !== 'undefined') {
-                if (loaderEl) loaderEl.style.display = 'none';
-                init3D();
-            } else if (retries > 0) {
-                setTimeout(() => tryInit3D(retries - 1), 500);
-            }
-        }
-
-        function createNeonTextTexture(text, width, height, fontSize, neonColor = '#00D1FF') {
-            const canvas = document.createElement('canvas');
-            canvas.width = width; canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#0a0a0a'; 
-            ctx.fillRect(0, 0, width, height);
-            ctx.font = `bold ${fontSize}px "Plus Jakarta Sans", Arial`;
-            ctx.textAlign = 'center'; 
-            ctx.textBaseline = 'middle';
-            ctx.shadowColor = neonColor;
-            ctx.shadowBlur = 25;
-            ctx.strokeStyle = neonColor;
-            ctx.lineWidth = 4;
-            ctx.strokeText(text, width/2, height/2);
-            ctx.shadowBlur = 10;
-            ctx.fillStyle = neonColor;
-            ctx.fillText(text, width/2, height/2);
-            ctx.shadowBlur = 0;
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillText(text, width/2, height/2);
-            return new THREE.CanvasTexture(canvas);
-        }
-
-        function init3D() {
-            const container = document.getElementById('canvas-container');
-            if (!container) return;
-
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(55, container.offsetWidth / container.offsetHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(container.offsetWidth, container.offsetHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            container.appendChild(renderer.domElement);
-
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-            scene.add(ambientLight);
-            const spotLight = new THREE.SpotLight(0x0066FF, 20);
-            spotLight.position.set(15, 15, 15);
-            scene.add(spotLight);
-
-            pcGroup = new THREE.Group();
-            pcGroup.scale.set(1.3, 1.3, 1.3);
-
-            const darkMetal = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.9, roughness: 0.1 });
-            const moboMat = new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.8 });
-            const rgbMat = new THREE.MeshBasicMaterial({ color: 0x00ffff });
-            const gpuMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.8 });
-            
-            const chassisNeonMat = new THREE.MeshBasicMaterial({ map: createNeonTextTexture('JualHosting.com', 512, 128, 55, '#00D1FF') });
-            const vgaNeonMat = new THREE.MeshBasicMaterial({ map: createNeonTextTexture('GeForce RTX 4080', 512, 128, 48, '#39FF14') });
-            const ssdNeonMat = new THREE.MeshBasicMaterial({ map: createNeonTextTexture('SSD', 256, 128, 70, '#00D1FF') }); 
-
-            // PSU Shroud
-            const shroud = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.8, 2.2), darkMetal);
-            shroud.position.y = -1.35;
-            pcGroup.add(shroud);
-
-            // Strip neon PSU
-            const psuNeonTop = new THREE.Mesh(new THREE.BoxGeometry(3.55, 0.05, 0.1), rgbMat);
-            psuNeonTop.position.set(0, -0.95, 1.11);
-            pcGroup.add(psuNeonTop);
-
-            const shroudBrand = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 0.5), chassisNeonMat);
-            shroudBrand.position.set(0, -1.35, 1.12);
-            pcGroup.add(shroudBrand);
-
-            // Motherboard
-            const mobo = new THREE.Mesh(new THREE.BoxGeometry(0.1, 3.2, 2.2), moboMat);
-            mobo.position.set(-1.3, 0.4, 0);
-            pcGroup.add(mobo);
-
-            // VGA / GPU
-            const gpu = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.5, 0.7), gpuMat);
-            gpu.position.set(-0.1, -0.1, 0.4);
-            pcGroup.add(gpu);
-
-            const vgaPlate = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 0.4), vgaNeonMat);
-            vgaPlate.position.set(-0.1, -0.1, 0.76);
-            pcGroup.add(vgaPlate);
-
-            // RAM Neon
-            for(let i=0; i<4; i++) {
-                const ram = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.8, 0.05), gpuMat);
-                ram.position.set(-1.15, 1.0, -0.3 + (i * 0.15));
-                pcGroup.add(ram);
-                const ramNeon = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.1, 0.051), rgbMat);
-                ramNeon.position.set(-1.15, 1.35, -0.3 + (i * 0.15));
-                pcGroup.add(ramNeon);
-            }
-
-            // CPU AIO Neon
-            const cpuBlock = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.45, 0.45), darkMetal);
-            cpuBlock.position.set(-1.1, 0.9, 0.4);
-            pcGroup.add(cpuBlock);
-            const cpuNeon = new THREE.Mesh(new THREE.TorusGeometry(0.15, 0.02, 16, 32), rgbMat);
-            cpuNeon.position.set(-0.87, 0.9, 0.4);
-            cpuNeon.rotation.y = Math.PI / 2;
-            pcGroup.add(cpuNeon);
-
-            // 8 UNIT SSD
-            for(let row=0; row<2; row++) {
-                for(let i=0; i<4; i++) {
-                    const ssdGroup = new THREE.Group();
-                    const ssd = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.04, 0.6), darkMetal);
-                    ssdGroup.add(ssd);
-                    const ssdPlate = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 0.4), ssdNeonMat);
-                    ssdPlate.rotation.x = -Math.PI / 2;
-                    ssdPlate.position.y = 0.021;
-                    ssdGroup.add(ssdPlate);
-                    ssdGroup.position.set(-0.8 + (i * 0.5), 0.5 + (row * 0.2), 0.4); 
-                    pcGroup.add(ssdGroup);
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
                 }
             }
-
-            // KIPAS RGB (Total 6)
-            const fanGeo = new THREE.TorusGeometry(0.4, 0.03, 8, 32);
-            function createFan(x, y, z, rx, ry) {
-                const fGroup = new THREE.Group();
-                fGroup.add(new THREE.Mesh(fanGeo, rgbMat));
-                for(let j=0; j<4; j++) {
-                    const blade = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.05, 0.01), rgbMat);
-                    blade.rotation.z = (Math.PI / 2) * j;
-                    fGroup.add(blade);
-                }
-                fGroup.position.set(x, y, z);
-                fGroup.rotation.x = rx; fGroup.rotation.y = ry;
-                fans.push(fGroup);
-                pcGroup.add(fGroup);
-            }
-
-            createFan(-1.4, 1.2, 0.3, 0, Math.PI/2);
-            createFan(-1.4, 0.2, 0.3, 0, Math.PI/2);
-            createFan(1.6, 1.2, 0.3, 0, Math.PI/2);
-            createFan(1.6, 0.2, 0.3, 0, Math.PI/2);
-            createFan(0, 1.8, 0.3, Math.PI/2, 0);
-            createFan(1.1, 1.8, 0.3, Math.PI/2, 0);
-
-            scene.add(pcGroup);
-            camera.position.set(7, 4, 10);
-            camera.lookAt(0, 0, 0);
-
-            container.addEventListener('mousedown', () => isDragging = true);
-            window.addEventListener('mouseup', () => isDragging = false);
-            window.addEventListener('mousemove', (e) => {
-                if (isDragging && pcGroup) {
-                    pcGroup.rotation.y += (e.clientX - previousMouseX) * 0.01;
-                    pcGroup.rotation.x += (e.clientY - previousMouseY) * 0.01;
-                }
-                previousMouseX = e.clientX; previousMouseY = e.clientY;
-            });
-            animate();
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            if (!isDragging && pcGroup) {
-                pcGroup.rotation.y += 0.005;
-                pcGroup.position.y = Math.sin(Date.now() * 0.001) * 0.1;
-            }
-            fans.forEach(f => f.children.forEach((c, i) => { if(i>0) c.rotation.z += 0.2; }));
-            renderer.render(scene, camera);
-        }
-
-        window.addEventListener('resize', () => {
-            const container = document.getElementById('canvas-container');
-            if (camera && renderer && container) {
-                camera.aspect = container.offsetWidth / container.offsetHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.offsetWidth, container.offsetHeight);
-            }
-        });
-
-        window.addEventListener('DOMContentLoaded', () => {
-            applySettings();
-            tryInit3D();
         });
     </script>
 </body>
