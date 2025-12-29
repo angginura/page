@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toko Ban SM Raja - Pusat Ban Berkualitas Medan</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#facc15', // Yellow
+                        secondary: '#1e293b', // Slate
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .transition-all { transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-white transition-colors duration-300">
+
+    <!-- Header / Navbar -->
+    <nav class="fixed w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm border-b border-slate-200 dark:border-slate-800">
+        <div class="container mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-dot text-primary text-2xl"></i>
+                <span class="font-black text-xl tracking-tighter italic">BAN <span class="text-primary uppercase">SM RAJA</span></span>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <!-- Dark Mode Toggle -->
+                <button id="theme-toggle" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:ring-2 ring-primary transition-all">
+                    <i id="theme-toggle-dark-icon" class="hidden fa-solid fa-moon"></i>
+                    <i id="theme-toggle-light-icon" class="hidden fa-solid fa-sun"></i>
+                </button>
+                
+                <a href="https://wa.me/6281277457431" class="hidden md:flex items-center gap-2 bg-primary text-slate-950 px-4 py-2 rounded-full font-bold text-sm hover:scale-105 transition-all">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    HUBUNGI KAMI
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center pt-20">
+        <div class="absolute inset-0 z-0 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1542128962-9d50ad7bf6e4?q=80&w=2070&auto=format&fit=crop" 
+                 alt="Background Ban" 
+                 class="w-full h-full object-cover opacity-20 dark:opacity-10 scale-110">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-slate-50 dark:to-slate-950"></div>
+        </div>
+
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-3xl">
+                <span class="inline-block px-3 py-1 bg-primary/20 text-primary rounded-full text-xs font-bold mb-4 tracking-widest uppercase">
+                    Pusat Ban Medan
+                </span>
+                <h1 class="text-5xl md:text-7xl font-black mb-6 leading-tight">
+                    Ban Awet, <br>Perjalanan <span class="text-primary">Nyaman.</span>
+                </h1>
+                <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-xl">
+                    Sedia berbagai merk ban internasional & lokal di <strong>Jl. Sisingamangaraja No. 4</strong>. Melayani pemasangan profesional, balancing, dan pengisian nitrogen.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="https://wa.me/6281277457431?text=Halo%20Toko%20Ban%20SM%20Raja,%20saya%20ingin%20tanya%20stok%20ban" 
+                       class="flex items-center justify-center gap-3 bg-green-600 hover:bg-green-500 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-xl shadow-green-600/20 transition-all">
+                        <i class="fa-brands fa-whatsapp text-2xl"></i>
+                        Konsultasi via WA
+                    </a>
+                    <a href="#lokasi" class="flex items-center justify-center gap-2 border-2 border-slate-300 dark:border-slate-700 px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+                        Cek Lokasi
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brands Section -->
+    <section class="py-12 bg-white dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800">
+        <div class="container mx-auto px-4">
+            <p class="text-center text-sm font-semibold text-slate-400 mb-8 uppercase tracking-widest">Merk Ban Tersedia</p>
+            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all">
+                <span class="text-2xl font-bold">BRIDGESTONE</span>
+                <span class="text-2xl font-bold">MICHELIN</span>
+                <span class="text-2xl font-bold">DUNLOP</span>
+                <span class="text-2 sm:text-2xl font-bold">GT RADIAL</span>
+                <span class="text-2xl font-bold">HANKOOK</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="py-24 container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-black mb-4 uppercase">Layanan Unggulan</h2>
+            <div class="w-20 h-1 bg-primary mx-auto"></div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Service 1 -->
+            <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 group hover:-translate-y-2 transition-all">
+                <div class="w-14 h-14 bg-primary/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-primary transition-all">
+                    <i class="fa-solid fa-screwdriver-wrench text-primary text-2xl group-hover:text-slate-950"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3">Ganti Ban Cepat</h3>
+                <p class="text-slate-600 dark:text-slate-400">Pemasangan menggunakan mesin otomatis untuk menjaga kualitas velg kendaraan Anda tetap mulus.</p>
+            </div>
+            <!-- Service 2 -->
+            <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 group hover:-translate-y-2 transition-all">
+                <div class="w-14 h-14 bg-primary/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-primary transition-all">
+                    <i class="fa-solid fa-scale-balanced text-primary text-2xl group-hover:text-slate-950"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3">Balancing & Spooring</h3>
+                <p class="text-slate-600 dark:text-slate-400">Pastikan kestabilan kemudi Anda agar ban tidak cepat habis tidak rata dan berkendara lebih aman.</p>
+            </div>
+            <!-- Service 3 -->
+            <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 group hover:-translate-y-2 transition-all">
+                <div class="w-14 h-14 bg-primary/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-primary transition-all">
+                    <i class="fa-solid fa-wind text-primary text-2xl group-hover:text-slate-950"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3">Nitrogen Murni</h3>
+                <p class="text-slate-600 dark:text-slate-400">Menjaga suhu ban tetap stabil, lebih empuk saat melaju, dan memperpanjang umur ban kendaraan.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Location & Contact -->
+    <section id="lokasi" class="py-24 bg-slate-100 dark:bg-slate-900">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-4xl font-black mb-6 uppercase italic">Kunjungi <span class="text-primary">Toko Kami</span></h2>
+                    <p class="text-lg text-slate-600 dark:text-slate-400 mb-8">
+                        Kami berlokasi di pusat kota Medan dengan akses yang sangat mudah dijangkau.
+                    </p>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-md shrink-0">
+                                <i class="fa-solid fa-location-dot text-red-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Alamat Lengkap</h4>
+                                <p class="text-slate-600 dark:text-slate-400 italic">Jl. Sisingamangaraja No. 4, Medan, Sumatera Utara.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-md shrink-0">
+                                <i class="fa-solid fa-clock text-blue-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Jam Operasional</h4>
+                                <p class="text-slate-600 dark:text-slate-400">Senin - Sabtu: 08:00 - 18:00 WIB</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-md shrink-0">
+                                <i class="fa-solid fa-phone text-green-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">WhatsApp / Telp</h4>
+                                <p class="text-slate-600 dark:text-slate-400">0812-7745-7431</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="rounded-3xl overflow-hidden shadow-2xl h-96 bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
+                    <!-- Placeholder for Map -->
+                    <div class="text-center p-8">
+                        <i class="fa-solid fa-map-location-dot text-6xl text-slate-400 mb-4"></i>
+                        <p class="text-slate-500">Google Maps akan tampil di sini.</p>
+                        <a href="https://www.google.com/maps/search/Jl.+SM+Raja+No.+4+Medan" target="_blank" class="mt-4 inline-block text-primary font-bold underline">Buka di Maps Sekarang</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex justify-center items-center gap-2 mb-6">
+                <i class="fa-solid fa-circle-dot text-primary text-xl"></i>
+                <span class="font-black text-lg tracking-tighter italic">TOKO BAN <span class="text-primary uppercase">SM RAJA</span></span>
+            </div>
+            <p class="text-slate-500 text-sm">© 2025 Toko Ban SM Raja. Solusi Ban Terbaik di Medan.</p>
+        </div>
+    </footer>
+
+    <!-- Mobile Floating WA -->
+    <a href="https://wa.me/6281277457431" class="md:hidden fixed bottom-6 right-6 w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center shadow-2xl z-[100] animate-bounce">
+        <i class="fa-brands fa-whatsapp text-3xl"></i>
+    </a>
+
+    <!-- Theme Switcher Logic -->
+    <script>
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+        const themeToggleBtn = document.getElementById('theme-toggle');
+
+        // Check preference on load
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            themeToggleLightIcon.classList.remove('hidden');
+        } else {
+            document.documentElement.classList.remove('dark');
+            themeToggleDarkIcon.classList.remove('hidden');
+        }
+
+        themeToggleBtn.addEventListener('click', function() {
+            // Toggle icons
+            themeToggleDarkIcon.classList.toggle('hidden');
+            themeToggleLightIcon.classList.toggle('hidden');
+
+            // Toggle theme
+            if (localStorage.getItem('color-theme')) {
+                if (localStorage.getItem('color-theme') === 'light') {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                }
+            } else {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
