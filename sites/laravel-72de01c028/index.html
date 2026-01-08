@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaraBase - Supabase Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Library Supabase dari CDN -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        [x-cloak] { display: none !important; }
+    </style>
+
+    <script>
+        /**
+         * Menggunakan fungsi global untuk memastikan Alpine.js dapat menemukan 
+         * objek data segera setelah inisialisasi.
+         */
+        function supabaseApp() {
+            return {
+                supabase: null,
+                orders: [],
+                connected: false,
+                loading: true,
+                errorMessage: '',
+
+                async init() {
+                    // --- KONFIGURASI SUPABASE ---
+                    // TUGAS ANDA: Ganti 2 baris di bawah ini dengan data dari dashboard Supabase Anda
+                    const SUPABASE_URL = 'https://jbeqhuuetkeunnmqblns.supabase.co'; 
+                    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpiZXFodXVldGtldW5ubXFibG5zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4OTAzNTgsImV4cCI6MjA4MzQ2NjM1OH0.JB_H3WFx9e-6EUa924kSSnqNzt3ROpTFweuuOTmey40';
+
+                    // Cek apakah konfigurasi masih default/kosong
+                    const isConfigMissing = SUPABASE_URL.includes('xyz.supabase.co') || SUPABASE_KEY === 'your-anon-key';
+
+                    if (isConfigMissing) {
+                        this.errorMessage = "PENTING: Anda belum memasukkan URL & Key Supabase. Lihat panduan di chat untuk cara membuatnya.";
+                        this.loading = false;
+                        if (window.lucide) window.lucide.createIcons();
+                        return;
+                    }
+
+                    // KONEKSI KE SUPABASE
+                    try {
+                        if (window.supabase) {
+                            this.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                            this.connected = true;
+                            await this.fetchOrders();
+                        } else {
+                            this.errorMessage = "Supabase SDK tidak dapat dimuat.";
+                        }
+                    } catch (err) {
+                        console.error("Inisialisasi gagal:", err);
+                        this.errorMessage = "Gagal terhubung. Pastikan URL benar.";
+                        this.connected = false;
+                    } finally {
+                        this.loading = false;
+                        if (window.lucide) window.lucide.createIcons();
+                    }
+                },
+
+                async fetchOrders() {
+                    if (!this.supabase) return;
+                    this.loading = true;
+                    this.errorMessage = '';
+                    
+                    try {
+                        const { data, error } = await this.supabase
+                            .from('orders')
+                            .select('*')
+                            .order('created_at', { ascending: false });
+
+                        if (error) throw error;
+                        this.orders = data || [];
+                    } catch (err) {
+                        console.error("Error fetch:", err);
+                        this.errorMessage = "Gagal ambil data: " + err.message + " (Cek apakah tabel 'orders' sudah dibuat?)";
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                async addOrder() {
+                    if (!this.supabase) return;
+                    
+                    const randomNames = ['Budi Gunawan', 'Siti Fatimah', 'Andi Wijaya', 'Rina Permata', 'Eko Santoso', 'Dian Sastro'];
+                    const randomName = randomNames[Math.floor(Math.random() * randomNames.length)];
+                    
+                    const newOrder = { 
+                        order_id: '#ORD-' + Math.floor(1000 + Math.random() * 9000), 
+                        customer_name: randomName, 
+                        amount: Math.floor(Math.random() * 1000000) + 50000,
+                        // created_at biasanya otomatis diisi Supabase, tapi kita kirim manual jaga-jaga
+                        // jika kolomnya tidak diset default now()
+                    };
+                    
+                    try {
+                        const { error } = await this.supabase
+                            .from('orders')
+                            .insert([newOrder]);
+                        
+                        if (error) throw error;
+                        await this.fetchOrders();
+                    } catch (err) {
+                        alert("Gagal tambah data: " + err.message);
+                    }
+                },
+            }
+        }
+    </script>
+    
+    <!-- Alpine.js dimuat terakhir dengan defer -->
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-900" x-data="supabaseApp()" x-cloak>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Konten Utama -->
+        <main class="flex-1 flex flex-col min-w-0 overflow-hidden p-8">
+            <div class="max-w-7xl mx-auto w-full">
+                
+                <!-- Alert Error / Instruksi -->
+                <template x-if="errorMessage">
+                    <div class="mb-6 p-4 bg-amber-50 border-l-4 border-amber-500 rounded-r-xl flex items-start gap-3 shadow-sm">
+                        <i data-lucide="alert-triangle" class="text-amber-500 w-5 h-5 shrink-0 mt-0.5"></i>
+                        <div>
+                            <h4 class="text-amber-800 font-bold text-sm">Konfigurasi Diperlukan</h4>
+                            <p class="text-amber-700 text-xs mt-1" x-text="errorMessage"></p>
+                        </div>
+                    </div>
+                </template>
+
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Dashboard Pesanan</h1>
+                        <p class="text-gray-500 text-sm mt-1">Mengelola data pesanan secara real-time via Supabase.</p>
+                    </div>
+                    <button 
+                        @click="addOrder()" 
+                        :disabled="!connected"
+                        :class="!connected ? 'opacity-50 cursor-not-allowed bg-gray-400' : 'bg-indigo-600 hover:bg-indigo-700'"
+                        class="text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg transition-all flex items-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        Tambah Pesanan
+                    </button>
+                </div>
+
+                <!-- Status Koneksi -->
+                <div class="mb-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold border" 
+                     :class="connected ? 'text-emerald-700 bg-emerald-50 border-emerald-100' : 'text-gray-700 bg-gray-50 border-gray-200'">
+                    <div class="w-2 h-2 rounded-full" :class="connected ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'"></div>
+                    Status: <span x-text="connected ? 'Terhubung ke Supabase' : 'Menunggu Konfigurasi...'"></span>
+                </div>
+
+                <!-- Tabel Data -->
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50 text-[10px] uppercase tracking-widest font-bold text-gray-400">
+                                <tr>
+                                    <th class="px-6 py-4">ID Pesanan</th>
+                                    <th class="px-6 py-4">Nama Pelanggan</th>
+                                    <th class="px-6 py-4 text-right">Total Transaksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-50 text-sm">
+                                <!-- Status Memuat -->
+                                <template x-if="loading && !errorMessage">
+                                    <tr>
+                                        <td colspan="3" class="px-6 py-16 text-center">
+                                            <div class="flex flex-col items-center gap-3">
+                                                <div class="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                                                <span class="text-gray-400 italic font-medium">Menghubungi database...</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                                
+                                <!-- Baris Data -->
+                                <template x-if="!loading && connected">
+                                    <template x-for="order in orders" :key="order.order_id">
+                                        <tr class="hover:bg-gray-50 transition-colors group">
+                                            <td class="px-6 py-4 font-medium text-indigo-600 group-hover:underline" x-text="order.order_id"></td>
+                                            <td class="px-6 py-4 font-semibold text-gray-700" x-text="order.customer_name"></td>
+                                            <td class="px-6 py-4 text-right font-bold text-gray-900" x-text="'Rp ' + (order.amount ? order.amount.toLocaleString('id-ID') : '0')"></td>
+                                        </tr>
+                                    </template>
+                                </template>
+
+                                <!-- State Kosong -->
+                                <template x-if="!loading && connected && orders.length === 0">
+                                    <tr>
+                                        <td colspan="3" class="px-6 py-16 text-center">
+                                            <div class="flex flex-col items-center text-gray-400">
+                                                <i data-lucide="database" class="w-12 h-12 mb-3 opacity-20"></i>
+                                                <p class="font-medium">Database terhubung tapi masih kosong.</p>
+                                                <p class="text-xs mt-1">Klik tombol "Tambah Pesanan" di atas.</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        window.addEventListener('load', () => {
+            if (window.lucide) window.lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
