@@ -1,0 +1,310 @@
+[
+    {
+        "id": "beat",
+        "name": "Honda BeAT",
+        "type": "Matic",
+        "price": "Rp 18.980.000",
+        "price_int": 18980000,
+        "image": "assets/images/motor_beat.png",
+        "description": "Skutik terlaris di Indonesia! Gesit, irit BBM, dan fiturnya lengkap.",
+        "features": [
+            "Rangka eSAF",
+            "Lampu LED",
+            "Power Charger"
+        ]
+    },
+    {
+        "id": "beat-street",
+        "name": "Honda BeAT Street",
+        "type": "Matic",
+        "price": "Rp 19.850.000",
+        "price_int": 19850000,
+        "image": "assets/images/motor_beat_street.webp",
+        "description": "Tampil beda dengan Street Style, setang telanjang yang laki banget.",
+        "features": [
+            "Naked Handlebar",
+            "Digital Panel Meter",
+            "Combined Digital Panel"
+        ]
+    },
+    {
+        "id": "genio",
+        "name": "Honda Genio",
+        "type": "Matic",
+        "price": "Rp 21.700.000",
+        "price_int": 21700000,
+        "image": "assets/images/motor_genio.webp",
+        "description": "Skutik casual fashionable dengan desain compact dan irit.",
+        "features": [
+            "Power Charger",
+            "Bagasi 14L",
+            "Rangka eSAF"
+        ]
+    },
+    {
+        "id": "scoopy",
+        "name": "Honda Scoopy",
+        "type": "Matic",
+        "price": "Rp 22.880.000",
+        "price_int": 22880000,
+        "image": "assets/images/motor_scoopy.webp",
+        "description": "Trendsetter skutik retro modern yang ikonik dan fashionable.",
+        "features": [
+            "Smart Key System",
+            "LED Projector",
+            "Console Box"
+        ]
+    },
+    {
+        "id": "vario-125",
+        "name": "Honda Vario 125",
+        "type": "Matic",
+        "price": "Rp 24.450.000",
+        "price_int": 24450000,
+        "image": "assets/images/motor_vario125.webp",
+        "description": "New Honda Vario 125, lebih sporti dan canggih.",
+        "features": [
+            "Honda Smart Key",
+            "Full Digital",
+            "USB Charger"
+        ]
+    },
+    {
+        "id": "vario-160",
+        "name": "Honda Vario 160",
+        "type": "Matic",
+        "price": "Rp 28.330.000",
+        "price_int": 28330000,
+        "image": "assets/images/motor_vario160.webp",
+        "description": "Performa tinggi dengan desain premium yang sporti.",
+        "features": [
+            "160cc 4 Valve",
+            "ABS",
+            "All LED Lighting"
+        ]
+    },
+    {
+        "id": "stylo-160",
+        "name": "Honda Stylo 160",
+        "type": "Matic",
+        "price": "Rp 29.170.000",
+        "price_int": 29170000,
+        "image": "assets/images/motor_stylo.webp",
+        "description": "Fashionable meets power. Skutik retro performa tinggi 160cc.",
+        "features": [
+            "160cc eSP+",
+            "ABS / CBS",
+            "Full Digital Panel"
+        ]
+    },
+    {
+        "id": "pcx-160",
+        "name": "Honda PCX 160",
+        "type": "Matic",
+        "price": "Rp 33.400.000",
+        "price_int": 33400000,
+        "image": "assets/images/motor_pcx.webp",
+        "description": "Nikmati kenyamanan berkendara kelas atas dengan desain mewah.",
+        "features": [
+            "Mesin 160cc eSP+",
+            "HSTC",
+            "Bagasi 30 Liter"
+        ]
+    },
+    {
+        "id": "adv-160",
+        "name": "Honda ADV 160",
+        "type": "Matic",
+        "price": "Rp 37.448.000",
+        "price_int": 37448000,
+        "image": "assets/images/motor_adv.webp",
+        "description": "The Best Urban Explorer. Jelajahi petualangan baru.",
+        "features": [
+            "Twin Subtank",
+            "Windscreen Adjustable",
+            "HSTC"
+        ]
+    },
+    {
+        "id": "cb150-verza",
+        "name": "Honda CB150 Verza",
+        "type": "Sport",
+        "price": "Rp 22.404.000",
+        "price_int": 22404000,
+        "image": "assets/images/motor_verza.webp",
+        "description": "Motor sport tangguh, maskulin, dan irit untuk harian.",
+        "features": [
+            "Panelmeter Digital",
+            "Secure Key Shutter",
+            "Suspensi Ganda"
+        ]
+    },
+    {
+        "id": "sonic-150r",
+        "name": "Honda Sonic 150R",
+        "type": "Sport",
+        "price": "Rp 25.520.000",
+        "price_int": 25520000,
+        "image": "assets/images/motor_sonic.webp",
+        "description": "Aksi tanpa batas dengan Light Sport 150cc DOHC 6 Speed.",
+        "features": [
+            "Clip on Handlebar",
+            "LED Headlight",
+            "Garnish Cover"
+        ]
+    },
+    {
+        "id": "cb150r",
+        "name": "Honda CB150R",
+        "type": "Sport",
+        "price": "Rp 32.500.000",
+        "price_int": 32500000,
+        "image": "assets/images/motor_cb150r.webp",
+        "description": "Naked Sport Bike dengan desain masif dan agresif.",
+        "features": [
+            "Inverted Front Suspension",
+            "Full LED",
+            "Tapered Handlebar"
+        ]
+    },
+    {
+        "id": "cb150x",
+        "name": "Honda CB150X",
+        "type": "Sport",
+        "price": "Rp 34.520.000",
+        "price_int": 34520000,
+        "image": "assets/images/motor_cb150x.webp",
+        "description": "Born to Explore. Motor sport adventure touring 150cc pertama.",
+        "features": [
+            "High Windscreen",
+            "Inverted Front Suspension",
+            "Tapered Handlebar"
+        ]
+    },
+    {
+        "id": "cbr-150r",
+        "name": "Honda CBR150R",
+        "type": "Sport",
+        "price": "Rp 39.200.000",
+        "price_int": 39200000,
+        "image": "assets/images/motor_cbr150r.webp",
+        "description": "Rasakan sensasi balap sesungguhnya dengan Total Control.",
+        "features": [
+            "Assist/Slipper Clutch",
+            "Inverted Front Suspension",
+            "ABS"
+        ]
+    },
+    {
+        "id": "crf-150l",
+        "name": "Honda CRF150L",
+        "type": "Sport",
+        "price": "Rp 36.700.000",
+        "price_int": 36700000,
+        "image": "assets/images/motor_crf.webp",
+        "description": "Unlimit your world! Motor trail tangguh untuk segala medan.",
+        "features": [
+            "Long Travel Suspension",
+            "Mesin 150cc PGM-FI",
+            "Aluminium Rims"
+        ]
+    },
+    {
+        "id": "cbr-250rr",
+        "name": "Honda CBR250RR",
+        "type": "Sport",
+        "price": "Rp 67.168.000",
+        "price_int": 67168000,
+        "image": "assets/images/motor_cbr250rr.webp",
+        "description": "Lightweight Supersport. Total Control & Speed.",
+        "features": [
+            "Throttle By Wire",
+            "3 Riding Modes",
+            "Quick Shifter"
+        ]
+    },
+    {
+        "id": "revo",
+        "name": "Honda Revo",
+        "type": "Cub",
+        "price": "Rp 18.000.000",
+        "price_int": 18000000,
+        "image": "assets/images/motor_revo.webp",
+        "description": "Keren, tangguh, dan paling irit dikelasnya.",
+        "features": [
+            "Bagasi 7L",
+            "Secure Key Shutter",
+            "Panel Meter Modern"
+        ]
+    },
+    {
+        "id": "supra-x",
+        "name": "Honda Supra X 125",
+        "type": "Cub",
+        "price": "Rp 21.500.000",
+        "price_int": 21500000,
+        "image": "assets/images/motor_supra_x.webp",
+        "description": "Rajanya motor bebek, tangguh dan irit.",
+        "features": [
+            "Power Charger",
+            "Functional Hook",
+            "Luxury Design"
+        ]
+    },
+    {
+        "id": "gtr-150",
+        "name": "Honda GTR 150",
+        "type": "Cub",
+        "price": "Rp 26.900.000",
+        "price_int": 26900000,
+        "image": "assets/images/motor_gtr.webp",
+        "description": "Bebek sport dengan performa mesin balap DOHC 6 Speed.",
+        "features": [
+            "Mesin 150cc DOHC",
+            "Ban Tubeless",
+            "Digital Panel"
+        ]
+    },
+    {
+        "id": "icon-e",
+        "name": "Honda ICON e:",
+        "type": "EV",
+        "price": "Rp 28.000.000",
+        "price_int": 28000000,
+        "image": "assets/images/motor_icon_e.webp",
+        "description": "ICON of the future. Skutik listrik modern dan ringkas.",
+        "features": [
+            "Baterai Tanam",
+            "Charger portable",
+            "Compact Design"
+        ]
+    },
+    {
+        "id": "em1-e",
+        "name": "Honda EM1 e:",
+        "type": "EV",
+        "price": "Rp 40.000.000",
+        "price_int": 40000000,
+        "image": "assets/images/motor_em1.webp",
+        "description": "Motor listrik Honda pertama dengan kualitas terjamin.",
+        "features": [
+            "Battery Mobile Power Pack",
+            "Full LED",
+            "Digital Meter"
+        ]
+    },
+    {
+        "id": "cuv-e",
+        "name": "Honda CUV e:",
+        "type": "EV",
+        "price": "Rp 54.500.000",
+        "price_int": 54500000,
+        "image": "assets/images/motor_cuv_e.webp",
+        "description": "Clean Urban Vehicle. Solusi mobilitas masa depan.",
+        "features": [
+            "Dual Mobile Power Pack",
+            "RoadSync Duo",
+            "Smart Key"
+        ]
+    }
+]
