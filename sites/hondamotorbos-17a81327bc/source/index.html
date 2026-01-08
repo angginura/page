@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Dealer Resmi Motor Honda - Dapatkan harga terbaik untuk motor Honda impian Anda. Kredit & Cash dengan proses mudah.">
+  <title>BOS MOTOR | Dealer Resmi Honda Terpercaya</title>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-container">
+      <a href="#" class="logo">
+        <i class="fas fa-motorcycle"></i> BOS <span>MOTOR</span>
+      </a>
+      <nav>
+        <a href="https://wa.me/6281290881377" class="btn btn-primary btn-whatsapp">
+          <i class="fab fa-whatsapp"></i> Hubungi Kami
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1>BOS MOTOR</h1>
+        <p>Dealer Resmi Honda Terpercaya. Dapatkan harga terbaik, proses kredit mudah, dan pelayanan prima untuk motor
+          impian Anda.</p>
+        <div class="hero-buttons">
+          <a href="#produk" class="btn btn-primary">Lihat Produk</a>
+          <a href="https://wa.me/6281290881377" class="btn btn-outline">Konsultasi Gratis</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Keunggulan Section -->
+  <section class="padding-section" style="padding: 60px 0;">
+    <div class="container">
+      <div class="features-grid">
+        <div class="feature-card">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <h3 class="feature-title">Dealer Resmi</h3>
+          <p>Jaminan unit original dan bergaransi resmi Astra Honda Motor.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-tags feature-icon"></i>
+          <h3 class="feature-title">Harga Transparan</h3>
+          <p>Harga OTR jujur tanpa biaya tersembunyi. Promo jelas dan menguntungkan.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-file-invoice-dollar feature-icon"></i>
+          <h3 class="feature-title">Kredit & Cash</h3>
+          <p>Fleksibilitas pembayaran tunai atau kredit dengan leasing terpercaya.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-shipping-fast feature-icon"></i>
+          <h3 class="feature-title">Pengiriman Cepat</h3>
+          <p>Unit ready stock siap kirim ke rumah Anda dengan aman.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Produk Section -->
+  <section id="produk" class="products section-padding">
+    <div class="container">
+      <div class="text-center">
+        <h2 class="section-title">Pilihan Motor Honda</h2>
+        <p class="section-subtitle">Pilih tipe motor yang sesuai dengan gaya hidup dan kebutuhan Anda.</p>
+
+        <div class="filters">
+          <button class="filter-btn active" data-category="all">Semua</button>
+          <button class="filter-btn" data-category="Matic">Matic</button>
+          <button class="filter-btn" data-category="Sport">Sport</button>
+          <button class="filter-btn" data-category="Cub">Bebek</button>
+          <button class="filter-btn" data-category="EV">Electric</button>
+        </div>
+      </div>
+
+      <div class="product-grid">
+        <!-- Products injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Promo Section -->
+  <section class="promo section-padding">
+    <div class="container promo-container">
+      <div class="promo-content">
+        <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Promo Spesial Bulan Ini!</h2>
+        <ul style="font-size: 1.2rem; margin-bottom: 30px; list-style-type: none;">
+          <li style="margin-bottom: 15px;"><i class="fas fa-check"></i> DP Mulai 500 Ribuan</li>
+          <li style="margin-bottom: 15px;"><i class="fas fa-check"></i> Potongan Tenor hingga 3 Bulan</li>
+          <li style="margin-bottom: 15px;"><i class="fas fa-check"></i> Bonus Helm & Jaket Eksklusif</li>
+          <li style="margin-bottom: 15px;"><i class="fas fa-check"></i> Gratis Servis & Oli 4x</li>
+        </ul>
+        <a href="https://wa.me/6281290881377?text=Info%20Promo%20Bulan%20Ini" class="btn"
+          style="background: white; color: var(--color-primary);">Ambil Promo Sekarang</a>
+      </div>
+      <div class="promo-image">
+        <!-- Optional illustrative icon/image -->
+        <i class="fas fa-gift" style="font-size: 10rem; opacity: 0.8;"></i>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimoni Section -->
+  <section class="section-padding">
+    <div class="container">
+      <div class="text-center">
+        <h2 class="section-title">Apa Kata Mereka?</h2>
+        <p class="section-subtitle">Kepuasan pelanggan adalah prioritas utama kami.</p>
+        <button id="openReviewModal" class="btn btn-outline"
+          style="color: var(--color-primary); border-color: var(--color-primary); margin-bottom: 30px;">
+          <i class="fas fa-pen"></i> Tulis Ulasan
+        </button>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="card-header-review">
+            <div class="customer-avatar"
+              style="background-color: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+              BS</div>
+            <div>
+              <div class="cust-name">Budi Santoso</div>
+              <div class="cust-role">Karyawan Swasta</div>
+            </div>
+            <div class="stars-static">
+              <i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i
+                class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i
+                class="fas fa-star text-warning"></i>
+            </div>
+          </div>
+          <p class="quote">"Pelayanan sangat ramah dan proses kreditnya cepat banget. Pagi ajuin, sore motor sudah
+            sampai rumah. Mantap!"</p>
+          <div class="review-date">2 Hari yang lalu</div>
+        </div>
+        <div class="testimonial-card">
+          <div class="card-header-review">
+            <div class="customer-avatar"
+              style="background-color: #3498db; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+              SA</div>
+            <div>
+              <div class="cust-name">Siti Aminah</div>
+              <div class="cust-role">Wiraswasta</div>
+            </div>
+            <div class="stars-static">
+              <i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i
+                class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i
+                class="fas fa-star text-warning"></i>
+            </div>
+          </div>
+          <p class="quote">"Harga disini paling transparan, salesnya informatif banget jelasin fitur motornya. Honda
+            Vario 160 nya keren!"</p>
+          <div class="review-date">1 Minggu yang lalu</div>
+        </div>
+        <div class="testimonial-card">
+          <div class="card-header-review">
+            <div class="customer-avatar"
+              style="background-color: #2ecc71; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+              RP</div>
+            <div>
+              <div class="cust-name">Rizky Pratama</div>
+              <div class="cust-role">Mahasiswa</div>
+            </div>
+            <div class="stars-static">
+              <i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i
+                class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i
+                class="fas fa-star-half-alt text-warning"></i>
+            </div>
+          </div>
+          <p class="quote">"Rekomendasi banget buat yang cari motor Honda. Bonusnya banyak dan pengirimannya aman."</p>
+          <div class="review-date">2 Minggu yang lalu</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h3 class="footer-title">BOS MOTOR</h3>
+          <p style="opacity: 0.7; margin-bottom: 20px;">
+            Mitra resmi penjualan motor Honda terpercaya dengan pelayanan terbaik 3S (Sales, Service, Sparepart).
+          </p>
+          <div style="display: flex; gap: 15px;">
+            <a href="#" style="color: white;"><i class="fab fa-facebook fa-lg"></i></a>
+            <a href="#" style="color: white;"><i class="fab fa-instagram fa-lg"></i></a>
+            <a href="#" style="color: white;"><i class="fab fa-youtube fa-lg"></i></a>
+          </div>
+        </div>
+        <div>
+          <h3 class="footer-title">Jam Operasional</h3>
+          <ul class="footer-links" style="opacity: 0.7;">
+            <li>Senin - Jumat: 08:00 - 17:00</li>
+            <li>Sabtu: 08:00 - 15:00</li>
+            <li>Minggu: 09:00 - 14:00 (Showroom Only)</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer-title">Hubungi Kami</h3>
+          <ul class="footer-links" style="opacity: 0.7;">
+            <li><i class="fas fa-map-marker-alt"></i> Jl. Kresek Raya No. 70, Duri Kosambi, Cengkareng, Jakarta Barat,
+              DKI Jakarta</li>
+            <li><i class="fab fa-whatsapp"></i> 0812-9088-1377 (WA 1)</li>
+            <li><i class="fab fa-whatsapp"></i> 0815-8009-953 (WA 2)</li>
+            <li><i class="fas fa-envelope"></i> info@bosmotor.com</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2026 BOS MOTOR. All Rights Reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating WhatsApp Container -->
+  <div class="floating-wa-container">
+    <div class="wa-options">
+      <a href="https://wa.me/6281290881377" class="wa-option" target="_blank">
+        <span class="wa-text">Admin 1 (0812...)</span>
+        <div class="wa-icon-small"><i class="fab fa-whatsapp"></i></div>
+      </a>
+      <a href="https://wa.me/628158009953" class="wa-option" target="_blank">
+        <span class="wa-text">Admin 2 (0815...)</span>
+        <div class="wa-icon-small"><i class="fab fa-whatsapp"></i></div>
+      </a>
+    </div>
+    <button class="floating-wa-btn" id="waToggle" title="Hubungi WhatsApp">
+      <i class="fab fa-whatsapp open-icon"></i>
+      <i class="fas fa-times close-icon"></i>
+    </button>
+  </div>
+
+  <!-- Main JS -->
+  <script type="module" src="./assets/js/main.js"></script>
+</body>
+
+</html>
