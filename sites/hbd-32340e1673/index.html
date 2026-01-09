@@ -1,0 +1,2095 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Desi Paramita</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- SEMUA CSS ANDA TETAP SAMA DI SINI --- */
+        :root {
+            --primary-pink: #ffcce6;
+            --rose-pink: #ff99cc;
+            --peach: #ffccdd;
+            --gold: #ffd700;
+            --text-dark: #555;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to bottom, var(--primary-pink), var(--peach));
+            color: var(--text-dark);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Welcome Modal */
+        .welcome-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .welcome-modal.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .welcome-content {
+            background-color: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: 2px solid var(--rose-pink);
+            position: relative;
+        }
+        
+        .welcome-content h2 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.5rem;
+            color: var(--rose-pink);
+            margin-bottom: 20px;
+        }
+        
+        .welcome-content p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .welcome-music {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .music-visualizer {
+            display: flex;
+            align-items: flex-end;
+            height: 60px;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .music-bar {
+            width: 8px;
+            background-color: var(--rose-pink);
+            border-radius: 4px;
+            animation: musicWave 1.5s infinite ease-in-out;
+        }
+        
+        .music-bar:nth-child(1) { animation-delay: 0s; height: 20px; }
+        .music-bar:nth-child(2) { animation-delay: 0.2s; height: 30px; }
+        .music-bar:nth-child(3) { animation-delay: 0.4s; height: 40px; }
+        .music-bar:nth-child(4) { animation-delay: 0.6s; height: 30px; }
+        .music-bar:nth-child(5) { animation-delay: 0.8s; height: 20px; }
+        
+        .music-bar.paused {
+            animation-play-state: paused;
+            background-color: #ddd;
+        }
+        
+        @keyframes musicWave {
+            0%, 100% { transform: scaleY(0.5); }
+            50% { transform: scaleY(1); }
+        }
+        
+        .welcome-play-btn {
+            background-color: var(--rose-pink);
+            color: white;
+            border: none;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            font-size: 2rem;
+            position: relative;
+        }
+        
+        .welcome-play-btn:hover {
+            background-color: var(--primary-pink);
+            transform: scale(1.1);
+        }
+        
+        .welcome-play-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .welcome-play-btn.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .welcome-play-btn.loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .welcome-note {
+            font-style: italic;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+        
+        .audio-error {
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="%23FFD700" opacity="0.3"/><circle cx="80" cy="80" r="2" fill="%23FFD700" opacity="0.3"/><circle cx="50" cy="50" r="1" fill="%23FFD700" opacity="0.5"/><circle cx="10" cy="90" r="1.5" fill="%23FFD700" opacity="0.4"/><circle cx="90" cy="10" r="1.5" fill="%23FFD700" opacity="0.4"/></svg>');
+            opacity: 0.2;
+            z-index: -1;
+        }
+        
+        .hero h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 4rem;
+            color: var(--rose-pink);
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+            animation: fadeIn 2s ease-in-out;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .hero h1::after {
+            content: "💖";
+            position: absolute;
+            right: -40px;
+            top: 10px;
+            font-size: 2rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .hero h1:hover::after {
+            opacity: 1;
+        }
+        
+        .hero h2 {
+            font-size: 1.5rem;
+            font-weight: 300;
+            color: var(--text-dark);
+            text-align: center;
+            animation: fadeIn 2.5s ease-in-out;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .hero h2:hover {
+            color: var(--rose-pink);
+        }
+        
+        /* Message Counter */
+        .message-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            font-size: 0.9rem;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .counter-icon {
+            color: var(--rose-pink);
+        }
+        
+        .counter-text {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        /* Hidden Message Section - Mobile Optimized */
+        .hidden-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            max-width: 90vw;
+            width: 400px;
+            max-height: 80vh;
+            z-index: 1000;
+            transition: transform 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--rose-pink);
+        }
+        
+        .hidden-message.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        .hidden-message-header {
+            background-color: var(--rose-pink);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            position: relative;
+            flex-shrink: 0;
+            border-radius: 18px 18px 0 0;
+        }
+        
+        .hidden-message-header h3 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 1.8rem;
+            margin: 0;
+        }
+        
+        .hidden-message-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .hidden-message-close:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(1.1);
+        }
+        
+        .hidden-message-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            text-align: center;
+            max-height: 50vh;
+        }
+        
+        .hidden-message-body p {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+        
+        .hidden-message-footer {
+            padding: 15px 20px;
+            text-align: center;
+            background-color: rgba(255, 153, 204, 0.1);
+            flex-shrink: 0;
+            border-radius: 0 0 18px 18px;
+        }
+        
+        .hidden-message-footer .close-btn {
+            background-color: var(--rose-pink);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .hidden-message-footer .close-btn:hover {
+            background-color: var(--primary-pink);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 153, 204, 0.4);
+        }
+        
+        .overlay {
+            display: none;
+        }
+        
+        /* Floating Hearts */
+        .floating-heart {
+            position: fixed;
+            bottom: -50px;
+            font-size: 2rem;
+            color: var(--rose-pink);
+            opacity: 0.7;
+            animation: floatUp 5s linear;
+            z-index: 10;
+            pointer-events: none;
+        }
+        
+        /* Secret Button */
+        .secret-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 100;
+            opacity: 0.3;
+        }
+        
+        .secret-button:hover {
+            transform: scale(1.1);
+            opacity: 1;
+            background-color: var(--rose-pink);
+            color: white;
+        }
+        
+        /* Shake Indicator - Hidden */
+        .shake-indicator {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            font-size: 0.8rem;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            max-width: 200px;
+            display: none; /* Added to hide indicator */
+        }
+        
+        .shake-indicator.show {
+            opacity: 1;
+        }
+        
+        .shake-progress {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        
+        .shake-step {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: #ddd;
+            transition: background-color 0.3s ease;
+        }
+        
+        .shake-step.active {
+            background-color: var(--rose-pink);
+        }
+        
+        /* Photo Gallery Section */
+        .photo-gallery {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: auto auto;
+            gap: 30px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        /* Centered 5th photo */
+        .photo-item:nth-child(5) {
+            grid-column: 1 / -1;
+            justify-self: center;
+            max-width: 400px;
+            transform: scale(1.1);
+            z-index: 5;
+        }
+        
+        .photo-item {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            background-color: white;
+            padding: 10px;
+            transform: rotate(var(--rotation));
+        }
+        
+        .photo-item:hover {
+            transform: rotate(0deg) scale(1.05);
+            box-shadow: 0 15px 35px rgba(255, 153, 204, 0.3);
+            z-index: 10;
+        }
+        
+        .photo-item:nth-child(5):hover {
+            transform: scale(1.15);
+        }
+        
+        .photo-img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 15px;
+            display: block;
+            background-color: #f8f8f8;
+        }
+        
+        .photo-item:nth-child(5) .photo-img {
+            height: 350px;
+        }
+        
+        .photo-item::before {
+            content: "";
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+            border-radius: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        
+        .photo-item:hover::before {
+            opacity: 1;
+        }
+        
+        /* Individual photo rotations */
+        .photo-item:nth-child(1) { --rotation: -3deg; }
+        .photo-item:nth-child(2) { --rotation: 2deg; }
+        .photo-item:nth-child(3) { --rotation: -2deg; }
+        .photo-item:nth-child(4) { --rotation: 3deg; }
+        .photo-item:nth-child(5) { --rotation: 0deg; }
+        
+        /* Decorative elements for gallery */
+        .gallery-decoration {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="%23FF99CC" opacity="0.7"/><circle cx="80" cy="80" r="2" fill="%23FF99CC" opacity="0.7"/><circle cx="50" cy="50" r="1" fill="%23FF99CC" opacity="0.8"/></svg>');
+            background-size: contain;
+            z-index: -1;
+            opacity: 0.6;
+        }
+        
+        .centered-photo-decoration {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="10" fill="%23FFD700" opacity="0.8"/></svg>');
+            background-size: contain;
+            z-index: -1;
+            opacity: 0.8;
+            animation: pulse 2s infinite;
+        }
+        
+        /* Slides Section */
+        .slides-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .slide {
+            display: none;
+            padding: 40px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            min-height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slide::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M20,20 Q30,10 40,20 T60,20 T80,20" stroke="%23FF99CC" fill="none" opacity="0.3"/><path d="M20,40 Q30,30 40,40 T60,40 T80,40" stroke="%23FF99CC" fill="none" opacity="0.3"/><path d="M20,60 Q30,50 40,60 T60,60 T80,60" stroke="%23FF99CC" fill="none" opacity="0.3"/><path d="M20,80 Q30,70 40,80 T60,80 T80,80" stroke="%23FF99CC" fill="none" opacity="0.3"/></svg>');
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .slide.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .slide p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .slide .prayer {
+            font-style: italic;
+            color: var(--rose-pink);
+            font-weight: 600;
+        }
+        
+        .slide-navigation {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .slide-btn {
+            background-color: var(--rose-pink);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        .slide-btn:hover {
+            background-color: var(--primary-pink);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 153, 204, 0.4);
+        }
+        
+        .slide-btn:disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Music Section */
+        .music-section {
+            text-align: center;
+            padding: 30px;
+            margin: 50px auto;
+            max-width: 600px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .music-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .music-btn {
+            background-color: var(--rose-pink);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin: 0 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .music-btn:hover {
+            background-color: var(--primary-pink);
+            transform: scale(1.1);
+        }
+        
+        .music-text {
+            font-style: italic;
+            color: var(--text-dark);
+            margin-top: 15px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .music-text:hover {
+            color: var(--rose-pink);
+        }
+        
+        /* Music Status Indicator */
+        .music-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: 10px;
+            font-size: 0.9rem;
+            color: var(--rose-pink);
+        }
+        
+        .music-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--rose-pink);
+            animation: pulse 1.5s infinite;
+        }
+        
+        .music-status.paused .music-status-dot {
+            animation: none;
+            background-color: #ddd;
+        }
+        
+        /* Message Form Section */
+        .message-form-section {
+            padding: 40px 20px;
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .message-form-section h3 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2rem;
+            color: var(--rose-pink);
+            margin-bottom: 20px;
+        }
+        
+        .message-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+        
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            padding: 12px;
+            border: 1px solid var(--rose-pink);
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            resize: vertical;
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+        }
+        
+        .submit-btn {
+            background-color: var(--rose-pink);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .submit-btn:hover {
+            background-color: var(--primary-pink);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 153, 204, 0.4);
+        }
+        
+        .form-note {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            margin-top: 10px;
+            font-style: italic;
+        }
+        
+        /* Success Message */
+        .success-message {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            font-family: 'Poppins', sans-serif;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .success-message.show {
+            opacity: 1;
+        }
+        
+        /* Footer Section */
+        .footer {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            text-align: center;
+            margin-top: auto;
+            border-top: 2px solid var(--rose-pink);
+            position: relative;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer-text {
+            font-size: 1rem;
+            color: var(--text-dark);
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .footer-heart {
+            color: var(--rose-pink);
+            animation: pulse 1.5s infinite;
+        }
+        
+        .footer-decoration {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="%23FF99CC" opacity="0.7"/><circle cx="80" cy="80" r="2" fill="%23FF99CC" opacity="0.7"/><circle cx="50" cy="50" r="1" fill="%23FF99CC" opacity="0.8"/></svg>');
+            background-size: contain;
+            z-index: -1;
+            opacity: 0.6;
+        }
+        
+        /* Decorative Elements */
+        .flower-decoration {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="10" fill="%23FF99CC" opacity="0.7"/></svg>');
+            background-size: contain;
+            z-index: -1;
+        }
+        
+        .ribbon {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="10" fill="%23FF99CC" opacity="0.7"/></svg>');
+            background-size: contain;
+            z-index: -1;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--gold);
+            opacity: 0.6;
+            border-radius: 50%;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+        
+        @keyframes sparkle {
+            0% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+            100% { opacity: 0.3; transform: scale(0.8); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+        
+        @keyframes floatUp {
+            0% {
+                bottom: -50px;
+                transform: translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                bottom: 100vh;
+                transform: translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+            
+            .hero h2 {
+                font-size: 1.2rem;
+            }
+            
+            .slide {
+                padding: 20px;
+            }
+            
+            .slide p {
+                font-size: 1rem;
+            }
+            
+            .gallery-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .photo-item:nth-child(5) {
+                grid-column: 1;
+                max-width: 100%;
+                transform: scale(1);
+            }
+            
+            .photo-img {
+                height: 250px;
+            }
+            
+            .photo-item:nth-child(5) .photo-img {
+                height: 280px;
+            }
+            
+            .message-counter {
+                top: 10px;
+                right: 10px;
+                font-size: 0.8rem;
+                padding: 8px 12px;
+            }
+            
+            .secret-button {
+                bottom: 10px;
+                left: 10px;
+                width: 40px;
+                height: 40px;
+            }
+            
+            .shake-indicator {
+                bottom: 60px;
+                left: 10px;
+                font-size: 0.7rem;
+                max-width: 150px;
+            }
+            
+            .welcome-content {
+                padding: 30px 20px;
+                max-width: 90%;
+            }
+            
+            .welcome-content h2 {
+                font-size: 2rem;
+            }
+            
+            .welcome-content p {
+                font-size: 1rem;
+            }
+            
+            /* Enhanced mobile message styles */
+            .hidden-message {
+                width: 95vw;
+                max-width: 350px;
+                max-height: 75vh;
+            }
+            
+            .hidden-message-header {
+                padding: 12px 15px;
+            }
+            
+            .hidden-message-header h3 {
+                font-size: 1.5rem;
+            }
+            
+            .hidden-message-body {
+                padding: 15px;
+                max-height: 45vh;
+            }
+            
+            .hidden-message-body p {
+                font-size: 0.95rem;
+                line-height: 1.5;
+                margin-bottom: 12px;
+            }
+            
+            .hidden-message-footer {
+                padding: 12px 15px;
+            }
+            
+            .hidden-message-footer .close-btn {
+                padding: 8px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .hidden-message-close {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+            
+            .message-form-section {
+                padding: 30px 15px;
+            }
+            
+            .message-form-section h3 {
+                font-size: 1.5rem;
+            }
+            
+            /* Footer responsive styles */
+            .footer {
+                padding: 15px 10px;
+            }
+            
+            .footer-text {
+                font-size: 0.9rem;
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+        
+        /* Very small screens */
+        @media (max-width: 480px) {
+            .hidden-message {
+                width: 98vw;
+                max-width: 320px;
+                max-height: 70vh;
+            }
+            
+            .hidden-message-header {
+                padding: 10px 15px;
+            }
+            
+            .hidden-message-header h3 {
+                font-size: 1.3rem;
+            }
+            
+            .hidden-message-body {
+                padding: 12px;
+                max-height: 40vh;
+            }
+            
+            .hidden-message-body p {
+                font-size: 0.9rem;
+                line-height: 1.4;
+                margin-bottom: 10px;
+            }
+            
+            .hidden-message-footer {
+                padding: 10px 15px;
+            }
+            
+            .hidden-message-footer .close-btn {
+                padding: 8px 18px;
+                font-size: 0.85rem;
+            }
+            
+            .hidden-message-close {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+            
+            /* Footer very small screen styles */
+            .footer {
+                padding: 12px 8px;
+            }
+            
+            .footer-text {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Success Message -->
+    <div class="success-message" id="successMessage">
+        Pesan Anda telah berhasil dikirim!
+    </div>
+    
+    <!-- Welcome Modal -->
+    <div class="welcome-modal" id="welcomeModal">
+        <div class="welcome-content">
+            <h2>Selamat Datang Sayangku</h2>
+            <p>Sebelum kamu melanjutkan membaca pesan-pesanku, aku mau kamu dengerin lagu spesial ini dulu. Lagu ini aku pilih khusus untukmu sebagai pengiring saat kamu membaca semua pesan dariku.</p>
+            
+            <div class="welcome-music">
+                <div class="music-visualizer" id="welcomeVisualizer">
+                    <div class="music-bar"></div>
+                    <div class="music-bar"></div>
+                    <div class="music-bar"></div>
+                    <div class="music-bar"></div>
+                    <div class="music-bar"></div>
+                </div>
+                
+                <button class="welcome-play-btn" id="welcomePlayBtn">
+                    <i class="fas fa-play"></i>
+                </button>
+                
+                <p class="welcome-note">Klik tombol play untuk memulai lagu dan membuka website</p>
+                <div class="audio-error" id="audioError">
+                    Audio tidak dapat dimuat. Website akan tetap dibuka.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Message Counter -->
+    <div class="message-counter">
+        <i class="fas fa-envelope counter-icon"></i>
+        <span class="counter-text">Pesan Ditemukan: <span id="messageCount">0</span>/7</span>
+    </div>
+    
+    <!-- Secret Button -->
+    <div class="secret-button" id="secretButton">
+        <i class="fas fa-key"></i>
+    </div>
+    
+    <!-- Shake Indicator - Hidden -->
+    <div class="shake-indicator" id="shakeIndicator" style="display: none;">
+        <div>Goyangkan HP 3 kali untuk pesan #6!</div>
+        <div class="shake-progress">
+            <div class="shake-step" id="shakeStep1"></div>
+            <div class="shake-step" id="shakeStep2"></div>
+            <div class="shake-step" id="shakeStep3"></div>
+        </div>
+    </div>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1 id="birthdayTitle">Happy Birthday Desi Paramita</h1>
+        <h2 id="birthdaySubtitle">Untuk sayanggkuu yang paling cantikkkkkk..</h2>
+        
+        <!-- Decorative Elements -->
+        <div class="flower-decoration" style="top: 10%; left: 5%;"></div>
+        <div class="flower-decoration" style="top: 20%; right: 10%;"></div>
+        <div class="flower-decoration" style="bottom: 15%; left: 8%;"></div>
+        <div class="flower-decoration" style="bottom: 25%; right: 5%;"></div>
+        <div class="ribbon" style="top: 15%; right: 15%;"></div>
+        <div class="ribbon" style="bottom: 10%; left: 15%;"></div>
+        
+        <!-- Confetti -->
+        <div class="confetti" style="top: 10%; left: 20%; animation: sparkle 3s infinite;"></div>
+        <div class="confetti" style="top: 30%; right: 25%; animation: sparkle 3s infinite 0.5s;"></div>
+        <div class="confetti" style="bottom: 20%; left: 30%; animation: sparkle 3s infinite 1s;"></div>
+        <div class="confetti" style="bottom: 40%; right: 15%; animation: sparkle 3s infinite 1.5s;"></div>
+    </section>
+    
+    <!-- Hidden Messages -->
+    <!-- Message 1: Main Hidden Message -->
+    <div class="hidden-message" id="hiddenMessage1">
+        <div class="hidden-message-header">
+            <h3>Pesan Rahasia Untukmu 💕</h3>
+            <button class="hidden-message-close" data-message="1">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="hidden-message-body">
+            <p>Sayang, aku sangat bersyukur memiliki kamu dalam hidupku. Setiap hari bersamamu adalah hadiah terindah yang pernah aku terima.</p>
+            <p>Aku berjanji akan selalu ada untukmu, dalam suka maupun duka. Kamu adalah cahaya dalam kegelapanku dan alasan aku menjadi lebih baik setiap hari.</p>
+            <p>Semoga kita bisa terus bersama selamanya, membangun masa depan yang indah bersama. Aku mencintaimu lebih dari yang bisa aku ungkapkan.</p>
+        </div>
+        <div class="hidden-message-footer">
+            <button class="close-btn" data-message="1">Tutup</button>
+        </div>
+    </div>
+    
+    <!-- Message 2: Subtitle Click -->
+    <div class="hidden-message" id="hiddenMessage2">
+        <div class="hidden-message-header">
+            <h3>Kamu Tahu Kan? 🌹</h3>
+            <button class="hidden-message-close" data-message="2">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="hidden-message-body">
+            <p>Kamu adalah alasan aku bangun setiap pagi dengan senyum di wajah. Senyummu bisa membuat hari yang buruk menjadi indah, tawamu bisa menyembuhkan luka yang tak terlihat.</p>
+            <p>Aku suka cara kamu menatapku saat aku bicara, cara kamu memegang tanganku saat kita berjalan, dan cara kamu mengatakan "aku sayang kamu" yang selalu membuatku merasa menjadi orang paling beruntung.</p>
+        </div>
+        <div class="hidden-message-footer">
+            <button class="close-btn" data-message="2">Tutup</button>
+        </div>
+    </div>
+    
+    <!-- Message 3: Secret Button -->
+    <div class="hidden-message" id="hiddenMessage3">
+        <div class="hidden-message-header">
+            <h3>Kunci Hatiku 🔑</h3>
+            <button class="hidden-message-close" data-message="3">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="hidden-message-body">
+            <p>Kamu telah membuka pintu hatiku yangg sempatt terkunci. Kamu menunjukkan padaku apa artinya benar-benar mencintai seseorang tanpa syarat.</p>
+            <p>Setiap momen bersamamu adalah petualangan baru, setiap percakapan adalah pelajaran baru, dan setiap hari adalah kesempatan baru untuk mencintaimu lebih dalam.</p>
+        </div>
+        <div class="hidden-message-footer">
+            <button class="close-btn" data-message="3">Tutup</button>
+        </div>
+    </div>
+    
+    <!-- Message 4: Music Text Click -->
+    <div class="hidden-message" id="hiddenMessage4">
+        <div class="hidden-message-header">
+            <h3>Lagu Untukmu 🎵</h3>
+            <button class="hidden-message-close" data-message="4">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="hidden-message-body">
+            <p>Lagu ini aku pilih khusus untukmu karena liriknya menggambarkan perasaanku sayangggggggg Setiap kata adalah doa, setiap melodi adalah cinta yang aku curahkan.</p>
+            <p>Jika aku bisa menulis lagu, aku akan menulis tentang matamu yang berbinar, tentang senyummu yang memikat, dan tentang cinta kita yang abadi.</p>
+        </div>
+        <div class="hidden-message-footer">
+            <button class="close-btn" data-message="4">Tutup</button>
+        </div>
+    </div>
+    
+    <!-- Message 5: Triple Click on Photo -->
+    <div class="hidden-message" id="hiddenMessage5">
+        <div class="hidden-message-header">
+            <h3>Menatapmu adalah ke indahan 📸</h3>
+            <button class="hidden-message-close" data-message="5">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="hidden-message-body">
+            <p>Setiap foto kamuuu adalah cerminan dari kecantikann kamuuu. Darii mulaii kitaa berkenalan hingga saat ini, setiap momen bersamamu berharga tak ternilai.</p>
+            <p>Aku masih ingat hari pertama kita salingg berkenalan, saat aku melihat kamumu sedangg chat "-1 lovers" dan kita mulai hubungan aku sadarr dann akuu tahu bahwa kamulah orang yang aku cari selama ini. Aku berdoa agar kita bisa terus menciptakan kenangan indah bersama.</p>
+        </div>
+        <div class="hidden-message-footer">
+            <button class="close-btn" data-message="5">Tutup</button>
+        </div>
+    </div>
+    
+    <!-- Message 6: Shake Gesture -->
+    <div class="hidden-message" id="hiddenMessage6">
+        <div class="hidden-message-header">
+            <h3>Goyangan Cinta 💝</h3>
+            <button class="hidden-message-close" data-message="6">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="hidden-message-body">
+            <p>sayangggg kamuuu berhasil menemukan pesan rahasia ini dengan goyangan HP! Ini bukti bahwa kamu benar-benar perhatian dan mau mencoba berbagai cara untuk menemukan pesan-pesanku.</p>
+            <p>Goyangan HP ini melambangkan getaran cinta dalam hatiku setiap kali bersamamuuu hehehe. Setiap goyangan adalah ketukan cinta yang aku berikan untukmu, sayanggggggg.</p>
+        </div>
+        <div class="hidden-message-footer">
+            <button class="close-btn" data-message="6">Tutup</button>
+        </div>
+    </div>
+    
+    <!-- Message 7: Final Reward (All Messages Found) -->
+    <div class="hidden-message" id="hiddenMessage7">
+        <div class="hidden-message-header">
+            <h3>Selamat! 🎉</h3>
+            <button class="hidden-message-close" data-message="7">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="hidden-message-body">
+            <p>Kamu telah menemukan semua pesan rahasia! Ini bukti bahwa kamu benar-benar perhatian dan mencintai aku sepenuh hati.</p>
+            <p>Sebagai hadiahnya, aku berjanji akan selalu membuatmu bahagia, akan selalu ada di sisimu dalam suka dan duka, dan akan mencintaimu selamanya. Kamu adalah hadiah terbesar dalam hidupku, sayang.</p>
+            <p>Sekarang kita resmi menjadi tim yang tak terkalahkan dalam cinta! Mari kita lanjutkan perjalanan ini bersama, menciptakan lebih banyak kenangan indah dan membangun masa depan yang cerah.</p>
+        </div>
+        <div class="hidden-message-footer">
+            <button class="close-btn" data-message="7">Tutup</button>
+        </div>
+    </div>
+    
+    <!-- Photo Gallery Section -->
+    <section class="photo-gallery">
+        <div class="gallery-container">
+            <div class="photo-item">
+                <img src="assets/images/photo1.jpg" alt="Desi" class="photo-img">
+            </div>
+            
+            <div class="photo-item">
+                <img src="assets/images/photo2.jpg" alt="Desi" class="photo-img">
+            </div>
+            
+            <div class="photo-item">
+                <img src="assets/images/photo3.jpg" alt="Desi" class="photo-img">
+            </div>
+            
+            <div class="photo-item">
+                <img src="assets/images/photo4.jpg" alt="Desi" class="photo-img">
+            </div>
+            
+            <!-- Centered 5th Photo -->
+            <div class="photo-item" id="centeredPhoto">
+                <img src="assets/images/photo5.jpg" alt="Desi" class="photo-img">
+            </div>
+        </div>
+        
+        <!-- Decorative elements for gallery -->
+        <div class="gallery-decoration" style="top: 10%; left: 5%;"></div>
+        <div class="gallery-decoration" style="top: 30%; right: 8%;"></div>
+        <div class="gallery-decoration" style="bottom: 20%; left: 10%;"></div>
+        <div class="gallery-decoration" style="bottom: 10%; right: 15%;"></div>
+        
+        <!-- Special decoration for centered photo -->
+        <div class="centered-photo-decoration" style="top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+    </section>
+    
+    <!-- Slides Section -->
+    <div class="slides-container">
+        <div class="slide active">
+            <p>Selamat ulang tahun, ayanggg! Semoga hari ini menjadi hari yang paling spesial dalam hidupmu, penuh dengan tawa dan kebahagiaan.</p>
+            <p>Maaf kalauu aku ada kata atau perbuatan yang pernah membuatmu kecewa atau sedih, akuuuu akan berusahaa menjadi lebih baik untukmu.</p>
+            <p class="prayer">semoga kemuu akann menjadii seseorangg yangg selalu kuat, tidakkk gampangg menangisss lagii yaaa sayangggg.....</p>
+        </div>
+        
+        <div class="slide">
+            <p>Hari ini adalah hari kelahiran orang yang paling aku cintai di dunia ini, cantikkkkuuuu! Semoga usiamu yang bertambah membawa kebahagiaannn untukk kamuu.</p>
+            <p>Aku minta maaf jika pernah membuat kamuuu merasa kurang nyaman atau bahkann akuu membuatt kamuu sakitt hatiii, itu sama sekali bukan keinginan akuuu sayanggg.</p>
+            <p class="prayer">Semoga semua impian dan cita-citamu terwujud di mudahkann jalann dann urusannyaa yaaa sayanggggggg.....</p>
+        </div>
+        
+        <div class="slide">
+            <p>Setiap detik bersamamu adalah anugerah terindah dalam hidupku, cantikkkkk. Terima kasih telah hadir dan mewarnai duniakuuuu.</p>
+            <p>Jika aku pernah melakukan kesalahan yang menyakiti hatii kecilmu, jadiii tolongg yaa sayangg maafinn aku yaa sayanggg. Aku akan terus belajar menjadi pribadi yang lebih baik untuk kamuuuu.</p>
+            <p class="prayer">Semoga hari-harimu selalu cerah dan penuh kebaikan, yaaa sayangggggggg.</p>
+        </div>
+        
+        <div class="slide">
+            <p>Di usiamu yang baru ini, semoga kamu semakin cantik, cerdas, dan menjadi pribadi yang lebih baik lagi sayanggg.</p>
+            <p>Aku mintaa maaffff jika ada sikapkuuu yang pernah membuat kamu merasa tidak dihargai, aku benar-benar menyayangimu, cantikkkkuuuu.</p>
+            <p class="prayer">Semoga kamuu selaluu diberikan kesehatannn, kekuatann, kelancarann, dalam menempuhhh hari di usia kamuu sekaranggg.....</p>
+        </div>
+        
+        <div class="slide">
+            <p>Terima kasih yaa sayanggg telah menjadi motivasiku setiap hari. sayangggggggg kamu adalah salah satu alasan aku menjadi untukk lebih baik.</p>
+            <p>Maafkan aku jika ada hal-hal kecil yang terlupakan atau kurang perhatian, aku berjanji akan lebih baikk untukk mengertii perasaanmu, yankk.</p>
+            <p class="prayer">Semoga perjalanan cinta kita semakin kuat, tidaaa mudahh berantemm yaa cantikkkkk.</p>
+        </div>
+        
+        <div class="slide">
+            <p>Selamat ulang tahun untuk gadis termanis di hatiku, sayanggkuu! Semoga di usiamu yang baru ini, kamu semakin sukses dan bahagia.</p>
+            <p>aku pernah membuatmu menunggu atau merasa diabaikan, aku benar-benar minta maaf, ayanggg. tapiii Kamu adalah prioritasku.</p>
+            <p class="prayer">Semoga Allah SWT selalu meridhoi hubungan kita dan membimbing kita ke jalan yang benar, yaaa cantikkkkuuuu.</p>
+        </div>
+        
+        <div class="slide-navigation">
+            <button class="slide-btn" id="prevBtn" onclick="changeSlide(-1)"><i class="fas fa-chevron-left"></i> Previous</button>
+            <button class="slide-btn" id="nextBtn" onclick="changeSlide(1)">Next <i class="fas fa-chevron-right"></i></button>
+        </div>
+    </div>
+    
+    <!-- Music Section -->
+    <div class="music-section">
+        <div class="music-controls">
+            <button class="music-btn" id="playBtn">
+                <i class="fas fa-play"></i>
+            </button>
+            <button class="music-btn" id="pauseBtn">
+                <i class="fas fa-pause"></i>
+            </button>
+        </div>
+        <p class="music-text" id="musicText">
+            Backsound spesial ini aku pilih untukmu, cantikkkkuuuu...
+            <span class="music-status paused" id="musicStatus">
+                <span class="music-status-dot"></span>
+                <span>Paused</span>
+            </span>
+        </p>
+    </div>
+    
+    <!-- Message Form Section -->
+    <section class="message-form-section">
+        <h3>pesan dan kesan kamu</h3>
+        <form class="message-form" id="messageForm">
+            <div class="form-group">
+                <label for="senderName">Nama Kamu</label>
+                <input type="text" id="senderName" required>
+            </div>
+            <div class="form-group">
+                <label for="messageContent">kesan pesan</label>
+                <textarea id="messageContent" required></textarea>
+            </div>
+            <button type="submit" class="submit-btn">Kirim Pesan</button>
+            <p class="form-note">pesan kamuu akan langsung diterima</p>
+        </form>
+    </section>
+    
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">
+                © 2025 Happy Birthday Desi Paramita | Dibuat dengan cinta dan hati 💕
+            </p>
+            <!-- Decorative elements for footer -->
+            <div class="footer-decoration" style="top: 10%; left: 5%;"></div>
+            <div class="footer-decoration" style="top: 10%; right: 5%;"></div>
+            <div class="footer-decoration" style="bottom: 10%; left: 15%;"></div>
+            <div class="footer-decoration" style="bottom: 10%; right: 15%;"></div>
+        </div>
+    </footer>
+    
+    <!-- Audio Elements -->
+    <audio id="welcomeMusic" loop>
+        <source src="assets/music/welcome-song.mp3" type="audio/mpeg">
+        Browser Anda tidak mendukung elemen audio.
+    </audio>
+    
+    <audio id="birthdayMusic" loop>
+        <source src="assets/music/birthday-song.mp3" type="audio/mpeg">
+        Browser Anda tidak mendukung elemen audio.
+    </audio>
+    
+    <script>
+    // API Configuration - PENTING: Ganti dengan kunci yang sama di file PHP
+    const API_CONFIG = {
+        url: './pesan.php',
+        // Kunci ini HARUS SAMA dengan yang ada di file PHP (pesan.php)
+        // Untuk keamanan lebih baik, dalam produksi gunakan metode autentikasi yang lebih aman
+        secretKey: 'GantiDenganKunciRahasiaYangSangatSulitDitebak123!'
+    };
+    
+    // Message Storage System (untuk backup di localStorage)
+    class MessageStorage {
+        constructor() {
+            this.messages = JSON.parse(localStorage.getItem('birthdayMessages')) || [];
+        }
+        
+        addMessage(name, content) {
+            const message = {
+                id: Date.now(),
+                name: name,
+                content: content,
+                timestamp: new Date().toISOString()
+            };
+            
+            this.messages.push(message);
+            this.saveMessages();
+            
+            return message;
+        }
+        
+        getMessages() {
+            return this.messages;
+        }
+        
+        saveMessages() {
+            localStorage.setItem('birthdayMessages', JSON.stringify(this.messages));
+        }
+    }
+    
+    // Initialize message storage
+    const messageStorage = new MessageStorage();
+    
+    // --- FUNGSI UNTUK MENGIRIM PESAN KE SERVER ---
+    async function sendToServer(name, content) {
+        try {
+            const response = await fetch(API_CONFIG.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-API-Secret': API_CONFIG.secretKey // Menggunakan kunci dari konfigurasi
+                },
+                body: JSON.stringify({
+                    name: name,
+                    message: content
+                })
+            });
+            
+            if (!response.ok) {
+                // Jika response tidak OK, coba baca sebagai teks untuk melihat error HTML
+                const errorText = await response.text();
+                console.error('Server returned non-OK response:', errorText);
+                throw new Error(`Server error: ${response.status}. Response: ${errorText.substring(0, 200)}`);
+            }
+            
+            const result = await response.json();
+            return result.success;
+        } catch (error) {
+            console.error('Error sending message to server:', error);
+            return false;
+        }
+    }
+    
+    // --- EVENT LISTENER UNTUK FORM PESAN ---
+    const messageForm = document.getElementById('messageForm');
+    const senderName = document.getElementById('senderName');
+    const messageContent = document.getElementById('messageContent');
+    const successMessage = document.getElementById('successMessage');
+    
+    messageForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = senderName.value.trim();
+        const content = messageContent.value.trim();
+        
+        if (name && content) {
+            // Tampilkan indikator loading
+            const submitBtn = messageForm.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+            submitBtn.disabled = true;
+            
+            try {
+                // Kirim ke server
+                const serverSuccess = await sendToServer(name, content);
+                
+                // Simpan ke localStorage sebagai backup (opsional, tapi bagus)
+                messageStorage.addMessage(name, content);
+                
+                // Tampilkan pesan sukses/error yang sesuai
+                if (serverSuccess) {
+                    successMessage.textContent = '✅ Pesan berhasil dikirim ke server!';
+                    successMessage.style.backgroundColor = '#4CAF50';
+                } else {
+                    successMessage.textContent = '⚠️ Pesan tersimpan di browser. Gagal mengirim ke server.';
+                    successMessage.style.backgroundColor = '#ff9800'; // Warna oranye untuk peringatan
+                }
+                
+                successMessage.classList.add('show');
+                
+                // Reset form
+                messageForm.reset();
+                
+            } catch (error) {
+                console.error('Error in form submission:', error);
+                
+                // Tampilkan pesan error detail
+                successMessage.textContent = '❌ Terjadi kesalahan. Silakan coba lagi.';
+                successMessage.style.backgroundColor = '#f44336'; // Warna merah untuk error
+                
+                successMessage.classList.add('show');
+            } finally {
+                // Kembalikan tombol ke keadaan semula
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                
+                // Sembunyikan pesan sukses/error setelah 5 detik
+                setTimeout(() => {
+                    successMessage.classList.remove('show');
+                    // Kembalikan warna ke default
+                    successMessage.style.backgroundColor = '#4CAF50';
+                }, 5000);
+                
+                // Buat floating hearts
+                createFloatingHearts();
+            }
+        }
+    });
+        
+        // Music Control System - Enhanced
+        class MusicController {
+            constructor() {
+                this.welcomeMusic = document.getElementById('welcomeMusic');
+                this.birthdayMusic = document.getElementById('birthdayMusic');
+                this.currentTrack = null;
+                this.isPlaying = false;
+                this.audioContext = null;
+                this.initialized = false;
+                this.audioError = document.getElementById('audioError');
+            }
+            
+            // Initialize audio context for better browser compatibility
+            async initAudio() {
+                if (!this.initialized) {
+                    try {
+                        // Create audio context for better browser support
+                        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        
+                        // Resume if suspended
+                        if (this.audioContext.state === 'suspended') {
+                            await this.audioContext.resume();
+                        }
+                        
+                        this.initialized = true;
+                        console.log('Audio initialized successfully');
+                    } catch (error) {
+                        console.log('Audio initialization failed:', error);
+                        this.showError();
+                    }
+                }
+            }
+            
+            async play(trackName) {
+                await this.initAudio();
+                
+                // Stop all tracks first
+                this.stopAll();
+                
+                // Play the requested track
+                if (trackName === 'welcome') {
+                    this.currentTrack = this.welcomeMusic;
+                } else if (trackName === 'birthday') {
+                    this.currentTrack = this.birthdayMusic;
+                }
+                
+                if (this.currentTrack) {
+                    try {
+                        // Set volume to 0.3 to avoid being too loud
+                        this.currentTrack.volume = 0.3;
+                        
+                        // Try to play the audio
+                        const playPromise = this.currentTrack.play();
+                        
+                        if (playPromise !== undefined) {
+                            playPromise.then(() => {
+                                this.isPlaying = true;
+                                this.updateVisualizer(trackName, true);
+                                this.updateMusicStatus(true);
+                                this.hideError();
+                                console.log(`🎵 Now playing: ${trackName}`);
+                            }).catch(error => {
+                                console.log(`Error playing ${trackName}:`, error);
+                                this.showError();
+                                // Continue without music
+                                this.isPlaying = false;
+                                this.updateMusicStatus(false);
+                            });
+                        }
+                    } catch (error) {
+                        console.log(`Error playing ${trackName}:`, error);
+                        this.showError();
+                        // Continue without music
+                        this.isPlaying = false;
+                        this.updateMusicStatus(false);
+                    }
+                }
+            }
+            
+            pause(trackName) {
+                if (trackName === 'welcome') {
+                    this.welcomeMusic.pause();
+                } else if (trackName === 'birthday') {
+                    this.birthdayMusic.pause();
+                }
+                
+                this.isPlaying = false;
+                this.updateVisualizer(trackName, false);
+                this.updateMusicStatus(false);
+                console.log(`⏸️ Paused: ${trackName}`);
+            }
+            
+            stopAll() {
+                this.welcomeMusic.pause();
+                this.welcomeMusic.currentTime = 0;
+                this.birthdayMusic.pause();
+                this.birthdayMusic.currentTime = 0;
+                
+                // Update all visualizers
+                this.updateVisualizer('welcome', false);
+                this.updateVisualizer('birthday', false);
+            }
+            
+            async switchTrack(fromTrack, toTrack) {
+                this.pause(fromTrack);
+                await this.play(toTrack);
+            }
+            
+            updateVisualizer(trackName, playing) {
+                let visualizer;
+                if (trackName === 'welcome') {
+                    visualizer = document.getElementById('welcomeVisualizer');
+                }
+                
+                if (visualizer) {
+                    const bars = visualizer.querySelectorAll('.music-bar');
+                    bars.forEach(bar => {
+                        if (playing) {
+                            bar.classList.remove('paused');
+                        } else {
+                            bar.classList.add('paused');
+                        }
+                    });
+                }
+            }
+            
+            updateMusicStatus(playing) {
+                const statusElement = document.getElementById('musicStatus');
+                if (statusElement) {
+                    if (playing) {
+                        statusElement.classList.remove('paused');
+                        statusElement.innerHTML = '<span class="music-status-dot"></span><span>Playing</span>';
+                    } else {
+                        statusElement.classList.add('paused');
+                        statusElement.innerHTML = '<span class="music-status-dot"></span><span>Paused</span>';
+                    }
+                }
+            }
+            
+            showError() {
+                if (this.audioError) {
+                    this.audioError.style.display = 'block';
+                }
+            }
+            
+            hideError() {
+                if (this.audioError) {
+                    this.audioError.style.display = 'none';
+                }
+            }
+        }
+        
+        // Initialize music controller
+        const musicController = new MusicController();
+        
+        // Welcome Modal Functionality - Enhanced
+        const welcomeModal = document.getElementById('welcomeModal');
+        const welcomePlayBtn = document.getElementById('welcomePlayBtn');
+        let welcomeSongPlayed = false;
+        
+        welcomePlayBtn.addEventListener('click', async function() {
+            // Add loading state
+            this.classList.add('loading');
+            this.innerHTML = '';
+            
+            // Small delay to show loading animation
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            if (!welcomeSongPlayed) {
+                // Try to play welcome music
+                await musicController.play('welcome');
+                welcomeSongPlayed = true;
+                
+                // Update button based on actual play state
+                if (musicController.isPlaying) {
+                    this.innerHTML = '<i class="fas fa-pause"></i>';
+                } else {
+                    this.innerHTML = '<i class="fas fa-play"></i>';
+                }
+                
+                // Hide welcome modal after a short delay
+                setTimeout(() => {
+                    welcomeModal.classList.add('hidden');
+                    
+                    // Show floating hearts when modal closes
+                    createFloatingHearts();
+                }, 1500);
+            } else {
+                // Toggle pause/play
+                if (musicController.isPlaying && musicController.currentTrack === musicController.welcomeMusic) {
+                    musicController.pause('welcome');
+                    this.innerHTML = '<i class="fas fa-play"></i>';
+                } else {
+                    await musicController.play('welcome');
+                    this.innerHTML = '<i class="fas fa-pause"></i>';
+                }
+            }
+            
+            // Remove loading state
+            this.classList.remove('loading');
+        });
+        
+        // Hidden Messages System
+        let foundMessages = new Set();
+        const totalMessages = 7;
+        let message7Shown = false; // Flag to prevent showing message 7 multiple times
+        
+        // Update message counter
+        function updateMessageCounter() {
+            document.getElementById('messageCount').textContent = foundMessages.size;
+        }
+        
+        // Show specific message
+        function showMessage(messageId) {
+            const message = document.getElementById(`hiddenMessage${messageId}`);
+            
+            if (message && !foundMessages.has(messageId)) {
+                foundMessages.add(messageId);
+                updateMessageCounter();
+                
+                // Add floating hearts
+                createFloatingHearts();
+            }
+            
+            message.classList.add('show');
+        }
+        
+        // Hide all messages
+        function hideAllMessages() {
+            const messages = document.querySelectorAll('.hidden-message');
+            
+            messages.forEach(message => {
+                message.classList.remove('show');
+            });
+        }
+        
+        // Create floating hearts
+        function createFloatingHearts() {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'floating-heart';
+                    heart.innerHTML = '❤️';
+                    heart.style.left = Math.random() * window.innerWidth + 'px';
+                    document.body.appendChild(heart);
+                    
+                    // Remove heart after animation
+                    setTimeout(() => {
+                        document.body.removeChild(heart);
+                    }, 5000);
+                }, i * 200);
+            }
+        }
+        
+        // Event Listeners for Hidden Messages
+        
+        // Message 1: Click on title
+        document.getElementById('birthdayTitle').addEventListener('click', () => {
+            showMessage(1);
+        });
+        
+        // Message 2: Click on subtitle
+        document.getElementById('birthdaySubtitle').addEventListener('click', () => {
+            showMessage(2);
+        });
+        
+        // Message 3: Click on secret button
+        document.getElementById('secretButton').addEventListener('click', () => {
+            showMessage(3);
+        });
+        
+        // Message 4: Click on music text
+        document.getElementById('musicText').addEventListener('click', () => {
+            showMessage(4);
+        });
+        
+        // Message 5: Triple click on centered photo
+        let clickCount = 0;
+        const centeredPhoto = document.getElementById('centeredPhoto');
+        
+        centeredPhoto.addEventListener('click', () => {
+            clickCount++;
+            if (clickCount === 3) {
+                showMessage(5);
+                clickCount = 0;
+            }
+            
+            // Reset click count after 1 second
+            setTimeout(() => {
+                clickCount = 0;
+            }, 1000);
+        });
+        
+        // Message 6: Shake Detection (3 shakes)
+        let shakeCount = 0;
+        let lastShakeTime = 0;
+        const shakeIndicator = document.getElementById('shakeIndicator');
+        let shakeTimeout = null;
+        
+        // Function to detect shake
+        function detectShake() {
+            const currentTime = Date.now();
+            
+            // Check if enough time has passed since last shake
+            if (currentTime - lastShakeTime > 500) {
+                shakeCount++;
+                lastShakeTime = currentTime;
+                
+                // Update shake indicator
+                document.getElementById(`shakeStep${shakeCount}`).classList.add('active');
+                
+                // Check if 3 shakes detected
+                if (shakeCount >= 3) {
+                    showMessage(6);
+                    shakeCount = 0;
+                    lastShakeTime = 0;
+                    
+                    // Hide shake indicator
+                    shakeIndicator.classList.remove('show');
+                    
+                    // Reset shake steps
+                    setTimeout(() => {
+                        for (let i = 1; i <= 3; i++) {
+                            document.getElementById(`shakeStep${i}`).classList.remove('active');
+                        }
+                    }, 2000);
+                    
+                    return;
+                }
+                
+                // Reset shake count if no shake for 3 seconds
+                clearTimeout(shakeTimeout);
+                shakeTimeout = setTimeout(() => {
+                    shakeCount = 0;
+                    lastShakeTime = 0;
+                    for (let i = 1; i <= 3; i++) {
+                        document.getElementById(`shakeStep${i}`).classList.remove('active');
+                    }
+                }, 3000);
+            }
+        }
+        
+        // Add shake detection for mobile devices
+        if (window.DeviceMotionEvent) {
+            window.addEventListener('devicemotion', (event) => {
+                const acceleration = event.accelerationIncludingGravity;
+                const shakeThreshold = 15;
+                
+                if (Math.abs(acceleration.x) > shakeThreshold || 
+                    Math.abs(acceleration.y) > shakeThreshold || 
+                    Math.abs(acceleration.z) > shakeThreshold) {
+                    detectShake();
+                }
+            });
+        }
+        
+        // Fallback for desktop - use keyboard keys
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 's' || e.key === 'S') {
+                detectShake();
+            }
+        });
+        
+        // Close buttons - Enhanced for mobile with special handling for message 6
+        document.querySelectorAll('.hidden-message-close, .close-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const messageId = parseInt(e.target.getAttribute('data-message'));
+                const message = document.getElementById(`hiddenMessage${messageId}`);
+                message.classList.remove('show');
+                
+                // Special handling: Show message 7 when message 6 is closed
+                if (messageId === 6 && !message7Shown) {
+                    message7Shown = true; // Set flag to prevent multiple shows
+                    setTimeout(() => {
+                        showMessage(7);
+                        // Create extra celebration hearts for message 7
+                        createFloatingHearts();
+                        createFloatingHearts();
+                    }, 500);
+                }
+            });
+        });
+        
+        // Slide functionality
+        let currentSlide = 1;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        function showSlide(n) {
+            // Hide all slides
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            // Show the current slide
+            slides[currentSlide - 1].classList.add('active');
+            
+            // Update button states
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+        }
+        
+        function changeSlide(n) {
+            currentSlide += n;
+            
+            // Wrap around if needed
+            if (currentSlide > totalSlides) {
+                currentSlide = totalSlides;
+            } else if (currentSlide < 1) {
+                currentSlide = 1;
+            }
+            
+            showSlide();
+        }
+        
+        // Initialize the first slide
+        showSlide();
+        
+        // Music functionality with smart switching
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        
+        // Birthday music play button
+        playBtn.addEventListener('click', async () => {
+            if (musicController.currentTrack !== musicController.birthdayMusic) {
+                await musicController.switchTrack('welcome', 'birthday');
+                // Update welcome button
+                welcomePlayBtn.innerHTML = '<i class="fas fa-play"></i>';
+            } else if (!musicController.isPlaying) {
+                await musicController.play('birthday');
+            }
+        });
+        
+        // Birthday music pause button
+        pauseBtn.addEventListener('click', async () => {
+            if (musicController.currentTrack === musicController.birthdayMusic) {
+                musicController.pause('birthday');
+                await musicController.play('welcome');
+                // Update welcome button
+                welcomePlayBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            }
+        });
+        
+        // Add floating animation to decorative elements
+        document.querySelectorAll('.flower-decoration, .ribbon, .gallery-decoration, .footer-decoration').forEach(element => {
+            element.style.animation = `float ${3 + Math.random() * 2}s infinite ease-in-out`;
+            element.style.animationDelay = `${Math.random() * 2}s`;
+        });
+        
+        // Add sparkle animation to confetti
+        document.querySelectorAll('.confetti').forEach(element => {
+            element.style.animation = `sparkle ${2 + Math.random() * 2}s infinite`;
+            element.style.animationDelay = `${Math.random() * 2}s`;
+        });
+        
+        // Fungsi untuk menambahkan efek polaroid pada foto
+        function addPolaroidEffect() {
+            const photoItems = document.querySelectorAll('.photo-item');
+            photoItems.forEach((item, index) => {
+                // Tambahkan caption di bawah foto
+                const caption = document.createElement('div');
+                caption.style.textAlign = 'center';
+                caption.style.padding = '10px 5px 5px';
+                caption.style.fontSize = '0.9rem';
+                caption.style.color = 'var(--text-dark)';
+                caption.style.fontStyle = 'italic';
+                
+                // Caption berbeda untuk setiap foto
+                const captions = [
+                    'CANTIKKKKU',
+                    'Sweet Smile',
+                    'Precious Memories',
+                    'Beautiful You',
+                    'SAYANGGG' // Caption khusus untuk foto tengah
+                ];
+                
+                caption.textContent = captions[index % captions.length];
+                item.appendChild(caption);
+            });
+        }
+        
+        // Handle image loading errors
+        function handleImageErrors() {
+            const images = document.querySelectorAll('.photo-img');
+            images.forEach((img, index) => {
+                img.onerror = function() {
+                    // Fallback to a colored div with text
+                    const fallback = document.createElement('div');
+                    fallback.style.width = '100%';
+                    fallback.style.height = img.style.height || '300px';
+                    fallback.style.backgroundColor = '#FFCCE6';
+                    fallback.style.display = 'flex';
+                    fallback.style.alignItems = 'center';
+                    fallback.style.justifyContent = 'center';
+                    fallback.style.borderRadius = '15px';
+                    fallback.style.color = '#FF99CC';
+                    fallback.style.fontSize = '1.2rem';
+                    fallback.style.fontWeight = 'bold';
+                    fallback.innerHTML = `Photo ${index + 1}`;
+                    
+                    img.parentNode.replaceChild(fallback, img);
+                };
+            });
+        }
+        
+        // Inisialisasi efek polaroid saat halaman dimuat
+        window.addEventListener('load', () => {
+            addPolaroidEffect();
+            handleImageErrors();
+        });
+    </script>
+</body>
+</html>
