@@ -1,0 +1,26 @@
+# --- KEAMANAN FILE ---
+# Blokir akses langsung ke file log dan JSON
+<Files "messages.json">
+    Require all denied
+</Files>
+
+<Files "rate_limt.json">
+    Require all denied
+</Files>
+
+<Files "message_errors.log">
+    Require all denied
+</Files>
+
+# Blokir akses ke semua file yang diawali titik (hidden files)
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Mencegah daftar direktori
+Options -Indexes
+
+# Mencegah akses ke file konfigurasi (jika ada)
+<FilesMatch "\.(conf|config|ini|log|sh|sql|bak|backup)$">
+    Require all denied
+</FilesMatch>
