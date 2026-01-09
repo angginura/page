@@ -1,0 +1,34 @@
+[
+    {
+        "id": "msg_693cea9a7f6de4.20101798",
+        "name": "AKA",
+        "content": "haiiiiiii sayangggggg",
+        "timestamp": "2025-12-13T11:24:58+07:00",
+        "whatsappStatus": {
+            "sent": true,
+            "timestamp": "2025-12-13T11:24:59+07:00",
+            "httpCode": 200,
+            "error": null,
+            "apiResponse": {
+                "detail": "success! message in queue",
+                "id": [
+                    135109181
+                ],
+                "process": "pending",
+                "quota": {
+                    "20220255": {
+                        "details": "deduced from total quota",
+                        "quota": 966,
+                        "remaining": 965,
+                        "used": 1
+                    }
+                },
+                "requestid": 285253677,
+                "status": true,
+                "target": [
+                    "6288290143920"
+                ]
+            }
+        }
+    }
+]
