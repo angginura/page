@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Qira'ah Publishing</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .bg-brand-primary {
+      background-color: #272a5d;
+    }
+
+    .text-brand-primary {
+      color: #272a5d;
+    }
+
+    .bg-brand-secondary {
+      background-color: #caa036;
+    }
+
+    .text-brand-secondary {
+      color: #caa036;
+    }
+
+    .border-brand-secondary {
+      border-color: #caa036;
+    }
+
+    .cta-button {
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Helper class untuk scroll smooth */
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+
+<body class="text-gray-800">
+
+  <nav id="navbar" class="bg-brand-primary text-white py-4 px-6 sticky top-0 z-50 shadow-lg transition-all duration-300">
+    <div class="container mx-auto flex justify-between items-center">
+      <a href="#" class="text-2xl font-bold hover:text-brand-secondary transition-colors">Qira'ah Publishing</a>
+
+      <ul class="hidden md:flex items-center space-x-8">
+        <li><a href="#tentang" class="font-semibold hover:text-brand-secondary transition-colors">Tentang</a></li>
+        <li><a href="#layanan" class="font-semibold hover:text-brand-secondary transition-colors">Layanan</a></li>
+        <li><a href="#panduan" class="font-semibold hover:text-brand-secondary transition-colors">Panduan</a></li>
+        <li><a href="#kontak" class="font-semibold hover:text-brand-secondary transition-colors">Kontak</a></li>
+      </ul>
+
+      <button id="mobile-menu-button" class="md:hidden text-2xl z-20">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+
+    <div id="mobile-menu"
+      class="hidden md:hidden absolute top-0 left-0 w-full h-screen bg-brand-primary/95 backdrop-blur-sm pt-24">
+      <ul class="flex flex-col items-center space-y-8">
+        <li><a href="#tentang" class="text-xl font-semibold hover:text-brand-secondary transition-colors">Tentang</a></li>
+        <li><a href="#layanan" class="text-xl font-semibold hover:text-brand-secondary transition-colors">Layanan</a></li>
+        <li><a href="#panduan" class="text-xl font-semibold hover:text-brand-secondary transition-colors">Panduan</a></li>
+        <li><a href="#kontak" class="text-xl font-semibold hover:text-brand-secondary transition-colors">Kontak</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header
+    class="bg-brand-primary text-white py-12 text-center flex items-center justify-center min-h-[50vh]"
+    style="background-image: url('https://ik.imagekit.io/jbtv/HEADER%20WEB.png?updatedAt=1752038870445'); background-size: cover; background-position: center;">
+    <div class="max-w-4xl mx-auto px-4">
+      <h1 class="text-4xl md:text-6xl font-bold text-white">Qira'ah Publishing</h1>
+      <p class="mt-4 text-xl md:text-2xl font-reguler text-brand-secondary"><i>“Dari Kata Menjadi Karya, Dari Ilmu Menjadi Cahaya”</i></p>
+      <div class="mt-8">
+        <a href="#tentang"
+          class="cta-button inline-block bg-white text-brand-primary font-bold py-3 px-8 rounded-lg text-lg">Tentang Kami</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <section id="tentang" class="py-16 md:py-24 bg-white">
+      <div class="container mx-auto px-6">
+        <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+          <div class="md:w-1/2">
+            <img src="https://ik.imagekit.io/jbtv/IMAGE%20WEB%201.png?updatedAt=1752039074788" alt="Mockup Buku" class="rounded-lg"/>
+          </div>
+
+          <div class="md:w-1/2 text-left">
+            <h2 class="text-3xl md:text-4xl font-bold text-brand-primary">Solusi Cetak dan Terbitkan Buku Anda</h2>
+            <p class="mt-6 text-base md:text-lg leading-relaxed">
+              <strong>Qira’ah Publishing</strong> adalah penerbit independen yang bergerak di bidang penerbitan buku-buku Islami, motivasi, dan edukatif. Kami membuka peluang kepada penulis pemula maupun profesional untuk menerbitkan karya terbaiknya secara profesional dan bermartabat.
+            </p>
+            <div class="mt-8">
+              <a href="#layanan"
+                class="cta-button inline-block bg-brand-secondary text-white font-bold py-3 px-8 rounded-lg text-lg">
+                Lihat Layanan Kami
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="layanan" class="py-16 md:py-24 bg-gray-700 bg-opacity-60 bg-blend-overlay text-white"
+      style="background-image: url('https://ik.imagekit.io/jbtv/HEADER%20WEB.png?updatedAt=1752038870445'); background-size: cover; background-position: center;">
+      <div class="container mx-auto px-6 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold">Layanan Kami</h2>
+        <div class="w-24 h-1 bg-brand-secondary mx-auto mt-4 mb-12 rounded"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left max-w-6xl mx-auto">
+          <div class="bg-white/10 p-6 rounded-lg backdrop-blur-sm">
+            <div class="flex items-start gap-4">
+              <i class="fas fa-print text-3xl text-brand-secondary mt-1"></i>
+              <div>
+                <h3 class="text-xl font-bold">Percetakan Buku</h3>
+                <p class="mt-2 text-white/90">Cetak buku satuan hingga ribuan eksemplar dengan kualitas terbaik dan
+                  harga terjangkau.</p>
+              </div>
+            </div>
+          </div>
+           <div class="bg-white/10 p-6 rounded-lg backdrop-blur-sm">
+            <div class="flex items-start gap-4">
+              <i class="fas fa-barcode text-3xl text-brand-secondary mt-1"></i>
+              <div>
+                <h3 class="text-xl font-bold">Penerbitan ISBN</h3>
+                <p class="mt-2 text-white/90">Proses cepat dan legal dalam pengurusan ISBN melalui Qira'ah Publishing.
+                </p>
+              </div>
+            </div>
+          </div>
+           <div class="bg-white/10 p-6 rounded-lg backdrop-blur-sm">
+            <div class="flex items-start gap-4">
+              <i class="fas fa-book text-3xl text-brand-secondary mt-1"></i>
+              <div>
+                <h3 class="text-xl font-bold">Katalog Buku Terbitan</h3>
+                <p class="mt-2 text-white/90">Temukan dan beli buku-buku berkualitas yang telah kami terbitkan.</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white/10 p-6 rounded-lg backdrop-blur-sm">
+            <div class="flex items-start gap-4">
+              <i class="fas fa-video text-3xl text-brand-secondary mt-1"></i>
+              <div>
+                <h3 class="text-xl font-bold">Panduan Penerbitan</h3>
+                <p class="mt-2 text-white/90">Panduan lengkap penerbitan buku dari awal hingga terbit tersedia untuk
+                  Anda.</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white/10 p-6 rounded-lg backdrop-blur-sm">
+            <div class="flex items-start gap-4">
+              <i class="fas fa-pencil-alt text-3xl text-brand-secondary mt-1"></i>
+              <div>
+                <h3 class="text-xl font-bold">Layanan Desain</h3>
+                <p class="mt-2 text-white/90">Buat cover, layout isi, dan branding buku Anda terlihat profesional dan
+                  menarik.</p>
+              </div>
+            </div>
+          </div>
+           <div class="bg-white/10 p-6 rounded-lg backdrop-blur-sm">
+            <div class="flex items-start gap-4">
+              <i class="fas fa-shopping-cart text-3xl text-brand-secondary mt-1"></i>
+              <div>
+                <h3 class="text-xl font-bold">Jual Buku Anda</h3>
+                <p class="mt-2 text-white/90">Kami bantu Anda jualan lewat katalog, media sosial, dan jaringan reseller
+                  kami.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="panduan" class="py-16 md:py-24 bg-gray-100">
+      <div class="container mx-auto px-6">
+        <div class="text-center">
+          <h2 class="text-3xl md:text-4xl font-bold text-brand-primary">Langkah Mudah Menerbitkan Buku</h2>
+          <p class="mt-2 text-lg text-gray-600">Ikuti panduan berikut</p>
+          <div class="w-24 h-1 bg-brand-secondary mx-auto mt-4 mb-12 rounded"></div>
+        </div>
+
+        <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+          <div class="md:w-1/2">
+            <img src="https://ik.imagekit.io/jbtv/IMAGE%20WEB%201.png?updatedAt=1752039074788" alt="Panduan Penerbitan" class="rounded-lg" />
+          </div>
+
+          <div class="md:w-1/2 text-left">
+            <div class="space-y-6">
+              <div class="flex items-start gap-4">
+                <div
+                  class="w-8 h-8 bg-brand-secondary text-brand-primary flex-shrink-0 flex items-center justify-center rounded-full font-bold">
+                  1</div>
+                <div>
+                  <h3 class="text-xl font-bold text-brand-primary">Kirim Naskah</h3>
+                  <p class="mt-1">Kirimkan naskah Anda dalam bentuk dokumen Word ke email kami untuk proses layout.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <div
+                  class="w-8 h-8 bg-brand-secondary text-brand-primary flex-shrink-0 flex items-center justify-center rounded-full font-bold">
+                  2</div>
+                <div>
+                  <h3 class="text-xl font-bold text-brand-primary">Proses Desain</h3>
+                  <p class="mt-1">Kami bantu mendesain cover dan layout isi buku sesuai identitas penerbitan.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <div
+                  class="w-8 h-8 bg-brand-secondary text-brand-primary flex-shrink-0 flex items-center justify-center rounded-full font-bold">
+                  3</div>
+                <div>
+                  <h3 class="text-xl font-bold text-brand-primary">Urus ISBN</h3>
+                  <p class="mt-1">Kami bantu mengurus ISBN sebagai identitas resmi buku Anda.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <div
+                  class="w-8 h-8 bg-brand-secondary text-brand-primary flex-shrink-0 flex items-center justify-center rounded-full font-bold">
+                  4</div>
+                <div>
+                  <h3 class="text-xl font-bold text-brand-primary">Cetak & Distribusi</h3>
+                  <p class="mt-1">Setelah buku siap, kami cetak dan bantu distribusikan ke pembaca.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer id="kontak"
+      class="bg-brand-primary text-white py-12"
+      style="background-image: url('https://ik.imagekit.io/jbtv/HEADER%20WEB.png?updatedAt=1752038870445'); background-size: cover; background-position: center;">
+      <div class="container mx-auto px-6 text-center">
+        <h2 class="text-2xl md:text-3xl text-white font-bold">Alamat</h2>
+        <p class="mt-4 text-white/80">Kembang Kerang, Kec. Aikmel, Kab. Lombok Timur, NTB</p>
+        <div class="flex justify-center mt-6 gap-6 text-2xl">
+          <a href="#" class="text-white hover:text-brand-secondary transition-colors"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-white hover:text-brand-secondary transition-colors"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="text-white hover:text-brand-secondary transition-colors"><i class="fas fa-globe"></i></a>
+        </div>
+      </div>
+    </footer>
+
+    <div class="py-4 text-center text-sm text-brand-primary font-semibold" style="background-color: #caa036;">
+      <p>&copy; 2025 Qira'ah Publishing. All Rights Reserved.</p>
+    </div>
+
+    <a href="https://wa.me/6285251675143?text=Assalamualaikum,%20saya%20tertarik%20dengan%20layanan%20Qira'ah%20Publishing."
+      target="_blank"
+      class="fixed bottom-6 right-6 w-16 h-16 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-lg z-50 transition-transform duration-300 hover:scale-110"
+      aria-label="Hubungi via WhatsApp">
+      <i class="fab fa-whatsapp text-4xl"></i>
+    </a>
+
+    <button id="scrollTopBtn"
+      class="hidden fixed bottom-24 right-6 w-14 h-14 bg-brand-secondary text-white rounded-full flex items-center justify-center shadow-lg z-40 transition-opacity duration-300 hover:bg-opacity-80">
+      <i class="fas fa-arrow-up text-xl"></i>
+    </button>
+
+    <div id="form-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6 md:p-8 relative">
+        <button id="close-modal-btn"
+          class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+        <h2 class="text-2xl font-bold text-brand-primary mb-2">Form Pemesanan Buku</h2>
+        <p class="mb-6">Anda memesan: <strong id="judul-buku-pesanan" class="text-brand-secondary"></strong></p>
+
+        <form id="order-form">
+          <input type="hidden" id="buku-dipesan" name="buku-dipesan">
+          <div class="mb-4">
+            <label for="nama" class="block text-gray-700 font-semibold mb-1">Nama Lengkap</label>
+            <input type="text" id="nama" name="nama" class="w-full p-2 border border-gray-300 rounded focus:ring-brand-secondary focus:border-brand-secondary" required>
+          </div>
+          <div class="mb-4">
+            <label for="whatsapp" class="block text-gray-700 font-semibold mb-1">Nomor WhatsApp</label>
+            <input type="tel" id="whatsapp" name="whatsapp" class="w-full p-2 border border-gray-300 rounded focus:ring-brand-secondary focus:border-brand-secondary"
+              placeholder="Contoh: 081234567890" required>
+          </div>
+          <div class="mb-4">
+            <label for="alamat" class="block text-gray-700 font-semibold mb-1">Alamat Lengkap</label>
+            <textarea id="alamat" name="alamat" rows="3" class="w-full p-2 border border-gray-300 rounded focus:ring-brand-secondary focus:border-brand-secondary"
+              required></textarea>
+          </div>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label for="jumlah" class="block text-gray-700 font-semibold mb-1">Jumlah Pesanan</label>
+              <input type="number" id="jumlah" name="jumlah" value="1" min="1"
+                class="w-full p-2 border border-gray-300 rounded focus:ring-brand-secondary focus:border-brand-secondary" required>
+            </div>
+            <div>
+              <label for="pembayaran" class="block text-gray-700 font-semibold mb-1">Pembayaran</label>
+              <select id="pembayaran" name="pembayaran" class="w-full p-2 border border-gray-300 rounded bg-white focus:ring-brand-secondary focus:border-brand-secondary"
+                required>
+                <option value="BSI">BSI (Bank Syariah Indonesia)</option>
+                <option value="Bank Jago">Bank Jago</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-6">
+            <label for="catatan" class="block text-gray-700 font-semibold mb-1">Catatan Tambahan (Opsional)</label>
+            <textarea id="catatan" name="catatan" rows="2" class="w-full p-2 border border-gray-300 rounded focus:ring-brand-secondary focus:border-brand-secondary"></textarea>
+          </div>
+          <button type="submit"
+            class="w-full cta-button bg-brand-secondary text-white font-bold py-3 px-4 rounded-lg text-lg flex items-center justify-center gap-2">
+            <i class="fab fa-whatsapp"></i> Kirim Pesanan via WhatsApp
+          </button>
+        </form>
+      </div>
+    </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+      // --- Script untuk Menu Navigasi Mobile ---
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+      const menuIcon = mobileMenuButton.querySelector('i');
+
+      if (mobileMenuButton && mobileMenu && menuIcon) {
+          mobileMenuButton.addEventListener('click', () => {
+              mobileMenu.classList.toggle('hidden');
+              // Ganti ikon hamburger menjadi 'X' saat menu terbuka
+              if (mobileMenu.classList.contains('hidden')) {
+                  menuIcon.classList.remove('fa-times');
+                  menuIcon.classList.add('fa-bars');
+              } else {
+                  menuIcon.classList.remove('fa-bars');
+                  menuIcon.classList.add('fa-times');
+              }
+          });
+
+          // Tutup menu mobile ketika salah satu link di-klik
+          mobileMenuLinks.forEach(link => {
+              link.addEventListener('click', () => {
+                  mobileMenu.classList.add('hidden');
+                  menuIcon.classList.remove('fa-times');
+                  menuIcon.classList.add('fa-bars');
+              });
+          });
+      }
+
+
+      // --- Script untuk Navigasi Smooth Scroll (di-handle oleh CSS) ---
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href');
+          // Pastikan targetId bukan hanya '#' agar tidak error
+          if (targetId.length > 1) {
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+              targetElement.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start'
+                });
+            }
+          } else if (targetId === '#') {
+             window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        });
+      });
+
+
+      // --- Script untuk Tombol Scroll to Top ---
+      const scrollTopBtn = document.getElementById('scrollTopBtn');
+      if (scrollTopBtn) {
+        window.onscroll = () => {
+          if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+            scrollTopBtn.classList.remove('hidden');
+          } else {
+            scrollTopBtn.classList.add('hidden');
+          }
+        };
+        scrollTopBtn.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+      
+    });
+  </script>
+
+</body>
+
+</html>
+
