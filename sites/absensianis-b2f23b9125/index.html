@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Geo-Lokasi</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // FIX: Menambahkan import signInWithCustomToken
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- KONFIGURASI FIREBASE ---
+        // Menggunakan variabel global dari lingkungan Canvas/Gemini
+        ```javascript
+        // --- KONFIGURASI FIREBASE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDLyQq45ZpBRmkfww5sU_XeXTRSgXgCMdA",
+            authDomain: "absensi-anis.firebaseapp.com",
+            projectId: "absensi-anis",
+            storageBucket: "absensi-anis.firebasestorage.app",
+            messagingSenderId: "704191207092",
+            appId: "1:704191207092:web:ab5b4cdb4350c446f029e1"
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- VARIABEL GLOBAL APP ---
+        let currentUser = null;
+        let userLocation = null;
+        let userName = localStorage.getItem('absensi_userName') || '';
+        
+        // Lokasi Kantor (Contoh: Monas, Jakarta)
+        // Ubah koordinat ini sesuai lokasi kantor asli Anda
+        const OFFICE_LAT = -6.175392;
+        const OFFICE_LNG = 106.827153;
+        const MAX_DISTANCE_KM = 0.5; // Radius toleransi (km)
+
+        // --- LOGIKA UTILITAS ---
+
+        // Menghitung jarak antara dua titik koordinat (Haversine Formula)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius bumi dalam km
+            const dLat = deg2rad(lat2 - lat1);
+            const dLon = deg2rad(lon2 - lon1);
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const d = R * c; // Jarak dalam km
+            return d;
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI / 180);
+        }
+
+        function formatDate(timestamp) {
+            if (!timestamp) return '';
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            return new Intl.DateTimeFormat('id-ID', {
+                day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+            }).format(date);
+        }
+
+        // --- LOGIKA UI & DOM ---
+
+        const loginScreen = document.getElementById('login-screen');
+        const dashboardScreen = document.getElementById('dashboard-screen');
+        const nameInput = document.getElementById('name-input');
+        const loginBtn = document.getElementById('login-btn');
+        const statusMsg = document.getElementById('status-msg');
+        const locationText = document.getElementById('location-text');
+        const distanceText = document.getElementById('distance-text');
+        const btnCheckIn = document.getElementById('btn-check-in');
+        const btnCheckOut = document.getElementById('btn-check-out');
+        const historyList = document.getElementById('history-list');
+        const clockElement = document.getElementById('clock');
+        const loadingOverlay = document.getElementById('loading-overlay');
+
+        function updateClock() {
+            const now = new Date();
+            clockElement.textContent = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+        setInterval(updateClock, 1000);
+
+        function showLoading(show) {
+            loadingOverlay.classList.toggle('hidden', !show);
+        }
+
+        function switchScreen(screenName) {
+            if (screenName === 'dashboard') {
+                loginScreen.classList.add('hidden');
+                dashboardScreen.classList.remove('hidden');
+                document.getElementById('user-display-name').textContent = userName;
+                initGeolocation();
+                subscribeToAttendance();
+            } else {
+                loginScreen.classList.remove('hidden');
+                dashboardScreen.classList.add('hidden');
+            }
+        }
+
+        // --- LOGIKA GEOLOKASI ---
+
+        function initGeolocation() {
+            if (!navigator.geolocation) {
+                locationText.textContent = "Browser tidak mendukung Geolokasi.";
+                return;
+            }
+
+            locationText.textContent = "Mencari lokasi...";
+            
+            navigator.geolocation.watchPosition(
+                (position) => {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    
+                    const dist = calculateDistance(userLocation.lat, userLocation.lng, OFFICE_LAT, OFFICE_LNG);
+                    
+                    locationText.innerHTML = `<i class="fas fa-map-marker-alt text-red-500 mr-1"></i> ${userLocation.lat.toFixed(5)}, ${userLocation.lng.toFixed(5)}`;
+                    
+                    let distanceDisplay = dist < 1 ? `${(dist * 1000).toFixed(0)} meter` : `${dist.toFixed(2)} km`;
+                    let statusColor = dist <= MAX_DISTANCE_KM ? "text-green-600" : "text-orange-500";
+                    let statusText = dist <= MAX_DISTANCE_KM ? "Di Area Kantor" : "Di Luar Area";
+
+                    distanceText.innerHTML = `Jarak: <b>${distanceDisplay}</b> <span class="${statusColor} ml-2 text-sm font-bold">(${statusText})</span>`;
+                    
+                    // Aktifkan tombol jika lokasi ditemukan
+                    btnCheckIn.disabled = false;
+                    btnCheckOut.disabled = false;
+                    btnCheckIn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    btnCheckOut.classList.remove('opacity-50', 'cursor-not-allowed');
+                },
+                (error) => {
+                    console.error("Geo Error:", error);
+                    let msg = "Gagal mengambil lokasi.";
+                    if(error.code === 1) msg = "Izin lokasi ditolak via Browser.";
+                    else if(error.code === 2) msg = "Sinyal GPS lemah/tidak tersedia.";
+                    else if(error.code === 3) msg = "Waktu permintaan habis.";
+                    locationText.textContent = msg;
+                    distanceText.textContent = "Pastikan GPS aktif & beri izin.";
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        }
+
+        // --- LOGIKA AUTH ---
+
+        // Inisialisasi Auth
+        const initAuth = async () => {
+            try {
+                // Sesuai aturan: Gunakan token custom jika ada, atau anonim
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Auth Error:", error);
+                alert("Gagal inisialisasi sistem autentikasi.");
+            }
+        };
+
+        initAuth();
+
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                if (userName) {
+                    switchScreen('dashboard');
+                } else {
+                    switchScreen('login');
+                }
+            }
+        });
+
+        loginBtn.addEventListener('click', () => {
+            const name = nameInput.value.trim();
+            if (name) {
+                userName = name;
+                localStorage.setItem('absensi_userName', name);
+                switchScreen('dashboard');
+            } else {
+                alert("Mohon masukkan nama Anda.");
+            }
+        });
+
+        // --- LOGIKA FIRESTORE (ABSENSI) ---
+
+        // Fungsi Generik untuk Kirim Data Absen
+        async function submitAttendance(type) {
+            if (!currentUser || !userLocation) {
+                alert("Menunggu data lokasi atau autentikasi...");
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                // RULE 1: Menggunakan path publik agar semua karyawan bisa melihat log hari ini
+                // Path: /artifacts/{appId}/public/data/attendance_logs
+                const attendanceRef = collection(db, 'artifacts', appId, 'public', 'data', 'attendance_logs');
+
+                const dist = calculateDistance(userLocation.lat, userLocation.lng, OFFICE_LAT, OFFICE_LNG);
+                const isWFO = dist <= MAX_DISTANCE_KM;
+
+                await addDoc(attendanceRef, {
+                    userId: currentUser.uid,
+                    userName: userName,
+                    type: type, // 'MASUK' atau 'PULANG'
+                    timestamp: serverTimestamp(),
+                    location: {
+                        lat: userLocation.lat,
+                        lng: userLocation.lng
+                    },
+                    distance: dist,
+                    status: isWFO ? 'WFO' : 'Remote' // WFO = Work From Office
+                });
+
+                // Tampilkan notifikasi modal sederhana
+                const modal = document.createElement('div');
+                modal.className = "fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded shadow-lg z-50 animate-bounce";
+                modal.innerText = `Berhasil Absen ${type}!`;
+                document.body.appendChild(modal);
+                setTimeout(() => modal.remove(), 3000);
+
+            } catch (error) {
+                console.error("Error submitting attendance:", error);
+                alert("Gagal mengirim data absensi: " + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        btnCheckIn.addEventListener('click', () => submitAttendance('MASUK'));
+        btnCheckOut.addEventListener('click', () => submitAttendance('PULANG'));
+
+        // Mendengarkan Data Absensi
+        function subscribeToAttendance() {
+            // RULE 1: Path yang sama
+            const attendanceRef = collection(db, 'artifacts', appId, 'public', 'data', 'attendance_logs');
+            
+            // RULE 2: Hindari orderBy di query awal jika indeks belum dibuat.
+            // Kita ambil data mentah, lalu sort di Client-side (Javascript).
+            
+            onSnapshot(attendanceRef, (snapshot) => {
+                const logs = [];
+                snapshot.forEach(doc => {
+                    logs.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Sort di memori (Terbaru di atas)
+                // Filter hanya data hari ini (Opsional, di sini kita tampilkan semua limit 50 biar simpel)
+                logs.sort((a, b) => {
+                    const tA = a.timestamp ? a.timestamp.toMillis() : 0;
+                    const tB = b.timestamp ? b.timestamp.toMillis() : 0;
+                    return tB - tA;
+                });
+
+                renderHistory(logs);
+            }, (error) => {
+                console.error("Error fetching logs:", error);
+            });
+        }
+
+        function renderHistory(logs) {
+            historyList.innerHTML = '';
+            
+            if (logs.length === 0) {
+                historyList.innerHTML = `
+                    <div class="text-center text-gray-400 py-4">
+                        <i class="fas fa-clipboard-list text-3xl mb-2"></i>
+                        <p>Belum ada data absensi hari ini.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            logs.forEach(log => {
+                const isMasuk = log.type === 'MASUK';
+                const colorClass = isMasuk ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
+                const iconClass = isMasuk ? 'fa-sign-in-alt text-green-600' : 'fa-sign-out-alt text-red-600';
+                const badgeColor = log.status === 'WFO' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800';
+
+                const el = document.createElement('div');
+                el.className = `p-3 rounded-lg border ${colorClass} flex items-center justify-between mb-2 transition hover:shadow-md`;
+                
+                el.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                            <i class="fas ${iconClass}"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800 text-sm">${log.userName || 'Tanpa Nama'}</p>
+                            <p class="text-xs text-gray-500">
+                                <i class="far fa-clock mr-1"></i>${formatDate(log.timestamp)}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${badgeColor} mb-1 inline-block">
+                            ${log.status || 'Unknown'}
+                        </span>
+                        <p class="text-[10px] text-gray-500 truncate w-20 text-right">
+                           ${(log.distance * 1000).toFixed(0)}m dari HQ
+                        </p>
+                    </div>
+                `;
+                historyList.appendChild(el);
+            });
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Animasi loading sederhana */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen text-gray-800 relative overflow-x-hidden">
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center">
+            <div class="loader mb-4"></div>
+            <p class="font-semibold text-gray-700">Memproses...</p>
+        </div>
+    </div>
+
+    <div id="app" class="max-w-md mx-auto min-h-screen bg-white shadow-2xl overflow-hidden relative">
+        
+        <!-- HEADER -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white rounded-b-[2rem] shadow-lg relative z-10">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight">E-Absensi</h1>
+                    <p class="text-blue-100 text-sm opacity-90">Sistem Kehadiran Pintar</p>
+                </div>
+                <div class="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
+                    <i class="fas fa-building text-xl"></i>
+                </div>
+            </div>
+            
+            <!-- Jam Digital di Header -->
+            <div class="text-center mt-2">
+                <div id="clock" class="text-4xl font-mono font-bold drop-shadow-md">--:--:--</div>
+                <p class="text-xs text-blue-100 mt-1" id="current-date">
+                    <script>document.write(new Date().toLocaleDateString('id-ID', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'}))</script>
+                </p>
+            </div>
+        </div>
+
+        <!-- LOGIN SCREEN -->
+        <div id="login-screen" class="p-8 mt-10">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600">
+                    <i class="fas fa-user-lock text-3xl"></i>
+                </div>
+                <h2 class="text-xl font-bold text-gray-800">Identifikasi Karyawan</h2>
+                <p class="text-gray-500 text-sm">Masukkan nama untuk memulai sesi</p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                    <input type="text" id="name-input" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="Contoh: Budi Santoso">
+                </div>
+                <button id="login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg transition transform active:scale-95">
+                    Masuk Aplikasi
+                </button>
+            </div>
+        </div>
+
+        <!-- DASHBOARD SCREEN -->
+        <div id="dashboard-screen" class="hidden pb-20">
+            
+            <!-- Info Card -->
+            <div class="mx-4 -mt-6 bg-white rounded-xl shadow-lg p-4 border border-gray-100 relative z-20">
+                <div class="flex justify-between items-center border-b pb-2 mb-2">
+                    <span class="text-xs text-gray-500 uppercase tracking-wide font-bold">Halo, Karyawan</span>
+                    <button onclick="localStorage.removeItem('absensi_userName'); location.reload();" class="text-xs text-red-500 hover:text-red-700">
+                        <i class="fas fa-sign-out-alt"></i> Keluar
+                    </button>
+                </div>
+                <h3 id="user-display-name" class="text-lg font-bold text-gray-800 mb-1">...</h3>
+                
+                <!-- Location Status -->
+                <div class="mt-3 bg-gray-50 rounded-lg p-3 text-sm">
+                    <div class="flex items-start gap-2 mb-1">
+                        <i class="fas fa-satellite-dish text-blue-500 mt-1"></i>
+                        <div>
+                            <p class="font-semibold text-gray-700">Posisi Anda:</p>
+                            <p id="location-text" class="text-gray-500 text-xs break-all">Menunggu GPS...</p>
+                        </div>
+                    </div>
+                    <div class="border-t border-gray-200 my-2"></div>
+                    <p id="distance-text" class="text-xs text-gray-600 flex items-center justify-between">
+                        <span>Menghitung jarak...</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-2 gap-4 px-4 mt-6">
+                <button id="btn-check-in" disabled class="group relative flex flex-col items-center justify-center p-4 bg-white border-2 border-green-500 rounded-xl shadow-sm hover:shadow-md transition active:bg-green-50 opacity-50 cursor-not-allowed">
+                    <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-2 group-hover:scale-110 transition">
+                        <i class="fas fa-fingerprint text-green-600 text-xl"></i>
+                    </div>
+                    <span class="font-bold text-green-700">MASUK</span>
+                    <span class="text-[10px] text-gray-400">Check In</span>
+                </button>
+
+                <button id="btn-check-out" disabled class="group relative flex flex-col items-center justify-center p-4 bg-white border-2 border-red-500 rounded-xl shadow-sm hover:shadow-md transition active:bg-red-50 opacity-50 cursor-not-allowed">
+                    <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-2 group-hover:scale-110 transition">
+                        <i class="fas fa-door-open text-red-600 text-xl"></i>
+                    </div>
+                    <span class="font-bold text-red-700">PULANG</span>
+                    <span class="text-[10px] text-gray-400">Check Out</span>
+                </button>
+            </div>
+
+            <!-- History Section -->
+            <div class="px-4 mt-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-gray-800">Aktivitas Hari Ini</h3>
+                    <span class="text-xs bg-gray-200 px-2 py-1 rounded text-gray-600">Real-time</span>
+                </div>
+                
+                <div id="history-list" class="space-y-2 overflow-y-auto max-h-[300px] pr-1 scrollbar-hide">
+                    <!-- Item Log akan muncul di sini -->
+                    <div class="animate-pulse flex space-x-4">
+                        <div class="rounded-full bg-gray-200 h-10 w-10"></div>
+                        <div class="flex-1 space-y-2 py-1">
+                            <div class="h-2 bg-gray-200 rounded"></div>
+                            <div class="h-2 bg-gray-200 rounded w-5/6"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
