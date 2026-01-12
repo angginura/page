@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venture | Discover Your Next Adventure</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables */
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #0f172a;
+            --accent-color: #f59e0b;
+            --text-color: #334155;
+            --text-light: #64748b;
+            --light-bg: #f8fafc;
+            --white: #ffffff;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 10px 30px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+            --border-radius: 12px;
+            --max-width: 1200px;
+        }
+        
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            background-color: var(--white);
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        .section {
+            padding: 5rem 0;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.85rem 2rem;
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .btn--secondary {
+            background-color: transparent;
+            border: 2px solid var(--white);
+            color: var(--white);
+        }
+        
+        .btn--secondary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn--outline {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .btn--outline:hover {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+        
+        /* Header Styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1.2rem 0;
+            transition: var(--transition);
+            background-color: transparent;
+        }
+        
+        .header--sticky {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 0.8rem 0;
+            box-shadow: var(--shadow);
+        }
+        
+        .header__container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header__logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+        
+        .header__logo-icon {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+        
+        .header__logo-text {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--secondary-color);
+        }
+        
+        .header__logo-text span {
+            color: var(--primary-color);
+        }
+        
+        .header__nav {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav__list {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav__link {
+            text-decoration: none;
+            color: var(--secondary-color);
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        
+        .nav__link:hover {
+            color: var(--primary-color);
+        }
+        
+        .nav__link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        
+        .nav__link:hover::after {
+            width: 100%;
+        }
+        
+        .header__auth {
+            display: flex;
+            gap: 1rem;
+            margin-left: 3rem;
+        }
+        
+        .btn--login {
+            background-color: transparent;
+            color: var(--secondary-color);
+            padding: 0.6rem 1.5rem;
+        }
+        
+        .btn--signup {
+            padding: 0.6rem 1.5rem;
+        }
+        
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            cursor: pointer;
+        }
+        
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            min-height: 700px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.9)), 
+                        url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center center/cover;
+            color: var(--white);
+        }
+        
+        .hero__content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero__title {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--white);
+            line-height: 1.2;
+        }
+        
+        .hero__subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Features Section */
+        .features {
+            background-color: var(--light-bg);
+        }
+        
+        .features__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .feature-card__icon {
+            width: 70px;
+            height: 70px;
+            background-color: rgba(37, 99, 235, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .feature-card__icon i {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+        
+        .feature-card__title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+        }
+        
+        .feature-card__description {
+            color: var(--text-light);
+        }
+        
+        /* Testimonials Section */
+        .testimonials {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .testimonials__container {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .testimonial-slider {
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+        }
+        
+        .testimonial-slider__track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        
+        .testimonial-slide {
+            min-width: 100%;
+            padding: 3rem;
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+        
+        .testimonial-slide__content {
+            font-size: 1.2rem;
+            font-style: italic;
+            margin-bottom: 2rem;
+            color: var(--text-color);
+            line-height: 1.8;
+        }
+        
+        .testimonial-slide__author {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .testimonial-slide__avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .testimonial-slide__info h4 {
+            color: var(--secondary-color);
+            margin-bottom: 0.25rem;
+        }
+        
+        .testimonial-slide__info p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .slider-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .slider-btn {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .slider-btn:hover {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .slider-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .slider-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #cbd5e1;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .slider-dot.active {
+            background-color: var(--primary-color);
+            transform: scale(1.2);
+        }
+        
+        /* CTA Section */
+        .cta {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: var(--white);
+            text-align: center;
+        }
+        
+        .cta__title {
+            color: var(--white);
+            margin-bottom: 1.5rem;
+        }
+        
+        .cta__subtitle {
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: var(--secondary-color);
+            color: var(--white);
+            padding: 4rem 0 2rem;
+        }
+        
+        .footer__content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer__logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer__logo-icon {
+            font-size: 1.8rem;
+            color: var(--accent-color);
+        }
+        
+        .footer__logo-text {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--white);
+        }
+        
+        .footer__description {
+            color: #cbd5e1;
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer__social {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .footer__social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: var(--white);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer__social-link:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        
+        .footer__heading {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--white);
+        }
+        
+        .footer__links {
+            list-style: none;
+        }
+        
+        .footer__link {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer__link a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer__link a:hover {
+            color: var(--white);
+            padding-left: 5px;
+        }
+        
+        .footer__newsletter p {
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+        }
+        
+        .footer__form {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .footer__input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: var(--border-radius);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+        }
+        
+        .footer__input::placeholder {
+            color: #94a3b8;
+        }
+        
+        .footer__input:focus {
+            outline: 2px solid var(--primary-color);
+        }
+        
+        .footer__bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        /* Newsletter Validation */
+        .validation-message {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .validation-message.success {
+            color: #10b981;
+            display: block;
+        }
+        
+        .validation-message.error {
+            color: #ef4444;
+            display: block;
+        }
+        
+        /* Responsive Styles */
+        @media screen and (max-width: 992px) {
+            .hero__title {
+                font-size: 2.8rem;
+            }
+            
+            .section-title {
+                font-size: 2.2rem;
+            }
+        }
+        
+        @media screen and (max-width: 768px) {
+            .header__nav {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 280px;
+                height: 100vh;
+                background-color: var(--white);
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 2rem;
+                box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
+                transition: right 0.4s ease;
+                z-index: 1001;
+            }
+            
+            .header__nav.active {
+                right: 0;
+            }
+            
+            .nav__list {
+                flex-direction: column;
+                gap: 1.5rem;
+                width: 100%;
+                margin-bottom: 2rem;
+            }
+            
+            .header__auth {
+                flex-direction: column;
+                width: 100%;
+                margin-left: 0;
+                gap: 0.75rem;
+            }
+            
+            .btn--login, .btn--signup {
+                text-align: center;
+            }
+            
+            .hamburger {
+                display: block;
+                z-index: 1002;
+            }
+            
+            .hero__title {
+                font-size: 2.4rem;
+            }
+            
+            .hero__subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .feature-card {
+                padding: 2rem 1.5rem;
+            }
+            
+            .testimonial-slide {
+                padding: 2rem;
+            }
+            
+            .footer__form {
+                flex-direction: column;
+            }
+        }
+        
+        @media screen and (max-width: 576px) {
+            .hero__title {
+                font-size: 2rem;
+            }
+            
+            .section {
+                padding: 3.5rem 0;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+            
+            .btn {
+                padding: 0.75rem 1.5rem;
+            }
+            
+            .features__grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer__content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        .focus-visible:focus-visible {
+            outline: 3px solid var(--accent-color);
+            outline-offset: 3px;
+        }
+        
+        /* Overlay for mobile menu */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="container header__container">
+            <a href="#" class="header__logo focus-visible">
+                <i class="fas fa-mountain header__logo-icon"></i>
+                <span class="header__logo-text">Venture<span>Go</span></span>
+            </a>
+            
+            <button class="hamburger focus-visible" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <nav class="header__nav" id="nav">
+                <ul class="nav__list">
+                    <li><a href="#home" class="nav__link focus-visible">Home</a></li>
+                    <li><a href="#features" class="nav__link focus-visible">Features</a></li>
+                    <li><a href="#testimonials" class="nav__link focus-visible">Testimonials</a></li>
+                    <li><a href="#cta" class="nav__link focus-visible">Get Started</a></li>
+                </ul>
+                
+                <div class="header__auth">
+                    <a href="#" class="btn btn--login focus-visible">Login</a>
+                    <a href="#" class="btn btn--signup focus-visible">Sign Up</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Overlay for mobile menu -->
+    <div class="overlay" id="overlay"></div>
+    
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero__content">
+                <h1 class="hero__title">Discover Your Next Adventure</h1>
+                <p class="hero__subtitle">Embark on unforgettable journeys with curated experiences, expert guides, and seamless planning. Explore the world's most breathtaking destinations with confidence.</p>
+                <a href="#features" class="btn btn--secondary focus-visible">Start Exploring</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="section features" id="features">
+        <div class="container">
+            <h2 class="section-title">Why Choose VentureGo</h2>
+            <p class="section-subtitle">We combine expert knowledge with cutting-edge technology to deliver exceptional travel experiences tailored to your preferences.</p>
+            
+            <div class="features__grid">
+                <div class="feature-card">
+                    <div class="feature-card__icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <h3 class="feature-card__title">Curated Adventures</h3>
+                    <p class="feature-card__description">Handpicked destinations and experiences tailored to your interests, from serene nature escapes to thrilling urban explorations.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-card__icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3 class="feature-card__title">Expert Guides</h3>
+                    <p class="feature-card__description">Connect with certified local experts who provide insider knowledge, safety assurance, and authentic cultural immersion.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-card__icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h3 class="feature-card__title">Seamless Planning</h3>
+                    <p class="feature-card__description">Our intuitive platform handles all logistics - accommodations, transport, and activities - so you can focus on the adventure.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Testimonials Section -->
+    <section class="section testimonials" id="testimonials">
+        <div class="container">
+            <h2 class="section-title">What Our Adventurers Say</h2>
+            <p class="section-subtitle">Join thousands of satisfied travelers who have discovered the world with VentureGo.</p>
+            
+            <div class="testimonials__container">
+                <div class="testimonial-slider">
+                    <div class="testimonial-slider__track" id="sliderTrack">
+                        <!-- Testimonial 1 -->
+                        <div class="testimonial-slide">
+                            <p class="testimonial-slide__content">"My trip to Patagonia was absolutely breathtaking! The guides were knowledgeable, the accommodations were perfect, and everything was seamlessly organized. This was my third trip with VentureGo, and they never disappoint."</p>
+                            <div class="testimonial-slide__author">
+                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80" alt="Sarah Johnson" class="testimonial-slide__avatar">
+                                <div class="testimonial-slide__info">
+                                    <h4>Sarah Johnson</h4>
+                                    <p>Adventure Photographer</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Testimonial 2 -->
+                        <div class="testimonial-slide">
+                            <p class="testimonial-slide__content">"As a solo traveler, safety is my top priority. VentureGo matched me with an incredible guide who showed me hidden gems in Japan I would never have found on my own. The entire experience was flawless and unforgettable."</p>
+                            <div class="testimonial-slide__author">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80" alt="Michael Chen" class="testimonial-slide__avatar">
+                                <div class="testimonial-slide__info">
+                                    <h4>Michael Chen</h4>
+                                    <p>Digital Nomad</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Testimonial 3 -->
+                        <div class="testimonial-slide">
+                            <p class="testimonial-slide__content">"Our family's adventure in Costa Rica was perfectly planned for all ages. From the rainforest hikes to the beach activities, every detail was considered. The kids are already asking when we're booking our next trip!"</p>
+                            <div class="testimonial-slide__author">
+                                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80" alt="Jessica & Robert Miller" class="testimonial-slide__avatar">
+                                <div class="testimonial-slide__info">
+                                    <h4>The Miller Family</h4>
+                                    <p>Family Adventurers</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slider-controls">
+                    <button class="slider-btn focus-visible" id="prevBtn" aria-label="Previous testimonial">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="slider-btn focus-visible" id="nextBtn" aria-label="Next testimonial">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                
+                <div class="slider-dots" id="sliderDots">
+                    <!-- Dots will be generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="section cta" id="cta">
+        <div class="container">
+            <h2 class="section-title cta__title">Ready for Your Next Adventure?</h2>
+            <p class="cta__subtitle">Join over 50,000 adventurers who trust VentureGo to plan their unforgettable journeys. Start exploring today with no commitments.</p>
+            <a href="#" class="btn focus-visible">Create Your Adventure</a>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__content">
+                <div class="footer__col">
+                    <div class="footer__logo">
+                        <i class="fas fa-mountain footer__logo-icon"></i>
+                        <span class="footer__logo-text">VentureGo</span>
+                    </div>
+                    <p class="footer__description">Discover extraordinary adventures with expert guidance and seamless planning. Your next unforgettable journey starts here.</p>
+                    <div class="footer__social">
+                        <a href="#" class="footer__social-link focus-visible" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="footer__social-link focus-visible" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="footer__social-link focus-visible" aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="footer__social-link focus-visible" aria-label="YouTube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer__col">
+                    <h3 class="footer__heading">Quick Links</h3>
+                    <ul class="footer__links">
+                        <li class="footer__link"><a href="#home" class="focus-visible">Home</a></li>
+                        <li class="footer__link"><a href="#features" class="focus-visible">Features</a></li>
+                        <li class="footer__link"><a href="#testimonials" class="focus-visible">Testimonials</a></li>
+                        <li class="footer__link"><a href="#cta" class="focus-visible">Get Started</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer__col">
+                    <h3 class="footer__heading">Legal</h3>
+                    <ul class="footer__links">
+                        <li class="footer__link"><a href="#" class="focus-visible">Privacy Policy</a></li>
+                        <li class="footer__link"><a href="#" class="focus-visible">Terms of Service</a></li>
+                        <li class="footer__link"><a href="#" class="focus-visible">Cookie Policy</a></li>
+                        <li class="footer__link"><a href="#" class="focus-visible">Accessibility</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer__col">
+                    <h3 class="footer__heading">Stay Updated</h3>
+                    <p class="footer__description">Subscribe to our newsletter for exclusive deals, travel tips, and adventure inspiration.</p>
+                    <form class="footer__form" id="newsletterForm">
+                        <input type="email" class="footer__input focus-visible" placeholder="Your email address" aria-label="Email address" required>
+                        <button type="submit" class="btn focus-visible">Subscribe</button>
+                        <div class="validation-message" id="validationMessage"></div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="footer__bottom">
+                <p>&copy; 2023 VentureGo. All rights reserved. | Designed with <i class="fas fa-heart" style="color: #ef4444;"></i> for adventure seekers worldwide.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const header = document.getElementById('header');
+        const hamburger = document.getElementById('hamburger');
+        const nav = document.getElementById('nav');
+        const overlay = document.getElementById('overlay');
+        const navLinks = document.querySelectorAll('.nav__link');
+        const sliderTrack = document.getElementById('sliderTrack');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const sliderDots = document.getElementById('sliderDots');
+        const newsletterForm = document.getElementById('newsletterForm');
+        const validationMessage = document.getElementById('validationMessage');
+        
+        // Testimonial Slider Data
+        const testimonials = [
+            {
+                content: '"My trip to Patagonia was absolutely breathtaking! The guides were knowledgeable, the accommodations were perfect, and everything was seamlessly organized. This was my third trip with VentureGo, and they never disappoint."',
+                name: 'Sarah Johnson',
+                role: 'Adventure Photographer',
+                image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80'
+            },
+            {
+                content: '"As a solo traveler, safety is my top priority. VentureGo matched me with an incredible guide who showed me hidden gems in Japan I would never have found on my own. The entire experience was flawless and unforgettable."',
+                name: 'Michael Chen',
+                role: 'Digital Nomad',
+                image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80'
+            },
+            {
+                content: '"Our family\'s adventure in Costa Rica was perfectly planned for all ages. From the rainforest hikes to the beach activities, every detail was considered. The kids are already asking when we\'re booking our next trip!"',
+                name: 'The Miller Family',
+                role: 'Family Adventurers',
+                image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80'
+            },
+            {
+                content: '"The hiking expedition in the Swiss Alps was a dream come true! The organization was impeccable, and the guides were true professionals who ensured our safety while maximizing the experience. Can\'t wait for my next adventure with VentureGo!"',
+                name: 'David Rodriguez',
+                role: 'Mountain Enthusiast',
+                image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80'
+            },
+            {
+                content: '"I\'ve traveled with many companies, but VentureGo stands out for their attention to detail and personalized service. My safari in Tanzania exceeded all expectations - every moment was magical."',
+                name: 'Amanda Thompson',
+                role: 'Wildlife Photographer',
+                image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80'
+            }
+        ];
+        
+        // Sticky Header Functionality
+        function handleStickyHeader() {
+            if (window.scrollY > 100) {
+                header.classList.add('header--sticky');
+            } else {
+                header.classList.remove('header--sticky');
+            }
+        }
+        
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            hamburger.classList.toggle('active');
+            nav.classList.toggle('active');
+            overlay.classList.toggle('active');
+            
+            // Update aria-expanded attribute
+            const isExpanded = nav.classList.contains('active');
+            hamburger.setAttribute('aria-expanded', isExpanded);
+            
+            // Update hamburger icon
+            const icon = hamburger.querySelector('i');
+            icon.className = isExpanded ? 'fas fa-times' : 'fas fa-bars';
+            
+            // Prevent body scrolling when menu is open
+            document.body.style.overflow = isExpanded ? 'hidden' : 'auto';
+        }
+        
+        // Close mobile menu when clicking a link
+        function closeMobileMenu() {
+            hamburger.classList.remove('active');
+            nav.classList.remove('active');
+            overlay.classList.remove('active');
+            hamburger.setAttribute('aria-expanded', 'false');
+            
+            const icon = hamburger.querySelector('i');
+            icon.className = 'fas fa-bars';
+            
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Testimonial Slider Functionality
+        let currentSlide = 0;
+        const slideCount = testimonials.length;
+        
+        function initializeSlider() {
+            // Clear existing slides
+            sliderTrack.innerHTML = '';
+            sliderDots.innerHTML = '';
+            
+            // Create slides
+            testimonials.forEach((testimonial, index) => {
+                // Create slide element
+                const slide = document.createElement('div');
+                slide.className = 'testimonial-slide';
+                slide.setAttribute('role', 'tabpanel');
+                slide.setAttribute('aria-roledescription', 'slide');
+                slide.setAttribute('aria-label', `${index + 1} of ${slideCount}`);
+                
+                slide.innerHTML = `
+                    <p class="testimonial-slide__content">${testimonial.content}</p>
+                    <div class="testimonial-slide__author">
+                        <img src="${testimonial.image}" alt="${testimonial.name}" class="testimonial-slide__avatar">
+                        <div class="testimonial-slide__info">
+                            <h4>${testimonial.name}</h4>
+                            <p>${testimonial.role}</p>
+                        </div>
+                    </div>
+                `;
+                
+                sliderTrack.appendChild(slide);
+                
+                // Create dot indicator
+                const dot = document.createElement('button');
+                dot.className = 'slider-dot';
+                dot.setAttribute('aria-label', `Go to testimonial ${index + 1}`);
+                dot.setAttribute('role', 'tab');
+                
+                if (index === 0) {
+                    dot.classList.add('active');
+                }
+                
+                dot.addEventListener('click', () => {
+                    goToSlide(index);
+                });
+                
+                sliderDots.appendChild(dot);
+            });
+            
+            updateSlider();
+        }
+        
+        function goToSlide(slideIndex) {
+            currentSlide = slideIndex;
+            updateSlider();
+        }
+        
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slideCount;
+            updateSlider();
+        }
+        
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slideCount) % slideCount;
+            updateSlider();
+        }
+        
+        function updateSlider() {
+            // Update slider track position
+            sliderTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            // Update active dot
+            const dots = document.querySelectorAll('.slider-dot');
+            dots.forEach((dot, index) => {
+                if (index === currentSlide) {
+                    dot.classList.add('active');
+                    dot.setAttribute('aria-selected', 'true');
+                } else {
+                    dot.classList.remove('active');
+                    dot.setAttribute('aria-selected', 'false');
+                }
+            });
+            
+            // Update slide aria attributes
+            const slides = document.querySelectorAll('.testimonial-slide');
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.removeAttribute('hidden');
+                } else {
+                    slide.setAttribute('hidden', 'true');
+                }
+            });
+        }
+        
+        // Newsletter Form Validation
+        function validateNewsletterForm(e) {
+            e.preventDefault();
+            
+            const emailInput = newsletterForm.querySelector('input[type="email"]');
+            const email = emailInput.value.trim();
+            
+            // Basic email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (!email) {
+                showValidationMessage('Please enter your email address.', 'error');
+                emailInput.focus();
+                return;
+            }
+            
+            if (!emailRegex.test(email)) {
+                showValidationMessage('Please enter a valid email address.', 'error');
+                emailInput.focus();
+                return;
+            }
+            
+            // Simulate form submission
+            showValidationMessage('Thank you for subscribing! You will receive our next newsletter.', 'success');
+            
+            // Reset form
+            newsletterForm.reset();
+            
+            // Clear validation message after 5 seconds
+            setTimeout(() => {
+                validationMessage.className = 'validation-message';
+                validationMessage.textContent = '';
+            }, 5000);
+        }
+        
+        function showValidationMessage(message, type) {
+            validationMessage.textContent = message;
+            validationMessage.className = `validation-message ${type}`;
+        }
+        
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize sticky header
+            window.addEventListener('scroll', handleStickyHeader);
+            
+            // Initialize mobile menu
+            hamburger.addEventListener('click', toggleMobileMenu);
+            overlay.addEventListener('click', closeMobileMenu);
+            
+            // Close mobile menu when clicking on a link
+            navLinks.forEach(link => {
+                link.addEventListener('click', closeMobileMenu);
+            });
+            
+            // Initialize testimonial slider
+            initializeSlider();
+            
+            // Add slider controls
+            nextBtn.addEventListener('click', nextSlide);
+            prevBtn.addEventListener('click', prevSlide);
+            
+            // Auto-advance slider every 8 seconds
+            let slideInterval = setInterval(nextSlide, 8000);
+            
+            // Pause auto-advance on hover
+            const sliderContainer = document.querySelector('.testimonial-slider');
+            sliderContainer.addEventListener('mouseenter', () => {
+                clearInterval(slideInterval);
+            });
+            
+            sliderContainer.addEventListener('mouseleave', () => {
+                slideInterval = setInterval(nextSlide, 8000);
+            });
+            
+            // Initialize newsletter form
+            newsletterForm.addEventListener('submit', validateNewsletterForm);
+            
+            // Keyboard navigation for accessibility
+            document.addEventListener('keydown', (e) => {
+                // Close mobile menu on Escape key
+                if (e.key === 'Escape' && nav.classList.contains('active')) {
+                    closeMobileMenu();
+                }
+                
+                // Navigate slider with arrow keys
+                if (e.key === 'ArrowRight') {
+                    nextSlide();
+                } else if (e.key === 'ArrowLeft') {
+                    prevSlide();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
