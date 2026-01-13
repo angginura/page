@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>arulbot — WhatsApp Bot</title>
 
+  <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+
   <script>
     tailwind.config = {
       theme: {
@@ -13,6 +15,25 @@
           colors: {
             wa: '#25D366',
             bg: '#020617'
+          },
+          animation: {
+            float: 'float 6s ease-in-out infinite',
+            glow: 'glow 2.5s ease-in-out infinite',
+            fade: 'fade 1.2s ease-out forwards'
+          },
+          keyframes: {
+            float: {
+              '0%,100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-12px)' }
+            },
+            glow: {
+              '0%,100%': { boxShadow: '0 0 10px #25D366' },
+              '50%': { boxShadow: '0 0 30px #25D366' }
+            },
+            fade: {
+              '0%': { opacity: 0, transform: 'translateY(20px)' },
+              '100%': { opacity: 1, transform: 'translateY(0)' }
+            }
           }
         }
       }
@@ -22,93 +43,198 @@
 
 <body class="bg-bg text-gray-200 overflow-x-hidden">
 
-<div class="fixed top-4 left-4 z-50">
-  <button onclick="toggleMenu()" class="px-4 py-2 rounded-xl bg-wa text-black font-bold">
-    ☰ Menu
-  </button>
-  <div id="topMenu" class="hidden mt-2 w-48 bg-bg border border-gray-700 rounded-xl overflow-hidden">
-    <button class="menu-item">⭐ Premium Bot</button>
-    <button class="menu-item">🤖 Sewabot</button>
-    <button class="menu-item">👥 Group Support</button>
-    <button class="menu-item">📞 Contact Owner</button>
-  </div>
-</div>
+  <!-- MUSIC -->
+  <audio id="music" autoplay loop>
+    <source src="https://d.uguu.se/BbvqLsxM.mp3" type="audio/mpeg">
+  </audio>
 
-<section class="min-h-screen flex items-center justify-center text-center px-6">
-  <div>
-    <h1 class="text-5xl font-extrabold text-wa">arulbot</h1>
-    <p class="mt-4 text-gray-400">WhatsApp Bot • Cepat • Modular • Stabil</p>
-  </div>
-</section>
+  <!-- HERO -->
+  <section class="relative min-h-screen flex items-center justify-center text-center px-4">
+    <img
+      src="https://images.unsplash.com/photo-1633356122544-f134324a6cee"
+      class="absolute inset-0 w-full h-full object-cover opacity-25"
+      alt="bg"
+    />
 
-<section class="max-w-4xl mx-auto px-6 py-24">
-  <h2 class="text-center text-3xl font-bold text-wa mb-10">Command List</h2>
-  <div id="commandList" class="space-y-4"></div>
-</section>
+    <div class="relative z-10 max-w-3xl animate-fade">
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+        class="w-28 mx-auto mb-6 animate-float"
+        alt="wa"
+      />
 
-<footer class="text-center text-xs text-gray-500 py-6">
-  © 2026 arulbot
-</footer>
+      <h1 class="text-5xl font-extrabold text-wa">arulbot</h1>
 
-<style>
-  .cmd-item {
-    border: 1px solid #1f2937;
-    border-radius: 1rem;
-    overflow: hidden;
-  }
-  .cmd-btn {
-    width: 100%;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    font-weight: 700;
-  }
-  .cmd-desc {
-    max-height: 0;
-    overflow: hidden;
-    padding: 0 1rem;
-    font-size: .9rem;
-    color: #9ca3af;
-    transition: .4s;
-  }
-  .cmd-item.active .cmd-desc {
-    max-height: 200px;
-    padding: 0 1rem 1rem;
-  }
-  .menu-item {
-    width: 100%;
-    padding: .75rem 1rem;
-    text-align: left;
-  }
-  .menu-item:hover {
-    background: #020617;
-  }
-</style>
+      <!-- TYPING -->
+      <p class="mt-4 text-lg text-gray-300 h-7">
+        <span id="typing"></span><span class="animate-pulse">|</span>
+      </p>
 
-<script>
-  const commands = [
-    { cmd: '.downloader', desc: 'Download video/audio dari YouTube, TikTok, Instagram, dll.' },
-    { cmd: '.ai', desc: 'Chat AI pintar untuk bantu kebutuhan user.' },
-    { cmd: '.sticker', desc: 'Buat sticker WhatsApp dari gambar/video.' },
-    { cmd: '.group', desc: 'Manajemen grup WhatsApp lengkap.' },
-    { cmd: '.rpg', desc: 'Game RPG santai dengan leveling dan item.' }
-  ]
-
-  const list = document.getElementById('commandList')
-  list.innerHTML = commands.map(c => `
-    <div class="cmd-item">
-      <button class="cmd-btn" onclick="this.parentElement.classList.toggle('active')">
-        <span>${c.cmd}</span>
-        <span>+</span>
-      </button>
-      <div class="cmd-desc">${c.desc}</div>
+      <div class="mt-8 flex gap-4 justify-center">
+        <a
+          href="https://s.id/arulbot"
+          target="_blank"
+          class="px-8 py-3 rounded-2xl bg-wa text-black font-bold animate-glow hover:scale-105 transition"
+        >
+          Bot Number
+        </a>
+        <button
+          onclick="toggleMusic()"
+          class="px-8 py-3 rounded-2xl border border-gray-600 hover:bg-gray-800 transition"
+        >
+          Toggle Music
+        </button>
+      </div>
     </div>
-  `).join('')
+  </section>
 
-  function toggleMenu() {
-    document.getElementById('topMenu').classList.toggle('hidden')
-  }
-</script>
+  <!-- COMMAND LIST -->
+  <section class="max-w-4xl mx-auto px-6 py-24">
+    <h2 class="text-center text-3xl font-bold text-wa mb-10">
+      Command List
+    </h2>
+
+    <div class="space-y-4">
+
+      <!-- ITEM -->
+      <div class="cmd-item">
+        <button class="cmd-btn" onclick="toggleCmd(this)">
+          <span>.downloader</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="cmd-desc">
+          Download video/audio dari YouTube, TikTok, Instagram, dan platform
+          populer lainnya dengan cepat dan otomatis.
+        </div>
+      </div>
+
+      <div class="cmd-item">
+        <button class="cmd-btn" onclick="toggleCmd(this)">
+          <span>.ai</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="cmd-desc">
+          Fitur chat AI untuk menjawab pertanyaan, ngobrol santai,
+          dan membantu berbagai kebutuhan user.
+        </div>
+      </div>
+
+      <div class="cmd-item">
+        <button class="cmd-btn" onclick="toggleCmd(this)">
+          <span>.sticker</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="cmd-desc">
+          Membuat sticker WhatsApp dari gambar atau video secara instan
+          dengan kualitas tinggi.
+        </div>
+      </div>
+
+      <div class="cmd-item">
+        <button class="cmd-btn" onclick="toggleCmd(this)">
+          <span>.group</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="cmd-desc">
+          Manajemen grup: kick, add, promote, demote, set welcome,
+          dan pengaturan admin lainnya.
+        </div>
+      </div>
+
+      <div class="cmd-item">
+        <button class="cmd-btn" onclick="toggleCmd(this)">
+          <span>.rpg</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="cmd-desc">
+          Mode game RPG santai untuk hiburan user,
+          leveling, item, dan ekonomi virtual.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="text-center text-xs text-gray-500 py-6">
+    © 2026 arulbot • Interactive Command Page
+  </footer>
+
+  <!-- STYLE -->
+  <style>
+    .cmd-item {
+      background: #020617;
+      border: 1px solid #1f2937;
+      border-radius: 1rem;
+      overflow: hidden;
+      transition: .3s;
+    }
+    .cmd-btn {
+      width: 100%;
+      padding: 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .cmd-btn:hover {
+      background: #020617;
+    }
+    .cmd-desc {
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 1.2rem;
+      font-size: .9rem;
+      color: #9ca3af;
+      transition: max-height .4s ease, padding .4s ease;
+    }
+    .cmd-item.active .cmd-desc {
+      max-height: 200px;
+      padding: 0 1.2rem 1.2rem;
+    }
+    .icon {
+      transition: transform .3s;
+    }
+    .cmd-item.active .icon {
+      transform: rotate(45deg);
+      color: #25D366;
+    }
+  </style>
+
+  <!-- SCRIPT -->
+  <script>
+    // MUSIC
+    const music = document.getElementById('music')
+    function toggleMusic() {
+      music.paused ? music.play() : music.pause()
+    }
+
+    // TYPING
+    const texts = [
+      'WhatsApp Bot Otomatis & Modern',
+      'Cepat • Stabil • Modular',
+      'Downloader • AI • RPG • Tools',
+      'Powered by arulbot'
+    ]
+    let i = 0, j = 0, del = false
+    const typing = document.getElementById('typing')
+
+    function typeLoop() {
+      const t = texts[i]
+      typing.textContent = del ? t.slice(0, --j) : t.slice(0, ++j)
+      if (!del && j === t.length) setTimeout(() => del = true, 1500)
+      if (del && j === 0) { del = false; i = (i + 1) % texts.length }
+      setTimeout(typeLoop, del ? 40 : 80)
+    }
+    typeLoop()
+
+    // COMMAND TOGGLE
+    function toggleCmd(btn) {
+      const item = btn.parentElement
+      item.classList.toggle('active')
+    }
+  </script>
 
 </body>
 </html>
