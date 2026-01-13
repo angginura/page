@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Email@belajar.id</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    .card {
+      background: rgba(255,255,255,0.97);
+      border-radius: 1.25rem;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+      max-width: 480px;
+      width: 100%;
+    }
+    .card-header {
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      color: #fff;
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .card-body {
+      padding: 2rem 1.5rem;
+    }
+    .form-control {
+      height: 3.2rem;
+      border-radius: 0.75rem;
+      font-size: 1.1rem;
+    }
+    .btn-primary {
+      height: 3.2rem;
+      border-radius: 0.75rem;
+      font-size: 1.1rem;
+      background: #6f42c1;
+      border: none;
+    }
+    #loading {
+      display: none;
+      text-align: center;
+      margin: 2rem 0;
+    }
+    .copy-btn {
+      margin-left: 10px;
+      font-size: 0.9rem;
+    }
+    .copy-success {
+      font-size: 0.85rem;
+      color: #198754;
+      margin-left: 8px;
+      display: none;
+    }
+    .info-box {
+      background: #e7f3ff;
+      border: 1px solid #b3d4fc;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      margin-top: 1rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-header">Akun Belajar.Id</div>
+  <div class="card-body">
+
+    <form id="searchForm">
+      <div class="mb-3">
+        <input id="nama" class="form-control" placeholder="Masukkan nama lengkap kamu" required>
+      </div>
+      <button class="btn btn-primary w-100">Cari Data</button>
+    </form>
+
+    <div id="loading">
+      <div class="spinner-border text-primary"></div>
+      <p class="mt-2">Sedang mencari...</p>
+    </div>
+
+    <div id="result" class="mt-3"></div>
+  </div>
+</div>
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbwq7-WvP-A_goSceT3k65axpTFVZyNrzl8UK8762wzRUlKfZCrHtQkzM5xMBjrXjnLX/exec"; // GANTI
+
+  document.getElementById('searchForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const nama = document.getElementById('nama').value.trim();
+    if (!nama) return;
+
+    document.getElementById('result').innerHTML = '';
+    document.getElementById('loading').style.display = 'block';
+
+    try {
+      const res = await fetch(API_URL + '?nama=' + encodeURIComponent(nama));
+      const data = await res.json();
+      renderResult(data);
+    } catch (err) {
+      renderError(err.message);
+    } finally {
+      document.getElementById('loading').style.display = 'none';
+    }
+  });
+
+  function renderResult(r) {
+    if (!r.success) {
+      document.getElementById('result').innerHTML =
+        `<div class="alert alert-warning">${r.message}</div>`;
+      return;
+    }
+
+    document.getElementById('result').innerHTML = `
+      <div class="alert alert-success">
+        <strong>Nama:</strong> ${r.nama}<br>
+        <strong>Email:</strong> ${r.email}
+        <button class="btn btn-sm btn-outline-success copy-btn"
+          onclick="copy('${r.email}', 'c1')">Copy</button>
+        <span id="c1" class="copy-success">Copied</span><br>
+        <strong>Password:</strong> ${r.password}
+        <button class="btn btn-sm btn-outline-success copy-btn"
+          onclick="copy('${r.password}', 'c2')">Copy</button>
+        <span id="c2" class="copy-success">Copied</span>
+      </div>
+
+      <div class="info-box">
+        <button class="btn btn-primary"
+          onclick="window.open('https://mail.google.com','_blank')">
+          Buka Gmail
+        </button>
+      </div>
+    `;
+  }
+
+  function renderError(msg) {
+    document.getElementById('result').innerHTML =
+      `<div class="alert alert-danger">Error: ${msg}</div>`;
+  }
+
+  function copy(text, id) {
+    navigator.clipboard.writeText(text);
+    const el = document.getElementById(id);
+    el.style.display = 'inline';
+    setTimeout(() => el.style.display = 'none', 1500);
+  }
+</script>
+
+</body>
+</html>
