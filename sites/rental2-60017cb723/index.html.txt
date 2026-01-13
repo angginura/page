@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BabelDrive - Rental Mobil Premium Bangka Belitung</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0F172A',
+                        accent: '#3B82F6',
+                        gold: '#F59E0B'
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 px-4 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center glass-effect rounded-2xl px-6 py-3 shadow-lg">
+            <div class="flex items-center gap-2">
+                <div class="bg-accent p-2 rounded-lg">
+                    <i class="fas fa-car-side text-white text-xl"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-primary">Babel<span class="text-accent">Drive</span></span>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-8 font-medium">
+                <a href="#home" class="hover:text-accent transition">Beranda</a>
+                <a href="#armada" class="hover:text-accent transition">Armada</a>
+                <a href="#layanan" class="hover:text-accent transition">Layanan</a>
+                <a href="#kontak" class="hover:text-accent transition">Kontak</a>
+            </div>
+
+            <a href="https://wa.me/628123456789" class="bg-primary text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-slate-800 transition shadow-md">
+                Pesan Sekarang
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-gradient min-h-screen flex items-center pt-20 px-4">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div class="text-white space-y-6">
+                <div class="inline-block px-4 py-1.5 bg-accent/20 border border-accent/30 rounded-full text-accent font-semibold text-sm">
+                    ✨ Partner Perjalanan Terbaik di Bangka
+                </div>
+                <h1 class="text-5xl md:text-7xl font-bold leading-tight">
+                    Jelajahi <span class="text-accent text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Babel</span> Dengan Kenyamanan.
+                </h1>
+                <p class="text-slate-400 text-lg max-w-lg">
+                    Layanan sewa mobil profesional di Pangkalpinang & sekitarnya. Armada terbaru, driver ramah, dan harga kompetitif untuk liburan atau bisnis.
+                </p>
+                <div class="flex flex-wrap gap-4 pt-4">
+                    <a href="#armada" class="px-8 py-4 bg-accent hover:bg-blue-600 text-white rounded-2xl font-bold text-lg transition flex items-center gap-2">
+                        Lihat Mobil <i class="fas fa-arrow-right text-sm"></i>
+                    </a>
+                    <div class="flex items-center gap-4 px-6 py-4 bg-white/5 rounded-2xl border border-white/10">
+                        <div class="flex -space-x-2">
+                            <img src="https://i.pravatar.cc/100?u=1" class="w-8 h-8 rounded-full border-2 border-primary" alt="User">
+                            <img src="https://i.pravatar.cc/100?u=2" class="w-8 h-8 rounded-full border-2 border-primary" alt="User">
+                            <img src="https://i.pravatar.cc/100?u=3" class="w-8 h-8 rounded-full border-2 border-primary" alt="User">
+                        </div>
+                        <div class="text-sm">
+                            <p class="font-bold">1,200+ Client</p>
+                            <p class="text-slate-400 text-xs">Puas & Terlayani</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="relative hidden md:block">
+                <div class="absolute -inset-4 bg-accent/20 blur-3xl rounded-full"></div>
+                <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=800" alt="Rental Mobil Bangka" class="relative rounded-3xl shadow-2xl border border-white/10 transform rotate-2 hover:rotate-0 transition duration-700">
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Booking Bar -->
+    <div class="max-w-6xl mx-auto px-4 -mt-16 relative z-10">
+        <div class="bg-white p-6 rounded-3xl shadow-2xl border border-slate-100 grid md:grid-cols-4 gap-6 items-end">
+            <div class="space-y-2">
+                <label class="text-sm font-bold text-slate-500 uppercase tracking-wider"><i class="fas fa-map-marker-alt text-accent mr-2"></i>Lokasi Jemput</label>
+                <select class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-accent outline-none">
+                    <option>Bandara Depati Amir</option>
+                    <option>Pangkalpinang Kota</option>
+                    <option>Sungailiat</option>
+                    <option>Koba</option>
+                </select>
+            </div>
+            <div class="space-y-2">
+                <label class="text-sm font-bold text-slate-500 uppercase tracking-wider"><i class="fas fa-calendar-alt text-accent mr-2"></i>Tanggal Ambil</label>
+                <input type="date" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-accent outline-none">
+            </div>
+            <div class="space-y-2">
+                <label class="text-sm font-bold text-slate-500 uppercase tracking-wider"><i class="fas fa-car text-accent mr-2"></i>Tipe Mobil</label>
+                <select class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-accent outline-none">
+                    <option>Pilih Tipe</option>
+                    <option>MPV (Avanza, Xpander)</option>
+                    <option>Luxury (Fortuner, Alphard)</option>
+                    <option>City Car (Brio, Agya)</option>
+                </select>
+            </div>
+            <button class="bg-accent text-white h-[52px] rounded-xl font-bold hover:bg-blue-600 transition shadow-lg shadow-blue-200">
+                Cek Ketersediaan
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <section class="py-20 max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+                <h3 class="text-4xl font-extrabold text-primary mb-2">50+</h3>
+                <p class="text-slate-500">Unit Kendaraan</p>
+            </div>
+            <div>
+                <h3 class="text-4xl font-extrabold text-primary mb-2">10+</h3>
+                <p class="text-slate-500">Tahun Pengalaman</p>
+            </div>
+            <div>
+                <h3 class="text-4xl font-extrabold text-primary mb-2">24/7</h3>
+                <p class="text-slate-500">Dukungan Darurat</p>
+            </div>
+            <div>
+                <h3 class="text-4xl font-extrabold text-primary mb-2">4.9</h3>
+                <p class="text-slate-500">Rating Google Maps</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Armada Section -->
+    <section id="armada" class="py-20 bg-slate-100">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <h2 class="text-accent font-bold mb-2">KATALOG KENDARAAN</h2>
+                    <h3 class="text-4xl font-bold text-primary">Pilih Armada Favoritmu</h3>
+                </div>
+                <button class="text-accent font-bold flex items-center gap-2 hover:gap-3 transition-all">
+                    Lihat Semua <i class="fas fa-chevron-right text-xs"></i>
+                </button>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8" id="car-list">
+                <!-- Car Item 1 -->
+                <div class="bg-white rounded-[2rem] overflow-hidden card-hover border border-slate-200">
+                    <div class="h-56 bg-slate-200 relative">
+                        <img src="https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&q=80&w=800" alt="Toyota Avanza" class="w-full h-full object-cover">
+                        <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-accent">TERLARIS</div>
+                    </div>
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h4 class="text-2xl font-bold text-primary">Toyota Avanza</h4>
+                                <p class="text-slate-400">Manual / Matic</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-accent font-bold text-xl">Rp 350rb</span>
+                                <p class="text-xs text-slate-400">/ 24 Jam</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 mb-8">
+                            <div class="flex items-center gap-2 text-slate-500 text-sm">
+                                <i class="fas fa-user-friends text-accent"></i> 7 Seat
+                            </div>
+                            <div class="flex items-center gap-2 text-slate-500 text-sm">
+                                <i class="fas fa-suitcase text-accent"></i> 3 Bag
+                            </div>
+                            <div class="flex items-center gap-2 text-slate-500 text-sm">
+                                <i class="fas fa-gas-pump text-accent"></i> BBM
+                            </div>
+                        </div>
+                        <button onclick="orderViaWA('Toyota Avanza')" class="w-full py-4 bg-slate-50 text-primary border border-slate-200 rounded-2xl font-bold hover:bg-primary hover:text-white transition flex items-center justify-center gap-2">
+                            Booking Sekarang <i class="fab fa-whatsapp"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Car Item 2 -->
+                <div class="bg-white rounded-[2rem] overflow-hidden card-hover border border-slate-200">
+                    <div class="h-56 bg-slate-200 relative">
+                        <img src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&q=80&w=800" alt="Mitsubishi Xpander" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h4 class="text-2xl font-bold text-primary">Mits. Xpander</h4>
+                                <p class="text-slate-400">Automatic</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-accent font-bold text-xl">Rp 450rb</span>
+                                <p class="text-xs text-slate-400">/ 24 Jam</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 mb-8">
+                            <div class="flex items-center gap-2 text-slate-500 text-sm">
+                                <i class="fas fa-user-friends text-accent"></i> 7 Seat
+                            </div>
+                            <div class="flex items-center gap-2 text-slate-500 text-sm">
+                                <i class="fas fa-suitcase text-accent"></i> 3 Bag
+                            </div>
+                            <div class="flex items-center gap-2 text-slate-500 text-sm">
+                                <i class="fas fa-bolt text-accent"></i> Turbo
+                            </div>
+                        </div>
+                        <button onclick="orderViaWA('Mitsubishi Xpander')" class="w-full py-4 bg-slate-50 text-primary border border-slate-200 rounded-2xl font-bold hover:bg-primary hover:text-white transition flex items-center justify-center gap-2">
+                            Booking Sekarang <i class="fab fa-whatsapp"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Car Item 3 -->
+                <div class="bg-white rounded-[2rem] overflow-hidden card-hover border border-slate-200">
+                    <div class="h-56 bg-slate-200 relative">
+                        <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800" alt="Toyota Fortuner" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h4 class="text-2xl font-bold text-primary">Toyota Fortuner</h4>
+                                <p class="text-slate-400">Premium 4x4</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-accent font-bold text-xl">Rp 1.2jt</span>
+                                <p class="text-xs text-slate-400">/ 24 Jam</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 mb-8">
+                            <div class="flex items-center gap-2 text-slate-500 text-sm">
+                                <i class="fas fa-user-friends text-accent"></i> 7 Seat
+                            </div>
+                            <div class="flex items-center gap-2 text-slate-500 text-sm">
+                                <i class="fas fa-suitcase text-accent"></i> 5 Bag
+                            </div>
+                            <div class="flex items-center gap-2 text-slate-500 text-sm">
+                                <i class="fas fa-shield-alt text-accent"></i> VIP
+                            </div>
+                        </div>
+                        <button onclick="orderViaWA('Toyota Fortuner')" class="w-full py-4 bg-slate-50 text-primary border border-slate-200 rounded-2xl font-bold hover:bg-primary hover:text-white transition flex items-center justify-center gap-2">
+                            Booking Sekarang <i class="fab fa-whatsapp"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section id="layanan" class="py-20">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-accent font-bold mb-2">LAYANAN KAMI</h2>
+                <h3 class="text-4xl font-bold text-primary mb-4">Semua yang Anda Butuhkan untuk Perjalanan Sempurna</h3>
+                <p class="text-slate-500">Kami menyediakan berbagai pilihan paket untuk memenuhi kebutuhan perjalanan Anda di Bangka Belitung.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="p-10 rounded-3xl bg-white border border-slate-100 shadow-sm hover:shadow-xl transition">
+                    <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-accent text-3xl mb-6">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-4">Lepas Kunci</h4>
+                    <p class="text-slate-500 mb-6">Nikmati kebebasan berkendara sendiri mengeksplorasi Pangkalpinang tanpa gangguan dengan syarat mudah.</p>
+                    <ul class="space-y-2 text-sm text-slate-600">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Unit Terbaru & Bersih</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Syarat Mudah</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Asuransi All Risk</li>
+                    </ul>
+                </div>
+
+                <div class="p-10 rounded-3xl bg-primary text-white shadow-xl scale-105">
+                    <div class="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center text-white text-3xl mb-6">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-4">Sewa + Driver</h4>
+                    <p class="text-slate-400 mb-6">Duduk manis dan biarkan driver profesional kami mengantar Anda ke destinasi terbaik di Bangka.</p>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><i class="fas fa-check text-accent mr-2"></i> Driver Berpengalaman</li>
+                        <li><i class="fas fa-check text-accent mr-2"></i> Paham Rute Wisata</li>
+                        <li><i class="fas fa-check text-accent mr-2"></i> Tepat Waktu</li>
+                    </ul>
+                </div>
+
+                <div class="p-10 rounded-3xl bg-white border border-slate-100 shadow-sm hover:shadow-xl transition">
+                    <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-accent text-3xl mb-6">
+                        <i class="fas fa-plane-arrival"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-4">Antar Jemput Bandara</h4>
+                    <p class="text-slate-500 mb-6">Layanan transfer Bandara Depati Amir ke Hotel atau sebaliknya dengan harga tetap yang transparan.</p>
+                    <ul class="space-y-2 text-sm text-slate-600">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Meet & Greet Service</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Tanpa Biaya Tambahan</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Tersedia 24 Jam</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials (Babel Specific) -->
+    <section class="py-20 bg-slate-900 text-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 relative">
+            <div class="absolute top-0 right-0 opacity-10 pointer-events-none">
+                <i class="fas fa-quote-right text-[15rem]"></i>
+            </div>
+            <h2 class="text-accent font-bold mb-8">APA KATA MEREKA?</h2>
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="space-y-6">
+                    <h3 class="text-4xl font-bold leading-tight">Menciptakan Momen Tak Terlupakan di <span class="text-accent text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Bangka Belitung</span></h3>
+                    <div class="p-8 bg-white/5 border border-white/10 rounded-3xl">
+                        <p class="text-lg italic text-slate-300 mb-6">"Pelayanan luar biasa! Mobil Xpander-nya sangat terawat, driver Mas Budi sangat ramah dan tahu spot-spot tersembunyi untuk foto di Pantai Parai. Sangat direkomendasikan untuk yang mau liburan ke Bangka!"</p>
+                        <div class="flex items-center gap-4">
+                            <img src="https://i.pravatar.cc/100?u=jane" class="w-12 h-12 rounded-full" alt="Client">
+                            <div>
+                                <h5 class="font-bold">Andini Putri</h5>
+                                <p class="text-sm text-slate-500">Wisatawan Jakarta</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <img src="https://images.unsplash.com/photo-1596436889106-be35e843f974?auto=format&fit=crop&q=80&w=400" class="rounded-2xl h-full object-cover grayscale hover:grayscale-0 transition duration-500" alt="Pantai Bangka">
+                    <img src="https://images.unsplash.com/photo-1620608209149-a35237885994?auto=format&fit=crop&q=80&w=400" class="rounded-2xl h-full object-cover grayscale hover:grayscale-0 transition duration-500" alt="Bangka Street">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="kontak" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="bg-accent rounded-[3rem] p-12 md:p-20 text-white flex flex-col md:flex-row items-center justify-between gap-12 relative overflow-hidden shadow-2xl">
+                <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+                <div class="relative z-10 max-w-xl">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Siap Untuk Perjalanan Anda Berikutnya?</h2>
+                    <p class="text-blue-100 text-lg mb-8">Hubungi kami sekarang untuk mendapatkan penawaran khusus liburan keluarga atau kebutuhan corporate di Pangkalpinang.</p>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <span class="text-xl font-semibold">+62 812 3456 7890</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <span class="text-xl font-semibold">halo@babeldrive.com</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative z-10 bg-white p-8 rounded-[2rem] text-primary w-full md:w-96 shadow-xl">
+                    <h4 class="text-xl font-bold mb-4">Kirim Pesan Cepat</h4>
+                    <form onsubmit="handleForm(event)" class="space-y-4">
+                        <input type="text" placeholder="Nama Lengkap" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-accent transition">
+                        <input type="text" placeholder="No. WhatsApp" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-accent transition">
+                        <textarea placeholder="Pesan Anda" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-accent transition"></textarea>
+                        <button type="submit" class="w-full py-4 bg-primary text-white rounded-xl font-bold hover:bg-slate-800 transition">Kirim ke WhatsApp</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-50 pt-20 pb-10 border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-4 gap-12 mb-16">
+            <div class="space-y-6">
+                <div class="flex items-center gap-2">
+                    <div class="bg-accent p-2 rounded-lg">
+                        <i class="fas fa-car-side text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight text-primary">Babel<span class="text-accent">Drive</span></span>
+                </div>
+                <p class="text-slate-500">Penyedia jasa transportasi terpercaya di Bangka Belitung dengan komitmen kenyamanan dan keselamatan pelanggan.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 hover:bg-accent hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 hover:bg-accent hover:text-white transition"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 hover:bg-accent hover:text-white transition"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+            
+            <div>
+                <h5 class="font-bold text-lg mb-6">Menu</h5>
+                <ul class="space-y-4 text-slate-500">
+                    <li><a href="#home" class="hover:text-accent transition">Beranda</a></li>
+                    <li><a href="#armada" class="hover:text-accent transition">Armada</a></li>
+                    <li><a href="#layanan" class="hover:text-accent transition">Layanan</a></li>
+                    <li><a href="#kontak" class="hover:text-accent transition">Kontak</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h5 class="font-bold text-lg mb-6">Armada Favorit</h5>
+                <ul class="space-y-4 text-slate-500">
+                    <li>Toyota Avanza</li>
+                    <li>Mitsubishi Xpander</li>
+                    <li>Toyota Fortuner</li>
+                    <li>Toyota Innova Reborn</li>
+                </ul>
+            </div>
+
+            <div>
+                <h5 class="font-bold text-lg mb-6">Lokasi Layanan</h5>
+                <ul class="space-y-4 text-slate-500">
+                    <li>Pangkalpinang Kota</li>
+                    <li>Bandara Depati Amir</li>
+                    <li>Pelabuhan Muntok</li>
+                    <li>Wisata Sungailiat</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto px-4 pt-10 border-t border-slate-200 text-center text-slate-400 text-sm">
+            <p>&copy; 2025 BabelDrive Rental Mobil. Didesain untuk kenyamanan perjalanan Bangka Belitung.</p>
+        </div>
+    </footer>
+
+    <!-- Floating WA Button -->
+    <a href="https://wa.me/628123456789" class="fixed bottom-8 right-8 w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center text-3xl shadow-2xl hover:scale-110 transition-all z-50">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script>
+        function orderViaWA(carName) {
+            const phoneNumber = "628123456789"; // Ganti dengan nomor asli
+            const message = `Halo BabelDrive, saya ingin menyewa mobil ${carName}. Apakah masih tersedia?`;
+            window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        function handleForm(e) {
+            e.preventDefault();
+            const phoneNumber = "628123456789";
+            const inputs = e.target.querySelectorAll('input, textarea');
+            const message = `Pesan Baru dari Website:\nNama: ${inputs[0].value}\nWhatsApp: ${inputs[1].value}\nPesan: ${inputs[2].value}`;
+            window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        // Simple Fade in on scroll
+        window.addEventListener('scroll', function() {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.remove('py-4');
+                nav.classList.add('py-2');
+            } else {
+                nav.classList.remove('py-2');
+                nav.classList.add('py-4');
+            }
+        });
+    </script>
+</body>
+</html>
