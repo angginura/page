@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>WebGo - Website | Profesional</title>
+    <meta name="description" content="Jasa pembuatan website UMKM mulai 30rb. Website profesional, responsive, dan SEO-friendly untuk bisnis kecil go international.">
+    <meta name="keywords" content="jasa website murah, buat website 30rb, website UMKM, web developer murah, landing page murah">
+    <meta name="author" content="WebGo">
+    <meta property="og:image" content="https://www.imghippo.com/i/dec3884Msc.png">
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        /* ========== RESET & VARIABLES ========== */
+        :root {
+            --primary: #2563EB;
+            --primary-dark: #1D4ED8;
+            --secondary: #0EA5E9;
+            --accent: #F59E0B;
+            --dark: #1F2937;
+            --light: #F9FAFB;
+            --white: #FFFFFF;
+            --gray: #6B7280;
+            --gray-light: #E5E7EB;
+            --success: #10B981;
+            
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 40px rgba(0,0,0,0.15);
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --radius-xl: 30px;
+            
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--dark);
+            background-color: var(--white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* ========== TYPOGRAPHY ========== */
+        h1, h2, h3, h4, h5 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 1rem;
+        }
+        
+        h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 1.5rem;
+        }
+        
+        h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        p {
+            color: var(--gray);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h2 {
+            display: inline-block;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+        
+        /* ========== LAYOUT ========== */
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        section {
+            padding: 5rem 0;
+        }
+        
+        /* ========== BUTTONS ========== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 32px;
+            border-radius: var(--radius-md);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-3px);
+        }
+        
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+        }
+        
+        .btn-whatsapp:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2);
+        }
+        
+        /* ========== NAVBAR ========== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1rem 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--gray-light);
+            transition: var(--transition);
+        }
+        
+        .navbar.scrolled {
+            padding: 0.75rem 0;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+        
+        .logo-img {
+            width: 45px;
+            height: 45px;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            font-size: 1rem;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+            z-index: 1001;
+        }
+        
+        /* ========== HERO SECTION ========== */
+        .hero {
+            padding-top: 8rem;
+            padding-bottom: 6rem;
+            background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80') no-repeat center right;
+            background-size: cover;
+            opacity: 0.1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 650px;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(37, 99, 235, 0.2);
+        }
+        
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            margin-top: 4rem;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: block;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        /* ========== FEATURES SECTION ========== */
+        .features {
+            background: var(--light);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            border: 1px solid var(--gray-light);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary);
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(14, 165, 233, 0.1));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            font-size: 2rem;
+        }
+        
+        /* ========== PROCESS SECTION ========== */
+        .process-timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .process-step {
+            flex: 1;
+            min-width: 220px;
+            text-align: center;
+            position: relative;
+            padding: 0 1rem;
+        }
+        
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+            border: 5px solid var(--white);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* ========== DEMO SHOWCASE ========== */
+        .demo-showcase {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: var(--radius-xl);
+            padding: 3rem;
+            margin-top: 2rem;
+            border: 1px solid var(--gray-light);
+        }
+        
+        .demo-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .demo-tab {
+            padding: 12px 28px;
+            background: var(--white);
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .demo-tab.active {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .demo-preview {
+            min-height: 350px;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            border: 1px solid var(--gray-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* ========== PRICING CALCULATOR ========== */
+        .calculator-container {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 3rem;
+            margin-top: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-light);
+        }
+        
+        .calculator-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .calc-group {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+        }
+        
+        .calc-slider {
+            width: 100%;
+            margin: 15px 0;
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--gray-light);
+            outline: none;
+        }
+        
+        .calc-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .price-display {
+            text-align: center;
+            padding: 2.5rem;
+            background: linear-gradient(135deg, #f0f7ff 0%, #e0f2fe 100%);
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--primary);
+        }
+        
+        .final-price {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 1rem 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* ========== TESTIMONIAL SECTION ========== */
+        .testimonials {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+        
+        .testimonial-slider {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .testimonial-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            border: 1px solid var(--gray-light);
+        }
+        
+        .testimonial-text {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--dark);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .testimonial-text::before {
+            content: '"';
+            font-size: 4rem;
+            color: var(--primary);
+            opacity: 0.2;
+            position: absolute;
+            top: -30px;
+            left: -10px;
+        }
+        
+        /* ========== CONTACT FORM ========== */
+        .contact-form {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 3rem;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-light);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: var(--white);
+        }
+        
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        /* ========== FOOTER ========== */
+        .footer {
+            background: linear-gradient(135deg, var(--dark) 0%, #111827 100%);
+            color: var(--white);
+            padding: 4rem 0 2rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-section h3 {
+            color: var(--white);
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: #D1D5DB;
+            text-decoration: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .footer-links a:hover {
+            color: var(--white);
+            transform: translateX(5px);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .social-link {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+        
+        .social-link:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        /* ========== WHATSAPP FLOATING BUTTON ========== */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            text-decoration: none;
+            box-shadow: var(--shadow-xl);
+            z-index: 999;
+            transition: var(--transition);
+            animation: pulse 2s infinite;
+        }
+        
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 30px rgba(37, 211, 102, 0.3);
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+        
+        /* ========== RESPONSIVE DESIGN ========== */
+        @media (max-width: 1024px) {
+            .process-timeline {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .process-step {
+                width: 100%;
+                max-width: 400px;
+            }
+            
+            .hero::before {
+                opacity: 0.05;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 280px;
+                height: 100vh;
+                background: var(--white);
+                flex-direction: column;
+                padding: 6rem 2rem 2rem;
+                box-shadow: var(--shadow-xl);
+                transition: right 0.3s ease;
+                z-index: 1000;
+            }
+            
+            .nav-links.active {
+                right: 0;
+            }
+            
+            .hero {
+                padding-top: 7rem;
+                text-align: center;
+            }
+            
+            .hero-content {
+                max-width: 100%;
+            }
+            
+            .hero-cta {
+                justify-content: center;
+            }
+            
+            .hero-stats {
+                justify-content: center;
+            }
+            
+            .demo-showcase,
+            .calculator-container,
+            .contact-form {
+                padding: 2rem;
+            }
+            
+            section {
+                padding: 3rem 0;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            h2 {
+                font-size: 1.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .hero-cta {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .calculator-controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .demo-tabs {
+                flex-direction: column;
+            }
+            
+            .demo-tab {
+                text-align: center;
+            }
+            
+            .final-price {
+                font-size: 3rem;
+            }
+            
+            .whatsapp-float {
+                width: 55px;
+                height: 55px;
+                font-size: 1.6rem;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+        
+        /* ========== ANIMATIONS ========== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+        
+        /* ========== CUSTOM SCROLLBAR ========== */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--primary-dark), var(--primary));
+        }
+    </style>
+</head>
+<body>
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/62881027126485?text=Halo%20WebGo%2C%20saya%20mau%20konsultasi%20website" 
+       class="whatsapp-float" target="_blank" id="whatsappFloat">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="#" class="logo">
+<div class="logo-img" style="background: none; padding: 0;">
+    <img src="https://i.ibb.co.com/XrHpjhNH/20260110-114507.png" 
+         alt="WebGo Logo" 
+         style="width: 45px; height: 45px; border-radius: 8px;">
+</div>
+                <span>WebGo</span>
+            </a>
+            
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="nav-links" id="navLinks">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#features" class="nav-link">Fitur</a>
+                <a href="#process" class="nav-link">Proses</a>
+                <a href="#demo" class="nav-link">Demo</a>
+                <a href="#pricing" class="nav-link">Harga</a>
+                <a href="#testimonials" class="nav-link">Testimoni</a>
+                <a href="#contact" class="btn btn-primary">Order Now</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content fade-in">
+                <div class="hero-badge">
+                    <i class="fas fa-bolt"></i> Start dari 30rb - No Hidden Fee!
+                </div>
+                
+                <h1>Website Profesional untuk <span style="color: var(--primary);">UMKM Go International</span></h1>
+                
+                <p>Bantu bisnis kecil naik level dengan website affordable. Desain modern, responsive, dan SEO-friendly. Mulai dari 30rb saja!</p>
+                
+                <div class="hero-cta">
+                    <a href="#contact" class="btn btn-primary">
+                        <i class="fas fa-calendar-check"></i> Pesan Sekarang
+                    </a>
+                    <a href="#demo" class="btn btn-secondary">
+                        <i class="fas fa-play-circle"></i> Lihat Demo Live
+                    </a>
+                </div>
+                
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="50">0</span>
+                        <span class="stat-label">Projek Selesai</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="100">0</span>
+                        <span class="stat-label">Client Puas</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="24">0</span>
+                        <span class="stat-label">Jam Support</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="1">0</span>
+                        <span class="stat-label">Hari Pengerjaan</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Keunggulan WebGo</h2>
+                <p>Mengapa ribuan UMKM mempercayai website mereka pada kami</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <h3>Harga Terjangkau</h3>
+                    <p>Start dari 30rb saja! Harga transparan tanpa biaya tersembunyi. Cocok untuk budget UMKM.</p>
+                </div>
+                
+                <div class="feature-card fade-in delay-1">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Proses Super Cepat</h3>
+                    <p>Website siap dalam 1-7 hari. Tim responsif dan dedicated untuk project Anda.</p>
+                </div>
+                
+                <div class="feature-card fade-in delay-2">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Responsive Parah</h3>
+                    <p>Tampilan sempurna di semua device. Mobile-first design untuk pengalaman terbaik.</p>
+                </div>
+                
+                <div class="feature-card fade-in delay-3">
+                    <div class="feature-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>SEO Optimized</h3>
+                    <p>Struktur website ramah SEO. Bantu bisnis ditemukan di Google lebih mudah.</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>Support 24/7</h3>
+                    <p>Bimbingan penggunaan lengkap. Support via WhatsApp langsung dengan tim.</p>
+                </div>
+                
+                <div class="feature-card fade-in delay-1">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h3>Revisi Unlimited</h3>
+                    <p>Revisi sampai puas! Kami percaya kualitas hasil adalah prioritas utama.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Process Section -->
+    <section class="process" id="process">
+        <div class="container">
+            <div class="section-title">
+                <h2>Proses Pembuatan</h2>
+                <p>4 Langkah sederhana dari konsultasi sampai website live</p>
+            </div>
+            
+            <div class="process-timeline">
+                <div class="process-step fade-in">
+                    <div class="step-number">1</div>
+                    <h3>Konsultasi Gratis</h3>
+                    <p>Ceritakan kebutuhan bisnis Anda via WhatsApp. Kami analisis dan berikan solusi terbaik.</p>
+                </div>
+                
+                <div class="process-step fade-in delay-1">
+                    <div class="step-number">2</div>
+                    <h3>Desain & Development</h3>
+                    <p>Kami buatkan mockup design sesuai brand. Setelah approve, kami develop website lengkap.</p>
+                </div>
+                
+                <div class="process-step fade-in delay-2">
+                    <div class="step-number">3</div>
+                    <h3>Review & Revisi</h3>
+                    <p>Anda review website di staging domain. Kasih feedback, kami revisi sampai puas.</p>
+                </div>
+                
+                <div class="process-step fade-in delay-3">
+                    <div class="step-number">4</div>
+                    <h3>Launch & Training</h3>
+                    <p>Website go live dengan domain Anda! Plus training singkat cara manage website.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Demo Section -->
+    <section class="demo" id="demo">
+        <div class="container">
+            <div class="section-title">
+                <h2>Live Component Demo</h2>
+                <p>Interaksi langsung dengan komponen website premium kami</p>
+            </div>
+            
+            <div class="demo-showcase">
+                <div class="demo-tabs">
+                    <div class="demo-tab active" data-tab="pricing">Pricing Card</div>
+                    <div class="demo-tab" data-tab="contact">Contact Form</div>
+                    <div class="demo-tab" data-tab="gallery">Product Gallery</div>
+                    <div class="demo-tab" data-tab="navigation">Navigation</div>
+                </div>
+                
+                <div class="demo-preview" id="demoPreview">
+                    <!-- Demo content loaded via JavaScript -->
+                    <div class="demo-content" style="text-align: center; width: 100%;">
+                        <h3 style="color: var(--primary); margin-bottom: 20px;">Interactive Component Preview</h3>
+                        <p>Pilih tab di atas untuk melihat demo komponen website yang akan Anda dapatkan</p>
+                        <div style="margin-top: 30px; font-size: 4rem; color: var(--primary); opacity: 0.3;">
+                            <i class="fas fa-mouse-pointer"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Pricing Calculator -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="section-title">
+                <h2>Kalkulator Harga</h2>
+                <p>Hitung estimasi harga website Anda sesuai kebutuhan</p>
+            </div>
+            
+            <div class="calculator-container">
+                <div class="calculator-controls">
+                    <div class="calc-group">
+                        <label class="form-label">Jumlah Halaman</label>
+                        <input type="range" min="1" max="10" value="1" class="calc-slider" id="pageSlider">
+                        <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                            <span style="font-size: 0.9rem;">1 Halaman</span>
+                            <span id="pageValue" style="font-weight: 600;">1 Halaman</span>
+                            <span style="font-size: 0.9rem;">10+ Halaman</span>
+                        </div>
+                    </div>
+                    
+                    <div class="calc-group">
+                        <label class="form-label">Fitur Khusus</label>
+                        <select class="form-select" id="featureSelect">
+                            <option value="0">Landing Page Basic</option>
+                            <option value="50">+ Product Gallery (Rp 50k)</option>
+                            <option value="80">+ Contact Form & Maps (Rp 80k)</option>
+                            <option value="120">+ Blog System (Rp 120k)</option>
+                            <option value="200">+ E-commerce Basic (Rp 200k)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="calc-group">
+                        <label class="form-label">Timeline</label>
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <button class="btn btn-secondary timeline-btn active" data-value="0">Standar (7 hari)</button>
+                            <button class="btn btn-secondary timeline-btn" data-value="20">Express (1 hari)</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="price-display">
+                    <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Estimasi Harga:</p>
+                    <h2 class="final-price" id="finalPrice">Rp 30k</h2>
+                    <p style="color: var(--gray); margin-bottom: 1.5rem;">*Harga final setelah konsultasi</p>
+                    <a href="#contact" class="btn btn-whatsapp" style="padding: 16px 40px;">
+                        <i class="fab fa-whatsapp"></i> Konsultasi Gratis via WA
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Testimonials -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <h2>Apa Kata Client Kami</h2>
+                <p>Testimoni dari UMKM yang sudah menggunakan jasa WebGo</p>
+            </div>
+            
+            <div class="testimonial-slider">
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        "WebGo bantu bisnis kuliner saya punya website profesional dengan harga terjangkau. Sekarang order online meningkat 40%!"
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+                        <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--gray-light); display: flex; align-items: center; justify-content: center; color: var(--gray);">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <h4 style="margin: 0;">Budi Santoso</h4>
+                            <p style="color: var(--gray); margin: 0; font-size: 0.9rem;">Pemilik Warung Makan Padang</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact Form -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <div class="section-title">
+                <h2>Pesan Website Anda</h2>
+                <p>Isi form dan langsung terhubung ke WhatsApp kami</p>
+            </div>
+            
+            <div class="contact-form">
+                <form id="orderForm">
+                    <div class="form-group">
+                        <label class="form-label" for="name">Nama Lengkap</label>
+                        <input type="text" id="name" class="form-input" required placeholder="Masukkan nama Anda">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="whatsapp">Nomor WhatsApp</label>
+                        <input type="tel" id="whatsapp" class="form-input" required placeholder="Contoh: 081234567890">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="business">Jenis Bisnis</label>
+                        <select id="business" class="form-select">
+                            <option value="">Pilih jenis bisnis Anda</option>
+                            <option value="makanan">Makanan & Minuman</option>
+                            <option value="fashion">Fashion & Aksesoris</option>
+                            <option value="jasa">Jasa & Konsultan</option>
+                            <option value="retail">Retail & Toko Online</option>
+                            <option value="lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="budget">Budget Range</label>
+                        <select id="budget" class="form-select">
+                            <option value="30-50">30rb - 50rb</option>
+                            <option value="50-100">50rb - 100rb</option>
+                            <option value="100-200">100rb - 200rb</option>
+                            <option value="200+">200rb+</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="message">Kebutuhan Website</label>
+                        <textarea id="message" class="form-textarea" 
+                                  placeholder="Ceritakan kebutuhan website Anda, fitur yang diinginkan, referensi website yang disukai, dll." 
+                                  rows="5"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-whatsapp" style="width: 100%; padding: 18px; font-size: 1.1rem;">
+                        <i class="fab fa-whatsapp"></i> Kirim Pesan ke WhatsApp
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="logo" style="color: white; margin-bottom: 1.5rem;">
+                        <div class="logo-img" style="background: none; padding: 0;">
+    <img src="https://i.ibb.co.com/XrHpjhNH/20260110-114507.png" 
+         alt="WebGo Logo" style="width: 45px; height: 45px; border-radius: 8px;">
+</div>
+                        <span>WebGo</span>
+                    </div>
+                    <p style="color: #D1D5DB; margin-bottom: 1.5rem;">
+                        Membantu UMKM Indonesia go digital dengan website affordable dan profesional. Start dari 30rb!
+                    </p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Layanan Kami</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Website UMKM</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Landing Page</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Company Profile</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> E-commerce Basic</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Portfolio Website</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Kontak Kami</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://wa.me/62881027126485"><i class="fab fa-whatsapp"></i> 62881027126485</a></li>
+                        <li><a href="mailto:keejagt@gmail.com"><i class="fas fa-envelope"></i> keejagt@gmail.com</a></li>
+                        <li><a href="#"><i class="fas fa-clock"></i> Support 24/7</a></li>
+                        <li><a href="#"><i class="fas fa-map-marker-alt"></i> Seluruh Indonesia</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Blog & Tips</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Portfolio</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> FAQ</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Terms & Conditions</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="border-top: 1px solid #374151; padding-top: 2rem; text-align: center;">
+                <p style="color: #9CA3AF; margin-bottom: 0.5rem;">
+                    &copy; 2026 WebGo. All rights reserved.
+                </p>
+                <p style="color: #EF4444;"></i> untuk UMKM Indonesia
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // ========== MOBILE MENU TOGGLE ==========
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileMenuBtn.innerHTML = navLinks.classList.contains('active') 
+                ? '<i class="fas fa-times"></i>' 
+                : '<i class="fas fa-bars"></i>';
+        });
+        
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            });
+        });
+        
+        // ========== NAVBAR SCROLL EFFECT ==========
+        const navbar = document.getElementById('navbar');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        
+        // ========== ANIMATED COUNTERS ==========
+        function animateCounter(element, target, duration = 2000) {
+            let start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target + '+';
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, 16);
+        }
+        
+        // Start counters when in view
+        const statNumbers = document.querySelectorAll('.stat-number[data-count]');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = parseInt(entry.target.dataset.count);
+                    animateCounter(entry.target, target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        statNumbers.forEach(stat => observer.observe(stat));
+        
+        // ========== PRICING CALCULATOR ==========
+        function updatePrice() {
+            const pageValue = parseInt(document.getElementById('pageSlider').value);
+            const featureValue = parseInt(document.getElementById('featureSelect').value);
+            const timelineValue = parseInt(document.querySelector('.timeline-btn.active').dataset.value);
+            
+            // Base price: 30k for first page
+            let total = 30;
+            
+            // Additional pages: 15k each after first
+            if (pageValue > 1) {
+                total += (pageValue - 1) * 15;
+            }
+            
+            // Add feature cost
+            total += featureValue;
+            
+            // Add express fee
+            total += timelineValue;
+            
+            // Update display
+            document.getElementById('pageValue').textContent = `${pageValue} Halaman`;
+            document.getElementById('finalPrice').textContent = `Rp ${total}k`;
+            
+            // Animate price change
+            const priceElement = document.getElementById('finalPrice');
+            priceElement.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                priceElement.style.transform = 'scale(1)';
+            }, 200);
+        }
+        
+        // Initialize calculator
+        document.getElementById('pageSlider').addEventListener('input', updatePrice);
+        document.getElementById('featureSelect').addEventListener('change', updatePrice);
+        
+        document.querySelectorAll('.timeline-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.timeline-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                updatePrice();
+            });
+        });
+        
+        // Initial price calculation
+        updatePrice();
+        
+        // ========== DEMO TABS ==========
+        const demoBtns = document.querySelectorAll('.demo-tab');
+        const demoPreview = document.getElementById('demoPreview');
+        
+        demoBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active tab
+                demoBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Load demo content
+                const tab = btn.dataset.tab;
+                loadDemoContent(tab);
+            });
+        });
+        
+        function loadDemoContent(tab) {
+            let content = '';
+            
+            switch(tab) {
+                case 'pricing':
+                    content = `
+                        <div style="width: 100%; max-width: 400px; margin: 0 auto;">
+                            <div style="background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #e5e7eb;">
+                                <div style="text-align: center; margin-bottom: 1.5rem;">
+                                    <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Basic Package</h3>
+                                    <p style="color: var(--gray); font-size: 0.9rem;">Start dari 30rb</p>
+                                </div>
+                                <div style="margin-bottom: 1.5rem;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span>Landing Page</span>
+                                        <span style="font-weight: 600; color: var(--primary);">Rp 30k</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span>Mobile Responsive</span>
+                                        <span style="color: var(--success);"><i class="fas fa-check-circle"></i></span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span>SEO Basic</span>
+                                        <span style="color: var(--success);"><i class="fas fa-check-circle"></i></span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span>Support 30 hari</span>
+                                        <span style="color: var(--success);"><i class="fas fa-check-circle"></i></span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" style="width: 100%;">Pilih Paket Ini</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'contact':
+                    content = `
+                        <div style="width: 100%; max-width: 500px; margin: 0 auto;">
+                            <h3 style="color: var(--primary); margin-bottom: 1.5rem; text-align: center;">Contact Form Demo</h3>
+                            <div style="display: grid; gap: 1rem;">
+                                <input type="text" placeholder="Nama Lengkap" style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; width: 100%;">
+                                <input type="email" placeholder="Email" style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; width: 100%;">
+                                <textarea placeholder="Pesan Anda" rows="3" style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; width: 100%;"></textarea>
+                                <button class="btn btn-primary" style="width: 100%;">Kirim Pesan</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'gallery':
+                    content = `
+                        <div style="width: 100%;">
+                            <h3 style="color: var(--primary); margin-bottom: 1.5rem; text-align: center;">Product Gallery Demo</h3>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                                <div style="background: linear-gradient(135deg, #f0f7ff, #e0f2fe); height: 120px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary);">
+                                    <i class="fas fa-image fa-2x"></i>
+                                </div>
+                                <div style="background: linear-gradient(135deg, #f0f7ff, #e0f2fe); height: 120px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary);">
+                                    <i class="fas fa-image fa-2x"></i>
+                                </div>
+                                <div style="background: linear-gradient(135deg, #f0f7ff, #e0f2fe); height: 120px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary);">
+                                    <i class="fas fa-image fa-2x"></i>
+                                </div>
+                            </div>
+                            <p style="text-align: center; margin-top: 1.5rem; color: var(--gray);">
+                                Gallery responsif dengan hover effect
+                            </p>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'navigation':
+                    content = `
+                        <div style="width: 100%; max-width: 600px; margin: 0 auto;">
+                            <h3 style="color: var(--primary); margin-bottom: 1.5rem; text-align: center;">Navigation Demo</h3>
+                            <div style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="font-weight: 700; font-size: 1.2rem; color: var(--primary);">BrandLogo</div>
+                                    <div style="display: flex; gap: 1.5rem;">
+                                        <span style="color: var(--dark); font-weight: 500;">Home</span>
+                                        <span style="color: var(--dark); font-weight: 500;">About</span>
+                                        <span style="color: var(--dark); font-weight: 500;">Services</span>
+                                        <span style="color: var(--dark); font-weight: 500;">Contact</span>
+                                    </div>
+                                    <button class="btn btn-primary" style="padding: 8px 20px; font-size: 0.9rem;">Order Now</button>
+                                </div>
+                            </div>
+                            <p style="text-align: center; margin-top: 1.5rem; color: var(--gray);">
+                                Navigation akan berubah menjadi hamburger menu di mobile
+                            </p>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            // Animate content change
+            demoPreview.style.opacity = '0';
+            setTimeout(() => {
+                demoPreview.innerHTML = content;
+                demoPreview.style.opacity = '1';
+            }, 300);
+        }
+        
+        // ========== WHATSAPP FORM INTEGRATION ==========
+        const orderForm = document.getElementById('orderForm');
+        
+        orderForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const name = document.getElementById('name').value;
+            const whatsapp = document.getElementById('whatsapp').value;
+            const business = document.getElementById('business').value;
+            const budget = document.getElementById('budget').value;
+            const message = document.getElementById('message').value;
+            
+            // Format WhatsApp message
+            const whatsappMessage = 
+`Halo WebGo! Saya ${name}.
+
+Saya tertarik buat website untuk bisnis ${business}.
+Budget: Rp ${budget.replace('-', 'rb - ')}rb
+Kebutuhan: ${message}
+
+Hubungi saya di: ${whatsapp}`;
+
+            // Encode message for URL
+            const encodedMessage = encodeURIComponent(whatsappMessage);
+            
+            // Replace with your actual WhatsApp number
+            const phoneNumber = '62881027126485'; // GANTI DENGAN NOMOR BOS
+            const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            
+            // Open WhatsApp
+            window.open(whatsappURL, '_blank');
+            
+            // Show success feedback
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            submitBtn.innerHTML = '<i class="fas fa-check"></i> Terkirim! Membuka WhatsApp...';
+            submitBtn.style.background = '#10B981';
+            
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.style.background = '';
+                orderForm.reset();
+            }, 3000);
+        });
+        
+        // ========== INITIALIZE DEMO ==========
+        loadDemoContent('pricing');
+        
+        // ========== SMOOTH SCROLL FOR ANCHOR LINKS ==========
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
