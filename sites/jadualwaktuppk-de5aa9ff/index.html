@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Dashboard Unit Hemodialisis Hospital Bintulu</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/595wB3cy/HOSPITAL_BINTULU.png">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        
+        /* Custom Scrollbar */
+        .overflow-x-auto::-webkit-scrollbar { height: 8px; }
+        .overflow-x-auto::-webkit-scrollbar-track { background: #f1f1f1; }
+        .overflow-x-auto::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        .overflow-x-auto::-webkit-scrollbar-thumb:hover { background: #555; }
+
+        /* Status Colors */
+        .status-new { background-color: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; }
+        .status-seen { background-color: #ffedd5; border-left: 4px solid #f97316; color: #9a3412; }
+        .status-approved { background-color: #fef9c3; border-left: 4px solid #eab308; color: #854d0e; }
+
+        /* Login Background */
+        .login-bg { background: linear-gradient(135deg, #1e3a8a 0%, #059669 100%); }
+
+        /* Schedule Table */
+        .schedule-table th, .schedule-table td {
+            border: 1px solid #e2e8f0;
+            padding: 4px;
+            text-align: center;
+            font-size: 0.75rem;
+            min-width: 35px;
+            height: 30px;
+        }
+        .schedule-table th { background-color: #eff6ff; color: #1e40af; font-weight: 600; }
+        
+        /* Loading Overlay */
+        #loading-overlay { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(2px); }
+
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; }
+            .schedule-container { overflow: visible; }
+            #sidebar { display: none; }
+            .print-flex-row { display: flex !important; flex-direction: row !important; }
+            .print-w-auto { width: auto !important; }
+        }
+    </style>
+</head>
+<body class="text-gray-800 h-screen overflow-hidden flex flex-col relative">
+
+    <!-- ================= LOADING OVERLAY ================= -->
+    <div id="loading-overlay" class="fixed inset-0 z-[60] hidden flex flex-col justify-center items-center transition-opacity duration-300">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600 mb-4"></div>
+        <p class="text-blue-800 font-bold animate-pulse text-lg" id="loading-text">Menyambung ke Database...</p>
+        <p class="text-xs text-gray-500 mt-2">Sila tunggu sebentar</p>
+    </div>
+
+    <!-- ================= CUSTOM MODAL (DELETE) ================= -->
+    <div id="custom-delete-modal" class="fixed inset-0 z-[70] hidden bg-black bg-opacity-50 flex justify-center items-center backdrop-blur-sm transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm transform transition-all scale-100 animate-fade-in-up">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+                    <i class="fa-solid fa-triangle-exclamation text-2xl text-red-600"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800">Pengesahan Padam</h3>
+                <p class="text-sm text-gray-500 mt-2">Adakah anda pasti mahu memadam rekod ini dari pangkalan data? Tindakan ini tidak boleh dikembalikan.</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeModal()" class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition">Batal</button>
+                <button id="confirm-delete-btn" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 shadow-lg transition transform hover:scale-105">Ya, Padam</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= NOTICE TOAST ================= -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <!-- ================= LANDING / LOGIN PAGE ================= -->
+    <section id="login-page" class="w-full h-full flex flex-row relative z-10">
+        <!-- Kiri: Branding -->
+        <div class="hidden md:flex w-1/2 login-bg flex-col justify-center items-center text-white p-10 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-full opacity-10" style="background-image: url('https://www.transparenttextures.com/patterns/medical-icons.png');"></div>
+            <img src="https://i.postimg.cc/595wB3cy/HOSPITAL_BINTULU.png" alt="Hospital Bintulu Logo" class="w-48 mb-6 drop-shadow-2xl animate-pulse">
+            <h1 class="text-4xl font-bold text-center mb-2">JADUAL WAKTU & CUTI</h1>
+            <h2 class="text-2xl font-light text-green-200">UNIT HEMODIALIS HOSPITAL BINTULU</h2>
+            <p class="mt-8 text-sm opacity-70">Sistem Pengurusan Hospital Pintar</p>
+            <div class="absolute bottom-4 text-xs text-white opacity-60">
+                &copy; <span class="year-copy"></span> Hakcipta Terpelihara Unit Hemodialisis HBTU
+            </div>
+        </div>
+
+        <!-- Kanan: Interaksi -->
+        <div class="w-full md:w-1/2 bg-white flex flex-col p-4 relative">
+            <div class="flex-1 flex flex-col justify-center items-center overflow-y-auto">
+                <div class="w-full max-w-lg">
+                    <div class="md:hidden text-center mb-6">
+                        <img src="https://i.postimg.cc/595wB3cy/HOSPITAL_BINTULU.png" alt="Logo" class="w-20 mx-auto mb-2">
+                        <h2 class="text-lg font-bold text-blue-900">UNIT HEMODIALIS HBTU</h2>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+                        <div class="flex mb-6 bg-gray-100 p-1 rounded-lg text-xs md:text-sm">
+                            <button onclick="switchLoginTab('admin')" id="tab-admin" class="flex-1 py-2 font-medium rounded-md bg-white shadow text-blue-700 transition"><i class="fa-solid fa-user-shield mr-1"></i> Admin</button>
+                            <button onclick="switchLoginTab('public')" id="tab-public" class="flex-1 py-2 font-medium rounded-md text-gray-500 hover:text-gray-700 transition"><i class="fa-solid fa-file-pen mr-1"></i> Borang</button>
+                            <button onclick="switchLoginTab('schedule')" id="tab-schedule" class="flex-1 py-2 font-medium rounded-md text-gray-500 hover:text-gray-700 transition"><i class="fa-solid fa-calendar-days mr-1"></i> Jadual</button>
+                        </div>
+
+                        <!-- 1. LOGIN FORM -->
+                        <div id="login-container">
+                            <h3 class="text-xl font-bold text-gray-800 mb-6">Log Masuk Admin</h3>
+                            <form id="login-form" onsubmit="handleLogin(event)">
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-xs font-bold mb-2">Email</label>
+                                    <input type="email" id="email" class="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 focus:border-blue-500 outline-none" placeholder="nama@moh.gov.my" required>
+                                </div>
+                                <div class="mb-6">
+                                    <label class="block text-gray-700 text-xs font-bold mb-2">Kata Laluan</label>
+                                    <input type="password" id="password" class="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 focus:border-blue-500 outline-none" placeholder="••••••••" required>
+                                </div>
+                                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-green-500 text-white font-bold py-2 rounded-lg shadow-lg hover:from-blue-700 hover:to-green-600">Log Masuk</button>
+                            </form>
+                        </div>
+
+                        <!-- 2. PUBLIC LEAVE FORM -->
+                        <div id="public-leave-container" class="hidden">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Borang Permohonan Cuti</h3>
+                            <form id="public-leave-form" onsubmit="submitPublicLeave(event)">
+                                <div class="mb-3">
+                                    <label class="text-xs font-semibold text-gray-600">Nama Pemohon</label>
+                                    <select id="public-leave-staff-select" class="w-full border p-2 rounded-lg mt-1 bg-gray-50 text-sm" required></select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="text-xs font-semibold text-gray-600">Jenis Cuti</label>
+                                    <select id="public-leave-type" class="w-full border p-2 rounded-lg mt-1 bg-gray-50 text-sm">
+                                        <option value="Cuti Rehat">Cuti Rehat</option>
+                                        <option value="Hari Kelepasan Am">Hari Kelepasan Am</option>
+                                        <option value="Cuti Sakit">Cuti Sakit</option>
+                                        <option value="Cuti Kecemasan">Cuti Kecemasan</option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 mb-3">
+                                    <div>
+                                        <label class="text-xs font-semibold text-gray-600">Mula</label>
+                                        <input type="date" id="public-leave-start" class="w-full border p-2 rounded-lg mt-1 text-sm" required>
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-semibold text-gray-600">Tamat</label>
+                                        <input type="date" id="public-leave-end" class="w-full border p-2 rounded-lg mt-1 text-sm" required>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="text-xs font-semibold text-gray-600">Catatan</label>
+                                    <textarea id="public-leave-reason" class="w-full border p-2 rounded-lg mt-1 text-sm" rows="2"></textarea>
+                                </div>
+                                <button type="submit" class="w-full bg-gradient-to-r from-green-500 to-teal-500 text-white font-bold py-2 rounded-lg shadow-lg">Hantar</button>
+                            </form>
+                        </div>
+
+                        <!-- 3. PUBLIC SCHEDULE VIEW -->
+                        <div id="public-schedule-container" class="hidden">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold text-gray-800">Lihat Jadual Waktu</h3>
+                                <button onclick="window.print()" class="bg-red-600 text-white text-xs px-3 py-1 rounded shadow hover:bg-red-700"><i class="fa-solid fa-file-pdf"></i> Jana PDF</button>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 mb-4">
+                                <select id="pub-sched-month" onchange="renderPublicSchedule()" class="border p-1 rounded text-sm"><option value="0">Januari</option><option value="1">Februari</option><option value="2">Mac</option><option value="3">April</option><option value="4">Mei</option><option value="5">Jun</option><option value="6">Julai</option><option value="7">Ogos</option><option value="8">September</option><option value="9">Oktober</option><option value="10">November</option><option value="11">Disember</option></select>
+                                <select id="pub-sched-year" onchange="renderPublicSchedule()" class="border p-1 rounded text-sm"><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>
+                                <select id="pub-sched-view" onchange="renderPublicSchedule()" class="border p-1 rounded text-sm"><option value="7">1 Minggu</option><option value="14">2 Minggu</option><option value="31">Sebulan</option></select>
+                            </div>
+                            <div class="overflow-x-auto border rounded-lg max-h-[400px]">
+                                <table class="w-full border-collapse schedule-table" id="public-schedule-table"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="md:hidden text-center text-xs text-gray-400 mt-2">&copy; <span class="year-copy"></span> Unit Hemodialisis HBTU</div>
+        </div>
+    </section>
+
+    <!-- ================= DASHBOARD LAYOUT ================= -->
+    <div id="dashboard-layout" class="hidden flex h-screen bg-gray-100">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-2xl z-20 no-print" id="sidebar">
+            <div class="p-6 flex items-center gap-3 border-b border-slate-700 bg-slate-800">
+                <img src="https://i.postimg.cc/595wB3cy/HOSPITAL_BINTULU.png" class="w-10 h-10 bg-white rounded-full p-1">
+                <div><h1 class="font-bold text-sm">HEMODIALIS</h1><p class="text-xs text-slate-400">Hospital Bintulu</p></div>
+            </div>
+            <nav class="flex-1 py-6 px-3 space-y-2 overflow-y-auto">
+                <p class="px-3 text-xs font-semibold text-slate-500 uppercase">Utama</p>
+                <a href="#" onclick="showSection('dashboard-home')" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white"><i class="fa-solid fa-chart-pie w-6 text-center text-blue-400"></i> Dashboard</a>
+                <p class="px-3 text-xs font-semibold text-slate-500 uppercase mt-4">Pengurusan</p>
+                <a href="#" onclick="showSection('jadual-waktu')" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white"><i class="fa-solid fa-calendar-days w-6 text-center text-green-400"></i> Jadual Waktu</a>
+                <a href="#" onclick="showSection('permohonan-cuti')" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white"><i class="fa-solid fa-envelope-open-text w-6 text-center text-yellow-400"></i> Rekod Cuti</a>
+                <div id="admin-menu-items" class="hidden">
+                    <p class="px-3 text-xs font-semibold text-slate-500 uppercase mt-4">Admin Panel</p>
+                    <a href="#" onclick="showSection('tetapan-pegawai')" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white"><i class="fa-solid fa-users-gear w-6 text-center text-purple-400"></i> Tetapan Pegawai</a>
+                    <a href="#" onclick="showSection('daftar-admin')" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white"><i class="fa-solid fa-user-shield w-6 text-center text-red-400"></i> Daftar Admin</a>
+                </div>
+            </nav>
+            <div class="p-4 border-t border-slate-700 bg-slate-800">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold" id="user-initial">A</div>
+                    <div class="overflow-hidden"><p class="text-sm font-medium truncate" id="user-name-display">Admin</p></div>
+                </div>
+                <button onclick="logout()" class="w-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2 rounded transition">Keluar</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-gradient-to-br from-blue-50 to-green-50">
+             <div class="md:hidden bg-white p-4 shadow flex justify-between items-center sticky top-0 z-10">
+                <h1 class="font-bold text-blue-900">HEMODIALIS BINTULU</h1>
+                <button onclick="document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar').classList.toggle('absolute'); document.getElementById('sidebar').classList.toggle('h-full');" class="text-gray-600"><i class="fa-solid fa-bars text-xl"></i></button>
+            </div>
+
+            <div class="p-6 md:p-10 max-w-7xl mx-auto space-y-6 pb-20">
+                <!-- DASHBOARD HOME -->
+                <section id="dashboard-home" class="content-section animate-fade-in">
+                    <div class="flex justify-between items-center mb-6"><h2 class="text-3xl font-bold text-gray-800">Rumusan Keseluruhan</h2><span class="text-sm text-gray-500" id="current-date-display"></span></div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-blue-100 flex items-center gap-4"><div class="p-4 bg-blue-100 text-blue-600 rounded-xl"><i class="fa-solid fa-users text-2xl"></i></div><div><p class="text-gray-500 text-sm">Jumlah Pegawai</p><h3 class="text-2xl font-bold" id="dash-total-staff">0</h3></div></div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-orange-100 flex items-center gap-4"><div class="p-4 bg-orange-100 text-orange-600 rounded-xl"><i class="fa-solid fa-clock text-2xl"></i></div><div><p class="text-gray-500 text-sm">Permohonan Baru</p><h3 class="text-2xl font-bold" id="dash-pending-leave">0</h3></div></div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-green-100 flex items-center gap-4"><div class="p-4 bg-green-100 text-green-600 rounded-xl"><i class="fa-solid fa-user-check text-2xl"></i></div><div><p class="text-gray-500 text-sm">Cuti Diluluskan</p><h3 class="text-2xl font-bold" id="dash-approved-leave">0</h3></div></div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-purple-100 flex items-center gap-4"><div class="p-4 bg-purple-100 text-purple-600 rounded-xl"><i class="fa-solid fa-briefcase-medical text-2xl"></i></div><div><p class="text-gray-500 text-sm">Bertugas Hari Ini</p><h3 class="text-2xl font-bold" id="dash-today-duty">0</h3></div></div>
+                    </div>
+                </section>
+
+                <!-- JADUAL WAKTU (ADMIN) -->
+                <section id="jadual-waktu" class="content-section hidden">
+                    <div class="bg-white p-8 rounded-xl shadow-lg print:shadow-none print:p-0">
+                        <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-6 no-print gap-4 border-b pb-6">
+                            <div><h2 class="text-xl font-bold text-blue-900">Pengurusan Jadual</h2><p class="text-sm text-gray-500">Jana dan urus jadual tugas pegawai</p></div>
+                            <div class="flex flex-wrap gap-3 items-end bg-gray-50 p-3 rounded-lg border">
+                                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Paparan</label><select id="schedule-view-mode" onchange="renderSchedule()" class="block w-full border p-2 rounded text-sm h-9"><option value="31">Sebulan</option><option value="14">Dua Minggu</option><option value="7">Seminggu</option><option value="custom">Custom</option></select></div>
+                                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Mula</label><input type="date" id="admin-sched-start" onchange="renderSchedule()" class="block w-full border p-2 rounded text-sm h-9"></div>
+                                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Tamat</label><input type="date" id="admin-sched-end" onchange="renderSchedule()" class="block w-full border p-2 rounded text-sm h-9"></div>
+                                <button onclick="saveScheduleToDB()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 h-9 flex items-center gap-2 text-sm font-bold"><i class="fa-solid fa-save"></i> Simpan Jadual</button>
+                                <button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 h-9 flex items-center gap-2 text-sm font-bold"><i class="fa-solid fa-print"></i> Cetak</button>
+                            </div>
+                        </div>
+                        <div class="mb-4 text-center">
+                            <img src="https://i.postimg.cc/595wB3cy/HOSPITAL_BINTULU.png" class="h-20 mx-auto mb-2">
+                            <h2 class="text-xl font-bold uppercase text-blue-900">Jadual Waktu Bertugas</h2>
+                            <h3 class="text-lg font-semibold uppercase text-gray-600">Unit Hemodialisis Hospital Bintulu</h3>
+                            <p class="text-md" id="print-month-year"></p>
+                        </div>
+                        <div class="flex flex-col xl:flex-row gap-4 print-flex-row">
+                            <div class="flex-1 overflow-x-auto schedule-container">
+                                <table class="w-full border-collapse schedule-table" id="schedule-table-grid"></table>
+                            </div>
+                            <div class="w-full xl:w-56 shrink-0 print-w-auto">
+                                <div class="bg-yellow-50 border border-yellow-200 rounded p-3 h-full flex flex-col min-h-[150px]">
+                                    <h4 class="font-bold text-sm mb-2 border-b border-yellow-200 pb-1 text-yellow-800"><i class="fa-regular fa-note-sticky"></i> Catatan</h4>
+                                    <textarea id="schedule-notes" class="w-full flex-1 bg-transparent resize-none text-xs outline-none p-1" placeholder="Catatan..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <h4 class="font-bold text-sm text-gray-700 mb-2">Keterangan Tetapan Shift</h4>
+                            <div id="schedule-legend" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs"></div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10 text-center break-inside-avoid">
+                            <div><p class="text-sm text-gray-500 mb-10">Disediakan Oleh:</p><select id="sign-prepared" class="w-full border-b border-gray-400 pb-1 text-center bg-transparent no-print"></select><p class="font-bold mt-2 print-only" id="print-sign-prepared"></p><p class="text-xs text-gray-400" id="role-prepared"></p></div>
+                            <div><p class="text-sm text-gray-500 mb-10">Disahkan Oleh:</p><select id="sign-verified" class="w-full border-b border-gray-400 pb-1 text-center bg-transparent no-print"></select><p class="font-bold mt-2 print-only" id="print-sign-verified"></p><p class="text-xs text-gray-400" id="role-verified"></p></div>
+                            <div><p class="text-sm text-gray-500 mb-10">Diluluskan Oleh:</p><select id="sign-approved" class="w-full border-b border-gray-400 pb-1 text-center bg-transparent no-print"></select><p class="font-bold mt-2 print-only" id="print-sign-approved"></p><p class="text-xs text-gray-400" id="role-approved"></p></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PERMOHONAN CUTI (LIST) -->
+                <section id="permohonan-cuti" class="content-section hidden">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <div class="flex justify-between items-center mb-4 border-b pb-2"><h3 class="text-xl font-bold text-gray-800">Rekod Permohonan Cuti</h3><button onclick="refreshData()" class="text-blue-500 text-sm hover:underline"><i class="fa-solid fa-rotate"></i> Refresh</button></div>
+                        <div class="flex gap-4 text-xs mb-4"><span class="flex items-center gap-1"><div class="w-3 h-3 bg-red-200 border-l-2 border-red-500"></div> Baru (Merah)</span><span class="flex items-center gap-1"><div class="w-3 h-3 bg-orange-200 border-l-2 border-orange-500"></div> Dilihat (Oren)</span><span class="flex items-center gap-1"><div class="w-3 h-3 bg-yellow-200 border-l-2 border-yellow-500"></div> Disahkan (Kuning)</span></div>
+                        <div class="space-y-3" id="leave-records-container"></div>
+                    </div>
+                </section>
+
+                <!-- TETAPAN PEGAWAI & SHIFT -->
+                <section id="tetapan-pegawai" class="content-section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-white p-8 rounded-xl shadow-lg">
+                            <h2 class="text-xl font-bold text-purple-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Pendaftaran Pegawai</h2>
+                            <form id="staff-form" onsubmit="saveStaff(event)" class="space-y-3 mb-6">
+                                <input type="hidden" id="staff-id">
+                                <input type="text" id="staff-name" placeholder="Nama Penuh" class="w-full p-2 border rounded" required>
+                                <input type="text" id="staff-ic" placeholder="No Kad Pengenalan" class="w-full p-2 border rounded" required>
+                                <select id="staff-position" class="w-full p-2 border rounded"><option value="PPK">PPK</option><option value="PPP">PPP</option><option value="KJ">KJ</option></select>
+                                <input type="text" id="staff-grade" placeholder="Gred" class="w-full p-2 border rounded">
+                                <div class="grid grid-cols-2 gap-2"><div><label class="text-xs">Cuti Tahunan</label><input type="number" id="staff-leave-total" class="w-full p-2 border rounded" value="25"></div><div><label class="text-xs">Baki</label><input type="number" id="staff-leave-carried" class="w-full p-2 border rounded" value="0"></div></div>
+                                <div class="flex gap-2"><button type="submit" class="flex-1 bg-green-600 text-white py-2 rounded">Simpan</button><button type="button" onclick="document.getElementById('staff-form').reset(); document.getElementById('staff-id').value='';" class="px-4 py-2 bg-gray-300 rounded">Reset</button></div>
+                            </form>
+                            <div class="h-64 overflow-y-auto border rounded bg-gray-50 p-2"><ul id="staff-list" class="space-y-2"></ul></div>
+                        </div>
+                        <div class="bg-white p-8 rounded-xl shadow-lg">
+                            <h2 class="text-xl font-bold text-blue-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-clock"></i> Tetapan Shift</h2>
+                            <div id="shifts-list" class="space-y-3 mb-4"></div>
+                            <div class="border-t pt-4">
+                                <h4 class="font-bold text-sm mb-2">Tambah Shift Baru</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+                                    <input type="text" id="new-shift-name" placeholder="Nama" class="border p-2 rounded text-sm">
+                                    <input type="number" id="new-shift-hours" placeholder="Jam" class="border p-2 rounded text-sm">
+                                    <input type="text" id="new-shift-desc" placeholder="Keterangan" class="border p-2 rounded text-sm md:col-span-2">
+                                    <select id="new-shift-type" class="border p-2 rounded text-sm"><option value="hakiki">Hakiki</option><option value="ot">OT</option></select>
+                                    <select id="new-shift-color" class="border p-2 rounded text-sm"><option value="bg-white">Putih</option><option value="bg-blue-50">Biru</option><option value="bg-green-50">Hijau</option><option value="bg-yellow-50">Kuning</option><option value="bg-red-50">Merah</option><option value="bg-purple-50">Ungu</option></select>
+                                </div>
+                                <button onclick="addNewShift()" class="w-full bg-blue-600 text-white py-2 rounded text-sm font-bold">Tambah Shift</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- DAFTAR ADMIN -->
+                <section id="daftar-admin" class="content-section hidden">
+                     <div class="bg-white p-8 rounded-xl shadow-lg max-w-2xl mx-auto">
+                        <h2 class="text-2xl font-bold text-red-800 mb-6"><i class="fa-solid fa-lock"></i> Pendaftaran Admin Baru</h2>
+                        <form onsubmit="registerAdmin(event)" class="space-y-4">
+                            <input type="text" id="new-admin-name" class="w-full border p-2 rounded" placeholder="Nama Admin" required>
+                            <input type="email" id="new-admin-email" class="w-full border p-2 rounded" placeholder="Email" required>
+                            <input type="password" id="new-admin-pass" class="w-full border p-2 rounded" placeholder="Password" required>
+                            <button type="submit" class="w-full bg-red-600 text-white py-2 rounded font-bold hover:bg-red-700">Daftar Admin</button>
+                        </form>
+                        <div class="mt-8"><h3 class="font-bold text-gray-700 mb-2">Senarai Admin</h3><ul id="admin-list" class="bg-gray-50 rounded p-4 text-sm space-y-2"></ul></div>
+                     </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- CONFIG & STATE ---
+        const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzyOSRx9FAjVx9os9ng33sxQnK3JjVsriVW9OSLGgE2b3Mz6BypewLDCaqpnpiFJolb/exec';
+        let currentUser = null;
+        let deleteCallback = null;
+        
+        // Data Cache
+        let db = {
+            staff: JSON.parse(localStorage.getItem('hd_staff')) || [],
+            admins: JSON.parse(localStorage.getItem('hd_admins')) || [{ name: "Master Admin", email: "rickeers@moh.gov.my", pass: "135881Andres@", role: "admin" }],
+            leaves: JSON.parse(localStorage.getItem('hd_leaves')) || [],
+            schedule: JSON.parse(localStorage.getItem('hd_schedule')) || {},
+            scheduleNotes: JSON.parse(localStorage.getItem('hd_schedule_notes')) || {},
+            shifts: JSON.parse(localStorage.getItem('hd_shifts')) || [
+                { id: 'hakiki', name: 'Kerja Hakiki', hours: 7, desc: 'Waktu Pejabat (07:00 - 14:00)', color: 'bg-white', type: 'hakiki' },
+                { id: 'ot', name: 'Kerja Lebih Masa', hours: 5, desc: 'Selepas Waktu Pejabat', color: 'bg-green-50', type: 'ot' }
+            ]
+        };
+
+        // --- API INTEGRATION ---
+        async function fetchAPI(action, sheet = '', data = null) {
+            showLoading(true, "Memproses Data...");
+            const params = new URLSearchParams();
+            params.append('action', action);
+            if(sheet) params.append('sheet', sheet);
+            if(data) params.append('data', JSON.stringify(data));
+
+            try {
+                const response = await fetch(APP_SCRIPT_URL, {
+                    method: 'POST',
+                    body: params,
+                    redirect: 'follow', // Penting untuk GAS
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+                });
+                
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                const result = await response.json();
+                showLoading(false);
+                
+                if (result.status === 'success') {
+                    return result;
+                } else {
+                    console.error("API Error:", result.message);
+                    showToast("Ralat Sistem: " + result.message, "error");
+                    return null;
+                }
+            } catch (error) {
+                showLoading(false);
+                console.error("Fetch Error:", error);
+                showToast("Gagal menyambung ke pangkalan data. Sila semak sambungan internet.", "error");
+                return null;
+            }
+        }
+
+        async function refreshData() {
+            const res = await fetchAPI('read_all');
+            if(res && res.data) {
+                db.staff = res.data.staff || [];
+                db.admins = (res.data.admins && res.data.admins.length > 0) ? res.data.admins : db.admins;
+                db.leaves = res.data.leaves || [];
+                db.shifts = (res.data.shifts && res.data.shifts.length > 0) ? res.data.shifts : db.shifts;
+                
+                if(res.data.schedule && res.data.schedule.length > 0) {
+                     let newSched = {};
+                     res.data.schedule.forEach(r => newSched[r.key] = r.value);
+                     db.schedule = newSched;
+                }
+                
+                if(res.data.notes && res.data.notes.length > 0) {
+                    let newNotes = {};
+                    res.data.notes.forEach(r => newNotes[r.key] = r.value);
+                    db.scheduleNotes = newNotes;
+                }
+                
+                saveLocal(); 
+                renderStaffList(); renderLeaveRecords(); renderShiftSettings(); renderAdminList();
+                if(!document.getElementById('jadual-waktu').classList.contains('hidden')) renderSchedule();
+                showToast("Data dikemaskini dari Database.", "success");
+            }
+        }
+
+        async function syncData(sheet, item, action = 'create') {
+            const res = await fetchAPI(action, sheet, item);
+            if(res) {
+                refreshData(); 
+                return true;
+            }
+            return false;
+        }
+
+        async function saveScheduleToDB() {
+            const schedArray = Object.keys(db.schedule).map(key => ({ key: key, value: db.schedule[key] }));
+            const notesArray = Object.keys(db.scheduleNotes).map(key => ({ key: key, value: db.scheduleNotes[key] }));
+            
+            showLoading(true, "Menyimpan Jadual...");
+            const params = new URLSearchParams();
+            params.append('action', 'save_schedule_batch');
+            params.append('data', JSON.stringify({ schedule: schedArray, notes: notesArray }));
+            
+            try {
+                const response = await fetch(APP_SCRIPT_URL, { 
+                    method: 'POST', 
+                    body: params,
+                    redirect: 'follow',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                });
+                const result = await response.json();
+                showLoading(false);
+                if(result.status === 'success') showToast("Jadual berjaya disimpan.", "success");
+                else showToast("Gagal simpan: " + result.message, "error");
+            } catch(e) { showLoading(false); showToast("Gagal simpan jadual.", "error"); }
+        }
+
+        function saveLocal() {
+            localStorage.setItem('hd_staff', JSON.stringify(db.staff));
+            localStorage.setItem('hd_admins', JSON.stringify(db.admins));
+            localStorage.setItem('hd_leaves', JSON.stringify(db.leaves));
+            localStorage.setItem('hd_schedule', JSON.stringify(db.schedule));
+            localStorage.setItem('hd_shifts', JSON.stringify(db.shifts));
+            localStorage.setItem('hd_schedule_notes', JSON.stringify(db.scheduleNotes));
+        }
+
+        (function init() {
+            document.querySelectorAll('.year-copy').forEach(el => el.innerText = new Date().getFullYear());
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            const fmt = d => d.toISOString().split('T')[0];
+            
+            if(document.getElementById('admin-sched-start')) document.getElementById('admin-sched-start').value = fmt(firstDay);
+            if(document.getElementById('admin-sched-end')) document.getElementById('admin-sched-end').value = fmt(lastDay);
+            document.getElementById('pub-sched-month').value = today.getMonth();
+            document.getElementById('pub-sched-year').value = today.getFullYear();
+
+            // Auto-load data on start
+            setTimeout(refreshData, 1000); 
+        })();
+
+        // --- UI HELPERS ---
+        function showLoading(show, text = "Sedang Memproses...") {
+            const el = document.getElementById('loading-overlay');
+            document.getElementById('loading-text').innerText = text;
+            if(show) el.classList.remove('hidden'); else el.classList.add('hidden');
+        }
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const colors = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-blue-600';
+            toast.className = `${colors} text-white px-4 py-3 rounded shadow-lg text-sm font-bold flex items-center gap-2 animate-bounce transition-all duration-300`;
+            toast.innerHTML = `<i class="fa-solid fa-bell"></i> ${msg}`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.add('opacity-0'); setTimeout(() => toast.remove(), 300) }, 3000);
+        }
+
+        function openDeleteModal(callback) {
+            deleteCallback = callback;
+            document.getElementById('custom-delete-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('custom-delete-modal').classList.add('hidden');
+            deleteCallback = null;
+        }
+
+        document.getElementById('confirm-delete-btn').addEventListener('click', () => {
+            if (deleteCallback) deleteCallback();
+            closeModal();
+        });
+
+        // --- STAFF LOGIC ---
+        async function saveStaff(e) {
+            e.preventDefault();
+            const id = document.getElementById('staff-id').value || Date.now().toString();
+            const staffData = {
+                id: id,
+                name: document.getElementById('staff-name').value,
+                ic: document.getElementById('staff-ic').value,
+                pos: document.getElementById('staff-position').value,
+                grade: document.getElementById('staff-grade').value,
+                leaveTot: document.getElementById('staff-leave-total').value,
+                leaveCar: document.getElementById('staff-leave-carried').value
+            };
+            
+            const exists = db.staff.find(s => s.id === id);
+            const action = exists ? 'update' : 'create';
+            
+            await syncData('staff', staffData, action);
+            document.getElementById('staff-form').reset();
+            document.getElementById('staff-id').value = '';
+        }
+
+        function deleteStaff(id) {
+            openDeleteModal(async () => { await syncData('staff', { id: id }, 'delete'); });
+        }
+        
+        function editStaff(id) {
+            const s = db.staff.find(s => s.id === id);
+            if(s) {
+                document.getElementById('staff-id').value = s.id;
+                document.getElementById('staff-name').value = s.name;
+                document.getElementById('staff-ic').value = s.ic;
+                document.getElementById('staff-position').value = s.pos;
+                document.getElementById('staff-grade').value = s.grade;
+                document.getElementById('staff-leave-total').value = s.leaveTot;
+                document.getElementById('staff-leave-carried').value = s.leaveCar;
+            }
+        }
+
+        function renderStaffList() {
+            const ul = document.getElementById('staff-list');
+            ul.innerHTML = '';
+            db.staff.forEach(s => {
+                ul.innerHTML += `<li class="flex justify-between p-2 bg-white border rounded text-sm">
+                    <span>${s.name} <span class="text-xs text-gray-500">(${s.pos})</span></span>
+                    <div class="flex gap-2">
+                        <button onclick="editStaff('${s.id}')" class="text-blue-600"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteStaff('${s.id}')" class="text-red-600"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </li>`;
+            });
+        }
+
+        // --- SHIFTS LOGIC ---
+        async function addNewShift() {
+            const name = document.getElementById('new-shift-name').value;
+            if(name) {
+                const shiftData = {
+                    id: name.toLowerCase().replace(/\s+/g, '_') + '_' + Date.now(),
+                    name: name,
+                    hours: document.getElementById('new-shift-hours').value,
+                    desc: document.getElementById('new-shift-desc').value,
+                    type: document.getElementById('new-shift-type').value,
+                    color: document.getElementById('new-shift-color').value
+                };
+                await syncData('shifts', shiftData, 'create');
+                document.getElementById('new-shift-name').value = '';
+                document.getElementById('new-shift-hours').value = '';
+                document.getElementById('new-shift-desc').value = '';
+            }
+        }
+
+        function deleteShift(id) {
+            openDeleteModal(async () => { await syncData('shifts', { id: id }, 'delete'); });
+        }
+
+        function renderShiftSettings() {
+            const container = document.getElementById('shifts-list');
+            container.innerHTML = '';
+            db.shifts.forEach(shift => {
+                const typeLabel = shift.type === 'ot' ? 'OT' : 'Hakiki';
+                const typeClass = shift.type === 'ot' ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800';
+                
+                const div = document.createElement('div');
+                div.className = `flex items-start gap-2 p-3 border rounded ${shift.color}`;
+                div.innerHTML = `
+                    <div class="flex-1">
+                        <div class="flex justify-between items-center mb-1">
+                            <p class="font-bold text-sm text-gray-800">${shift.name}</p>
+                            <span class="text-[10px] ${typeClass} px-2 py-0.5 rounded font-bold">${typeLabel}</span>
+                        </div>
+                         <div class="flex justify-between items-center text-xs">
+                             <span class="font-semibold">${shift.hours} Jam</span>
+                        </div>
+                        <p class="text-xs text-gray-500 italic border-t border-gray-200 pt-1 mt-1">${shift.desc || 'Tiada keterangan'}</p>
+                    </div>
+                    <button onclick="deleteShift('${shift.id}')" class="text-red-500 text-xs hover:underline mt-1">Padam</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // --- ADMINS LOGIC ---
+        async function registerAdmin(e) {
+            e.preventDefault();
+            const data = {
+                id: Date.now().toString(),
+                name: document.getElementById('new-admin-name').value,
+                email: document.getElementById('new-admin-email').value,
+                pass: document.getElementById('new-admin-pass').value,
+                role: 'admin'
+            };
+            await syncData('admins', data, 'create');
+            e.target.reset();
+        }
+
+        function renderAdminList() {
+            const list = document.getElementById('admin-list');
+            list.innerHTML = '';
+            db.admins.forEach(a => {
+                list.innerHTML += `<li class="border-b pb-1 mb-1 flex justify-between"><span>${a.name} (${a.email})</span> <span class="text-xs text-gray-400">********</span></li>`;
+            });
+        }
+
+        // --- LEAVES LOGIC ---
+        async function submitPublicLeave(e) {
+            e.preventDefault();
+            const data = {
+                id: Date.now().toString(),
+                staffId: document.getElementById('public-leave-staff-select').value,
+                type: document.getElementById('public-leave-type').value,
+                start: document.getElementById('public-leave-start').value,
+                end: document.getElementById('public-leave-end').value,
+                reason: document.getElementById('public-leave-reason').value,
+                status: 'new'
+            };
+            await syncData('leaves', data, 'create');
+            e.target.reset();
+            showToast("Permohonan Berjaya Dihantar", "success");
+        }
+
+        function renderLeaveRecords() {
+            const con = document.getElementById('leave-records-container');
+            con.innerHTML = '';
+            db.leaves.forEach(l => {
+                const s = db.staff.find(st => st.id === l.staffId);
+                const colors = { new: 'status-new', seen: 'status-seen', approved: 'status-approved' };
+                con.innerHTML += `
+                <div class="p-3 rounded shadow-sm bg-white border flex justify-between ${colors[l.status]}">
+                    <div>
+                        <p class="font-bold text-sm">${s ? s.name : 'Unknown'}</p>
+                        <p class="text-xs">${l.type} (${l.start} - ${l.end})</p>
+                        <p class="text-xs italic opacity-75">${l.reason}</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="toggleLeave('${l.id}', '${l.status}')" class="bg-white/50 p-1 rounded hover:bg-white"><i class="fa-solid fa-rotate"></i></button>
+                        <button onclick="deleteLeave('${l.id}')" class="bg-white/50 p-1 rounded hover:bg-red-200"><i class="fa-solid fa-trash text-red-600"></i></button>
+                    </div>
+                </div>`;
+            });
+        }
+
+        async function toggleLeave(id, currentStatus) {
+            const flow = { new: 'seen', seen: 'approved', approved: 'new' };
+            const newStatus = flow[currentStatus];
+            await syncData('leaves', { id: id, status: newStatus }, 'update');
+        }
+
+        function deleteLeave(id) {
+            openDeleteModal(async () => { await syncData('leaves', { id: id }, 'delete'); });
+        }
+
+        // --- SCHEDULE RENDER ---
+        function updateScheduleCell(key, value) {
+            db.schedule[key] = value.toUpperCase();
+            // Note: Not auto-saving to DB instantly to prevent lag. User must click "Simpan Jadual"
+            saveLocal();
+            renderSchedule(); 
+        }
+
+        function saveScheduleNote() {
+            const startIn = document.getElementById('admin-sched-start').value;
+            const d = startIn ? new Date(startIn) : new Date();
+            const noteKey = `note-${d.getFullYear()}-${d.getMonth()}`;
+            db.scheduleNotes[noteKey] = document.getElementById('schedule-notes').value;
+            saveLocal();
+        }
+
+        function getDaysInMonth(month, year) { return new Date(year, parseInt(month) + 1, 0).getDate(); }
+        function getDayName(date) { return ['A', 'I', 'S', 'R', 'K', 'J', 'S'][date.getDay()]; }
+
+        function renderScheduleLogic(tableId, isPublic = false) {
+            const table = document.getElementById(tableId);
+            const legendContainer = document.getElementById('schedule-legend');
+            const notesArea = document.getElementById('schedule-notes');
+            let startDate, endDate;
+
+            if (isPublic) {
+                const month = document.getElementById('pub-sched-month').value;
+                const year = document.getElementById('pub-sched-year').value;
+                const viewLimit = parseInt(document.getElementById('pub-sched-view').value);
+                startDate = new Date(year, month, 1);
+                endDate = new Date(year, month, 1);
+                endDate.setDate(startDate.getDate() + (viewLimit - 1));
+                const lastDayOfMonth = new Date(year, parseInt(month) + 1, 0);
+                if (endDate > lastDayOfMonth) endDate = lastDayOfMonth; 
+            } else {
+                const viewMode = document.getElementById('schedule-view-mode').value;
+                const startIn = document.getElementById('admin-sched-start').value;
+                startDate = startIn ? new Date(startIn) : new Date();
+                if (viewMode === 'custom') {
+                    const endIn = document.getElementById('admin-sched-end').value;
+                    endDate = endIn ? new Date(endIn) : new Date(startDate);
+                } else {
+                    const daysToAdd = parseInt(viewMode) - 1;
+                    endDate = new Date(startDate);
+                    endDate.setDate(startDate.getDate() + daysToAdd);
+                    if (document.getElementById('admin-sched-end')) document.getElementById('admin-sched-end').value = endDate.toISOString().split('T')[0];
+                }
+            }
+
+            if(!isPublic) {
+                 const sStr = startDate.toLocaleDateString('ms-MY', { day: 'numeric', month: 'short' });
+                 const eStr = endDate.toLocaleDateString('ms-MY', { day: 'numeric', month: 'short', year: 'numeric' });
+                 document.getElementById('print-month-year').innerText = `${sStr} - ${eStr}`;
+                 
+                 if(legendContainer) {
+                     legendContainer.innerHTML = '';
+                     db.shifts.forEach(s => {
+                         const typeLabel = s.type === 'ot' ? 'OT' : 'Hakiki';
+                         legendContainer.innerHTML += `<div class="p-2 border rounded ${s.color || 'bg-white'} flex flex-col gap-1">
+                            <div class="flex justify-between font-bold text-gray-800">
+                                <span>${s.name} <span class="text-[9px] font-normal text-gray-500">(${typeLabel})</span></span> 
+                                <span>${s.hours}J</span>
+                            </div>
+                            <div class="text-[10px] text-gray-500 italic">${s.desc || '-'}</div>
+                         </div>`;
+                     });
+                 }
+                 if(notesArea) {
+                     const noteKey = `note-${startDate.getFullYear()}-${startDate.getMonth()}`;
+                     notesArea.value = db.scheduleNotes[noteKey] || '';
+                 }
+            }
+
+            let html = '<thead><tr><th class="w-40 text-left px-2 bg-blue-100 sticky left-0 z-20">Nama / Tarikh</th>';
+            let loopDate = new Date(startDate);
+            let dayCount = 0;
+            while (loopDate <= endDate) {
+                const dayName = getDayName(loopDate);
+                const dayNum = loopDate.getDate();
+                const isWeekend = (loopDate.getDay() === 0 || loopDate.getDay() === 6);
+                html += `<th class="${isWeekend ? 'bg-gray-200' : ''}">${dayNum}<br><span class="text-[10px]">${dayName}</span></th>`;
+                loopDate.setDate(loopDate.getDate() + 1);
+                dayCount++; if(dayCount > 60) break;
+            }
+            if(!isPublic) {
+                db.shifts.forEach(shift => { html += `<th class="w-16 bg-gray-50 text-[10px]">Total<br>${shift.name.split(' ')[0]}</th>`; });
+                html += '<th class="w-10 no-print">Act</th>';
+            }
+            html += '</tr></thead><tbody>';
+
+            db.staff.forEach(s => {
+                let totals = {}; db.shifts.forEach(sh => totals[sh.id] = 0);
+                db.shifts.forEach((shift, sIndex) => {
+                    html += `<tr class="${shift.color || 'bg-white'} border-b border-gray-300">`;
+                    if(sIndex === 0) {
+                        html += `<td rowspan="${db.shifts.length}" class="text-left px-2 font-bold text-xs bg-white sticky left-0 z-10 border-r shadow-sm">
+                            ${s.name}<div class="text-[9px] text-gray-400 font-normal">${s.pos}</div></td>`;
+                    }
+                    let cellDate = new Date(startDate);
+                    let safeC = 0;
+                    while(cellDate <= endDate) {
+                        const y = cellDate.getFullYear(); const m = cellDate.getMonth(); const d = cellDate.getDate();
+                        const key = `${y}-${m}-${d}-${s.id}-${shift.id}`;
+                        const val = db.schedule[key] || '';
+                        const currDateStr = cellDate.toISOString().split('T')[0];
+                        const onLeave = db.leaves.find(l => l.staffId === s.id && l.status === 'approved' && currDateStr >= l.start && currDateStr <= l.end);
+
+                        if(val) totals[shift.id] += parseFloat(shift.hours);
+                        let cellContent = isPublic ? (onLeave ? '<span class="text-red-600 font-bold">CR</span>' : val) 
+                            : `<input type="text" value="${onLeave ? 'CR' : val}" class="w-full h-full text-center bg-transparent outline-none uppercase text-xs ${onLeave ? 'text-red-600 font-bold' : ''}" onchange="updateScheduleCell('${key}', this.value)" ${onLeave ? 'disabled' : ''}>`;
+                        
+                        html += `<td class="${onLeave ? 'bg-red-50' : ''}">${cellContent}</td>`;
+                        cellDate.setDate(cellDate.getDate() + 1); safeC++; if(safeC > 60) break;
+                    }
+                    if(!isPublic) {
+                        db.shifts.forEach(sh => {
+                             if(sh.id === shift.id) html += `<td class="font-bold text-xs bg-gray-50 text-center">${totals[shift.id]}</td>`; 
+                             else html += `<td class="bg-gray-100"></td>`;
+                        });
+                        if(sIndex === 0) html += `<td rowspan="${db.shifts.length}" class="no-print text-center"><button class="text-gray-400 hover:text-blue-600"><i class="fa-regular fa-comment"></i></button></td>`;
+                    }
+                    html += '</tr>';
+                });
+            });
+            html += '</tbody>';
+            table.innerHTML = html;
+        }
+
+        function renderSchedule() { renderScheduleLogic('schedule-table-grid', false); }
+        function renderPublicSchedule() { renderScheduleLogic('public-schedule-table', true); }
+
+        // --- AUTH & NAV ---
+        function switchLoginTab(mode) {
+            ['admin', 'public', 'schedule'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                const container = t === 'schedule' ? document.getElementById(`public-schedule-container`) 
+                                : t === 'public' ? document.getElementById(`public-leave-container`) 
+                                : document.getElementById(`login-container`);
+                if (t === mode) {
+                    btn.className = "flex-1 py-2 font-medium rounded-md bg-white shadow text-blue-700 transition border border-gray-100";
+                    container.classList.remove('hidden');
+                    if(t === 'public') populateStaffSelect('public-leave-staff-select');
+                    if(t === 'schedule') renderPublicSchedule();
+                } else {
+                    btn.className = "flex-1 py-2 font-medium rounded-md text-gray-500 hover:text-gray-700 transition";
+                    container.classList.add('hidden');
+                }
+            });
+        }
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            const admin = db.admins.find(a => a.email === email && a.pass === pass);
+            if (admin) {
+                currentUser = admin;
+                document.getElementById('login-page').classList.add('hidden');
+                document.getElementById('dashboard-layout').classList.remove('hidden');
+                document.getElementById('dashboard-layout').classList.add('flex');
+                document.getElementById('user-name-display').innerText = currentUser.name;
+                const adminMenu = document.getElementById('admin-menu-items');
+                if (currentUser.role === 'admin') adminMenu.classList.remove('hidden');
+                showSection('dashboard-home');
+            } else { showToast("Log masuk gagal", "error"); }
+        }
+        function logout() { currentUser = null; document.getElementById('dashboard-layout').classList.add('hidden'); document.getElementById('login-page').classList.remove('hidden'); document.getElementById('login-form').reset(); switchLoginTab('admin'); }
+        function showSection(id) {
+            document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            if(id === 'tetapan-pegawai') { renderStaffList(); renderShiftSettings(); }
+            if(id === 'permohonan-cuti') renderLeaveRecords();
+            if(id === 'jadual-waktu') { populateStaffSelectSignatures(); renderSchedule(); }
+            if(id === 'dashboard-home') loadDashboardStats();
+        }
+        function loadDashboardStats() {
+            document.getElementById('dash-total-staff').innerText = db.staff.length;
+            document.getElementById('dash-pending-leave').innerText = db.leaves.filter(l => l.status === 'new').length;
+            document.getElementById('dash-approved-leave').innerText = db.leaves.filter(l => l.status === 'approved').length;
+            const today = new Date();
+            const keyPart = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+            let count = 0;
+            db.staff.forEach(s => { const hasDuty = db.shifts.some(sh => db.schedule[`${keyPart}-${s.id}-${sh.id}`]); if(hasDuty) count++; });
+            document.getElementById('dash-today-duty').innerText = count;
+            document.getElementById('current-date-display').innerText = today.toLocaleDateString('ms-MY', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        }
+        function populateStaffSelect(id) {
+            const el = document.getElementById(id); if(!el) return; el.innerHTML = '<option value="">-- Pilih --</option>'; db.staff.forEach(s => el.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+        }
+        function populateStaffSelectSignatures() {
+            ['sign-prepared', 'sign-verified', 'sign-approved'].forEach(id => {
+                const el = document.getElementById(id); el.innerHTML = '<option value="">-- Pilih --</option>'; db.staff.forEach(s => el.innerHTML += `<option value="${s.id}" data-role="${s.pos}">${s.name}</option>`);
+                el.onchange = function() { document.getElementById(`print-${id}`).innerText = el.options[el.selectedIndex].text; document.getElementById(`role-${id.replace('sign-','')}`).innerText = el.options[el.selectedIndex].getAttribute('data-role'); }
+            });
+        }
+    </script>
+</body>
+</html>
