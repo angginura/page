@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Wedding of Romeo & Juliet</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@200;400;600&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --terracotta: #a35d0b;
+            --cream: #f4eee0;
+            --white: #ffffff;
+            --dark-brown: #7a4508;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--terracotta); color: var(--white); overflow-x: hidden; scroll-behavior: smooth; }
+
+        /* --- NAVIGATION --- */
+        .nav-float {
+            position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 999;
+        }
+        .btn-nav {
+            width: 45px; height: 45px; background: var(--white); border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; color: var(--terracotta); font-size: 1.2rem;
+        }
+
+        /* --- COVER (Sesuai Foto 1) --- */
+        #cover {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background-color: var(--terracotta); display: flex; justify-content: center; align-items: center; 
+            z-index: 10000; text-align: center; transition: 1.2s cubic-bezier(0.8, 0, 0.2, 1);
+        }
+        .cover-box { border: 1px solid rgba(255,255,255,0.3); padding: 50px 30px; max-width: 85%; }
+        .cover-box h1 { font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 300; line-height: 1.2; margin-bottom: 25px; }
+        .btn-buka { background: var(--white); color: var(--terracotta); padding: 12px 35px; border: none; font-weight: 600; cursor: pointer; border-radius: 4px; letter-spacing: 1px; }
+
+        /* --- SECTIONS --- */
+        section { padding: 80px 20px; text-align: center; }
+        .title-serif { font-family: 'Cormorant Garamond', serif; font-size: 2.8rem; margin-bottom: 10px; font-weight: 400; }
+        .sub-header { letter-spacing: 5px; font-size: 0.75rem; opacity: 0.8; text-transform: uppercase; margin-bottom: 40px; }
+
+        /* --- MEMPELAI (Sesuai Layout Foto 2) --- */
+        .mempelai { background: var(--cream); color: var(--terracotta); border-radius: 50px 50px 0 0; }
+        .couple-flex { display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin-top: 40px; }
+        .photo-frame { width: 220px; height: 300px; border: 1px solid var(--terracotta); padding: 8px; margin: 0 auto 20px; }
+        .photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+        .ig-link { display: block; margin-top: 10px; color: var(--terracotta); text-decoration: none; font-size: 0.8rem; font-weight: 600; opacity: 0.7; }
+
+        /* --- COUNTDOWN (Tengah Halaman) --- */
+        .countdown-sec { background: var(--dark-brown); padding: 60px 20px; }
+        .timer-container { display: flex; justify-content: center; gap: 15px; margin-top: 25px; }
+        .timer-item { 
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            width: 75px; height: 75px; display: flex; flex-direction: column; justify-content: center; border-radius: 8px;
+        }
+        .timer-item b { font-size: 1.4rem; }
+        .timer-item span { font-size: 0.7rem; text-transform: uppercase; opacity: 0.7; }
+
+        /* --- DETAIL ACARA --- */
+        .event-box { border: 1px solid rgba(255,255,255,0.3); padding: 30px; max-width: 500px; margin: 20px auto; border-radius: 12px; }
+
+        /* --- GALLERY --- */
+        .gallery-sec { background: var(--white); color: var(--terracotta); }
+        .grid-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 900px; margin: 0 auto; }
+        .grid-gallery img { width: 100%; height: 200px; object-fit: cover; border-radius: 4px; }
+
+        /* --- E-MONEY SLIDE (Bagian Bawah) --- */
+        .gift-sec { background: var(--cream); color: var(--terracotta); }
+        .card-gift { 
+            background: var(--white); padding: 30px; border-radius: 15px; 
+            max-width: 350px; margin: 20px auto; box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(163, 93, 11, 0.2);
+        }
+        .btn-copy { background: var(--terracotta); color: white; border: none; padding: 8px 15px; border-radius: 5px; margin-top: 10px; cursor: pointer; font-size: 0.8rem; }
+
+        /* --- RSVP --- */
+        .rsvp-form { max-width: 500px; margin: 0 auto; padding-top: 20px; }
+        input, select, textarea { 
+            width: 100%; padding: 12px; margin-bottom: 15px; background: transparent; 
+            border: none; border-bottom: 1px solid var(--white); color: white; outline: none;
+        }
+        .btn-wa { width: 100%; padding: 15px; background: var(--white); color: var(--terracotta); border: none; border-radius: 40px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <audio id="music" loop>
+        <source src="music (2).mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="nav-float">
+        <button class="btn-nav" onclick="toHome()">🏠</button>
+        <button class="btn-nav" onclick="togglePlay()" id="playIcon">🎵</button>
+    </div>
+
+    <div id="cover">
+        <div class="cover-box" data-aos="zoom-in">
+            <p class="sub-header" style="margin-bottom: 15px;">The Wedding of</p>
+            <h1>God's plan to<br>save you...</h1>
+            <p style="letter-spacing: 3px; margin-bottom: 30px;">ROMEO & JULIET</p>
+            <button class="btn-buka" onclick="openInvitation()">BUKA UNDANGAN</button>
+        </div>
+    </div>
+
+    <section id="home">
+        <div data-aos="fade-up">
+            <p class="sub-header">The Wedding of</p>
+            <h1 class="title-serif" style="font-size: 3.5rem;">Romeo & Juliet</h1>
+            <p style="letter-spacing: 5px;">25 . 12 . 2025</p>
+        </div>
+    </section>
+
+    <section class="mempelai">
+        <h2 class="title-serif" data-aos="fade-up">Mempelai</h2>
+        <div class="couple-flex">
+            <div data-aos="fade-right">
+                <div class="photo-frame"><img src="foto (4).jpg"></div>
+                <h3 class="title-serif" style="font-size: 1.8rem;">Romeo Putra</h3>
+                <a href="https://instagram.com" class="ig-link">@romeoputra_</a>
+            </div>
+            <div data-aos="fade-left">
+                <div class="photo-frame"><img src="foto (5).jpg"></div>
+                <h3 class="title-serif" style="font-size: 1.8rem;">Juliet Putri</h3>
+                <a href="https://instagram.com" class="ig-link">@julietputri_</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="countdown-sec">
+        <h2 class="title-serif" data-aos="fade-up">Menuju Hari Bahagia</h2>
+        <div class="timer-container" data-aos="zoom-in">
+            <div class="timer-item"><b id="d">00</b><span>Hari</span></div>
+            <div class="timer-item"><b id="h">00</b><span>Jam</span></div>
+            <div class="timer-item"><b id="m">00</b><span>Menit</span></div>
+            <div class="timer-item"><b id="s">00</b><span>Detik</span></div>
+        </div>
+    </section>
+
+    <section>
+        <div class="event-box" data-aos="fade-up">
+            <h2 class="title-serif">Akad Nikah</h2>
+            <p>Pukul 08.00 - 10.00 WIB</p>
+            <p>Masjid Agung Baitul Makmur</p>
+            <p>Jakarta Selatan</p>
+        </div>
+        <div class="event-box" data-aos="fade-up">
+            <h2 class="title-serif">Resepsi</h2>
+            <p>Pukul 11.00 - 14.00 WIB</p>
+            <p>Grand Ballroom Hotel</p>
+            <p>Jakarta Selatan</p>
+        </div>
+    </section>
+
+    <section class="gallery-sec">
+        <h2 class="title-serif" data-aos="fade-up" style="margin-bottom: 30px;">Galeri Foto</h2>
+        <div class="grid-gallery">
+            <img src="foto (3).jpg" data-aos="zoom-in">
+            <img src="foto (4).jpg" data-aos="zoom-in">
+            <img src="foto (5).jpg" data-aos="zoom-in">
+            <img src="foto (6).jpg" data-aos="zoom-in">
+        </div>
+    </section>
+
+    <section class="gift-sec">
+        <h2 class="title-serif" data-aos="fade-up">Wedding Gift</h2>
+        <p style="font-size: 0.9rem; margin-bottom: 30px;">Doa restu Anda adalah kado terindah, namun jika ingin memberi kado digital:</p>
+        <div class="card-gift" data-aos="flip-left">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" width="80" style="margin-bottom: 15px;">
+            <p>Nomor Rekening:</p>
+            <h3 style="letter-spacing: 2px; margin: 5px 0;">1234567890</h3>
+            <p>a.n Romeo Putra</p>
+            <button class="btn-copy">Salin Rekening</button>
+        </div>
+        <div class="card-gift" data-aos="flip-right">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg" width="100" style="margin-bottom: 15px;">
+            <p>Nomor Rekening:</p>
+            <h3 style="letter-spacing: 2px; margin: 5px 0;">0987654321</h3>
+            <p>a.n Juliet Putri</p>
+            <button class="btn-copy">Salin Rekening</button>
+        </div>
+    </section>
+
+    <section>
+        <div class="rsvp-form" data-aos="fade-up">
+            <h2 class="title-serif">Konfirmasi Kehadiran</h2>
+            <form id="waForm">
+                <input type="text" id="nama" placeholder="Nama Lengkap" required>
+                <select id="hadir">
+                    <option value="Hadir">Akan Hadir</option>
+                    <option value="Tidak Hadir">Berhalangan</option>
+                </select>
+                <textarea id="pesan" rows="3" placeholder="Ucapan Doa"></textarea>
+                <button type="submit" class="btn-wa">KIRIM KONFIRMASI (WA)</button>
+            </form>
+        </div>
+    </section>
+
+    <footer style="padding: 40px; opacity: 0.5; font-size: 0.7rem; letter-spacing: 2px;">
+        DESIGNED BY GEMINI_DIGITAL &copy; 2025
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: true });
+        
+        const audio = document.getElementById('music');
+        let playing = false;
+
+        function openInvitation() {
+            document.getElementById('cover').style.transform = 'translateY(-100%)';
+            audio.play();
+            playing = true;
+        }
+
+        function togglePlay() {
+            if(playing) { audio.pause(); playing = false; }
+            else { audio.play(); playing = true; }
+        }
+
+        function toHome() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Timer Function
+        const targetDate = new Date("Dec 25, 2025 08:00:00").getTime();
+        setInterval(() => {
+            const now = new Date().getTime();
+            const gap = targetDate - now;
+            document.getElementById('d').innerText = Math.floor(gap / (1000 * 60 * 60 * 24));
+            document.getElementById('h').innerText = Math.floor((gap % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById('m').innerText = Math.floor((gap % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById('s').innerText = Math.floor((gap % (1000 * 60)) / 1000);
+        }, 1000);
+
+        // WA Form
+        document.getElementById('waForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const n = document.getElementById('nama').value;
+            const h = document.getElementById('hadir').value;
+            const p = document.getElementById('pesan').value;
+            window.open(`https://wa.me/6285811927625?text=Nama: ${n}%0AStatus: ${h}%0APesan: ${p}`);
+        });
+    </script>
+</body>
+</html>
