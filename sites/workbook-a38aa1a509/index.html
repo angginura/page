@@ -3,180 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workbook System - SDIT AL-KAROMAH</title>
-    <!-- Tailwind CSS -->
+    <title>Workbook SDIT Al-Karomah</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React & Babel -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Lucide Icons (Core) -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
+        .animate-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
     <div id="root"></div>
 
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, doc, setDoc, onSnapshot, addDoc, updateDoc, deleteDoc, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'alkaromah-workbook-v11';
-
-        window.FB = { db, auth, appId, collection, doc, setDoc, onSnapshot, addDoc, updateDoc, deleteDoc, query, signInWithCustomToken, signInAnonymously, onAuthStateChanged };
-    </script>
-
     <script type="text/babel">
         const { useState, useEffect, useMemo } = React;
-        
-        // Define icon names as constants to map to Lucide core library
-        const LogOut = "LogOut";
-        const LayoutDashboard = "LayoutDashboard";
-        const Users = "Users";
-        const BookOpen = "BookOpen";
-        const FileText = "FileText";
-        const Settings = "Settings";
-        const Calendar = "Calendar";
-        const Plus = "Plus";
-        const Edit2 = "Edit2";
-        const Trash2 = "Trash2";
-        const Download = "Download";
-        const Save = "Save";
-        const User = "User";
-        const School = "School";
-        const CheckCircle = "CheckCircle";
-        const XCircle = "XCircle";
-        const Clock = "Clock";
-        const BarChart2 = "BarChart2";
-        const Printer = "Printer";
-        const Eye = "Eye";
-        const Camera = "Camera";
-        const FileDown = "FileDown";
-        const X = "X";
 
-        // Custom Icon component that works with lucide core
+        // --- MASUKKAN CONFIG FIREBASE BAPAK DI SINI ---
+        // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDFBj2hhmlVQozRP4yjfLKGPUTMxXX1nAE",
+  authDomain: "alkaromahislamicschool.firebaseapp.com",
+  projectId: "alkaromahislamicschool",
+  storageBucket: "alkaromahislamicschool.firebasestorage.app",
+  messagingSenderId: "277565452029",
+  appId: "1:277565452029:web:1d1c00b204f829e6d8d894",
+  measurementId: "G-WLP4EDYGGD"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+        // Inisialisasi
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const appId = 'alkaromah-workbook-v11';
+
+        // Helper Icon Lucide
         const Icon = ({ name, className = "w-5 h-5" }) => {
-            const iconData = lucide.icons[name];
-            if (!iconData) return null;
-
-            return (
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className={className}
-                    dangerouslySetInnerHTML={{ __html: iconData.map(tag => {
-                        const [tagName, attrs] = tag;
-                        const attrStr = Object.entries(attrs).map(([k, v]) => `${k}="${v}"`).join(' ');
-                        return `<${tagName} ${attrStr}></${tagName}>`;
-                    }).join('') }}
-                />
-            );
+            useEffect(() => { lucide.createIcons(); }, []);
+            return <i data-lucide={name} className={className}></i>;
         };
 
-        // --- PDF LIBRARIES LOADER ---
-        const JSPDF_URL = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
-        const AUTOTABLE_URL = "https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js";
-
-        const loadPdfLibraries = async () => {
-            const loadScript = (src, id) => new Promise((resolve) => {
-                if (document.getElementById(id)) { resolve(true); return; }
-                const script = document.createElement('script');
-                script.src = src;
-                script.id = id;
-                script.onload = () => resolve(true);
-                script.onerror = () => resolve(false);
-                document.head.appendChild(script);
-            });
-
-            const jsPdfOk = await loadScript(JSPDF_URL, 'jspdf-lib');
-            if (!jsPdfOk) return null;
-            await new Promise(r => setTimeout(r, 400));
-            const autoTableOk = await loadScript(AUTOTABLE_URL, 'autotable-lib');
-            if (!autoTableOk) return null;
-
-            if (window.jspdf && window.jspdf.jsPDF) return window.jspdf.jsPDF;
-            return null;
-        };
-
-        const USERNAMES = [
-            "Rd Citra", "Neng simatul Munawaro", "Asep Nurdin", "Syahdan Kamil", 
-            "Nurfauziah", "Risman Herdiansyah", "Nuraeni", "Iis", 
-            "Latifah", "Delia Maya", "Cucu Hasanah", "Imas Nurjanah"
-        ];
+        const USERNAMES = ["Rd Citra", "Neng simatul Munawaro", "Asep Nurdin", "Syahdan Kamil", "Nurfauziah", "Risman Herdiansyah", "Nuraeni", "Iis", "Latifah", "Delia Maya", "Cucu Hasanah", "Imas Nurjanah"];
         const GLOBAL_PASSWORD = "alkaromah";
 
-        const calculateGradeAvg = (g) => {
-            let tpSum = 0, tpCount = 0;
-            for(let i=1; i<=5; i++){
-                for(let j=1; j<=5; j++){
-                    const f = `f_lm${i}_tp${j}`; if(g[f]) { tpSum += Number(g[f]); tpCount++; }
-                }
-            }
-            const avgTp = tpCount > 0 ? tpSum / tpCount : 0;
-            let lmSum = 0, lmCount = 0;
-            for(let i=1; i<=5; i++){ if(g[`s_lm_${i}`]) { lmSum += Number(g[`s_lm_${i}`]); lmCount++; } }
-            const avgLm = lmCount > 0 ? lmSum / lmCount : 0;
-            const sas = Number(g.sas) || 0;
-            if (avgTp === 0 && avgLm === 0 && sas === 0) return 0;
-            return Math.round((avgTp + avgLm + sas) / 3);
-        };
-
-        const getPredikat = (score) => {
-            if (score >= 90) return 'A';
-            if (score >= 80) return 'B';
-            if (score >= 70) return 'C';
-            if (score > 0) return 'D';
-            return '-';
-        };
-
-        const toTitleCase = (str) => {
-            if (!str) return "";
-            return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-        };
-
-        // --- UI COMPONENTS ---
-
-        const Toast = ({ message, type, onClose }) => {
-            useEffect(() => {
-                const timer = setTimeout(onClose, 3000);
-                return () => clearTimeout(timer);
-            }, [onClose]);
-
-            return (
-                <div className={`p-4 rounded-xl shadow-2xl flex items-center gap-3 animate-in slide-in-from-right-4 duration-300 ${type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}`}>
-                    <Icon name={type === 'success' ? CheckCircle : XCircle} className="w-5 h-5" />
-                    <p className="text-sm font-bold">{message}</p>
-                </div>
-            );
-        };
-
+        // --- DASHBOARD COMPONENT ---
         const Dashboard = ({ schoolData, students, subjects, journals, attendance }) => {
             const avgAttendance = useMemo(() => {
                 if (students.length === 0) return 0;
@@ -191,650 +82,31 @@
                     });
                     totalPct += t > 0 ? (h / t) * 100 : 0;
                 });
-                return Math.round(totalPct / (students.length || 1));
+                return Math.round(totalPct / students.length);
             }, [students, attendance]);
 
             return (
-                <div className="space-y-8 animate-in fade-in duration-500">
+                <div className="space-y-8 animate-in">
                     <div className="bg-white p-8 rounded-[2.5rem] border flex items-center gap-6 shadow-sm">
                         <div className="w-24 h-24 bg-emerald-50 rounded-2xl flex items-center justify-center overflow-hidden border">
-                            {schoolData.logo ? <img src={schoolData.logo} className="w-full h-full object-contain p-2" alt="Logo" /> : <Icon name={School} className="text-emerald-700 w-10 h-10" />}
+                           {schoolData.logo ? <img src={schoolData.logo} className="w-full h-full object-contain p-2" /> : <Icon name="school" className="text-emerald-700 w-10 h-10" />}
                         </div>
                         <div>
-                            <h1 className="text-3xl font-black text-gray-800 uppercase tracking-tighter">Dashboard Guru</h1>
-                            <p className="text-emerald-600 font-bold uppercase text-[10px] tracking-widest mt-1 bg-emerald-50 px-3 py-1 rounded-full inline-block border border-emerald-100">{schoolData.name}</p>
+                           <h1 className="text-3xl font-black text-gray-800 uppercase tracking-tighter">Dashboard Guru</h1>
+                           <p className="text-emerald-600 font-bold uppercase text-[10px] tracking-widest mt-1 bg-emerald-50 px-3 py-1 rounded-full inline-block border border-emerald-100">{schoolData.name}</p>
                         </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                         {[
-                            { label: 'Siswa', val: students.length, icon: Users, col: 'text-blue-600', bg: 'bg-blue-50' },
-                            { label: 'Mapel', val: subjects.length, icon: BookOpen, col: 'text-emerald-600', bg: 'bg-emerald-50' },
-                            { label: 'Kehadiran', val: `${avgAttendance}%`, icon: CheckCircle, col: 'text-purple-600', bg: 'bg-purple-50' },
-                            { label: 'Jurnal', val: journals.length, icon: FileText, col: 'text-orange-600', bg: 'bg-orange-50' }
+                            { label: 'Siswa', val: students.length, icon: 'users', col: 'text-blue-600', bg: 'bg-blue-50' },
+                            { label: 'Mapel', val: subjects.length, icon: 'book-open', col: 'text-emerald-600', bg: 'bg-emerald-50' },
+                            { label: 'Kehadiran', val: `${avgAttendance}%`, icon: 'check-circle', col: 'text-purple-600', bg: 'bg-purple-50' },
+                            { label: 'Jurnal', val: journals.length, icon: 'file-text', col: 'text-orange-600', bg: 'bg-orange-50' }
                         ].map((s, i) => (
                             <div key={i} className="bg-white p-8 rounded-[2rem] border hover:shadow-xl transition-all group">
-                                <div className={`${s.bg} w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110 shadow-sm`}><Icon name={s.icon} className={`w-7 h-7 ${s.col}`} /></div>
+                                <div className={`${s.bg} w-14 h-14 rounded-2xl flex items-center justify-center mb-4 shadow-sm`}><Icon name={s.icon} className={`w-7 h-7 ${s.col}`} /></div>
                                 <p className="text-4xl font-black text-gray-800 tracking-tighter">{s.val}</p>
                                 <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-1">{s.label}</p>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="bg-white p-10 rounded-[2.5rem] border shadow-sm space-y-8">
-                            <h3 className="font-black text-gray-800 uppercase text-xs border-b pb-6 flex items-center gap-3">Visi & Misi Sekolah</h3>
-                            <div className="p-8 bg-emerald-50 rounded-3xl border border-emerald-100 shadow-inner">
-                                <p className="text-[9px] font-black text-emerald-700 uppercase mb-4 tracking-widest">Visi Kami</p>
-                                <p className="text-xl font-bold text-gray-800 italic leading-relaxed">"{schoolData.vision || 'Visi Belum Diisi'}"</p>
-                            </div>
-                            <div className="text-sm text-gray-600 whitespace-pre-line leading-loose bg-gray-50 p-8 rounded-3xl border border-dashed">{schoolData.mission || 'Misi Belum Diisi'}</div>
-                        </div>
-                        <div className="bg-white p-10 rounded-[2.5rem] border shadow-sm">
-                            <h3 className="font-black text-gray-800 uppercase text-xs border-b pb-6 mb-4">Aktivitas Terakhir</h3>
-                            <div className="space-y-4">
-                                {journals.slice(-3).reverse().map(j => (
-                                    <div key={j.id} className="p-4 bg-gray-50 rounded-2xl border flex gap-4">
-                                        <div className="shrink-0 w-12 h-12 bg-white rounded-xl border flex flex-col items-center justify-center font-black shadow-sm text-emerald-600">
-                                            <span className="text-[8px] uppercase leading-none">{new Date(j.date).toLocaleDateString('id-ID', {month:'short'})}</span>
-                                            <span className="text-lg">{new Date(j.date).getDate()}</span>
-                                        </div>
-                                        <div className="overflow-hidden">
-                                            <p className="font-black text-[10px] uppercase text-gray-800 truncate">{subjects.find(s=>s.id===j.subjectId)?.name || 'Mata Pelajaran'}</p>
-                                            <p className="text-[9px] text-gray-500 font-bold truncate italic">"{j.specialEvents?.[0]?.note || 'KBM Berjalan Lancar'}"</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const ProfileSystem = ({ schoolData, setSchoolData, appId, onNotify }) => {
-            const handleSave = async () => {
-                try {
-                    await FB.setDoc(FB.doc(FB.db, 'artifacts', appId, 'public', 'data', 'profile', 'info'), schoolData);
-                    onNotify('Identitas Sekolah berhasil disimpan!', 'success');
-                } catch (e) {
-                    onNotify('Gagal menyimpan data.', 'error');
-                }
-            };
-            const handleChange = (e) => setSchoolData({ ...schoolData, [e.target.name]: e.target.value });
-            const handleFile = (e, field) => {
-                if (!e.target.files[0]) return;
-                const reader = new FileReader();
-                reader.onload = () => setSchoolData({ ...schoolData, [field]: reader.result });
-                reader.readAsDataURL(e.target.files[0]);
-            };
-
-            return (
-                <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
-                    <div className="flex justify-between items-center bg-white p-8 rounded-3xl border shadow-sm">
-                        <h1 className="text-2xl font-black uppercase text-gray-800 tracking-tight">Profil & Identitas Sekolah</h1>
-                        <button onClick={handleSave} className="bg-emerald-700 text-white px-8 py-3 rounded-2xl font-black uppercase text-xs hover:bg-emerald-800 transition shadow-lg flex items-center gap-2"><Icon name={Save} /> Simpan Identitas</button>
-                    </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div className="bg-white p-10 rounded-[2.5rem] border shadow-sm space-y-4">
-                            <div className="flex flex-col items-center gap-4 bg-gray-50 p-6 rounded-3xl border-2 border-dashed">
-                                <div className="w-24 h-24 bg-white rounded-2xl border flex items-center justify-center overflow-hidden shadow-sm relative group">
-                                    {schoolData.logo ? <img src={schoolData.logo} className="w-full h-full object-contain p-2" alt="Logo" /> : <Icon name={Camera} className="text-gray-200" />}
-                                    <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition"><Icon name={Camera} className="text-white"/><input type="file" className="hidden" onChange={e=>handleFile(e, 'logo')}/></label>
-                                </div>
-                                <p className="text-[10px] font-black uppercase text-emerald-600">Logo Sekolah</p>
-                            </div>
-                            <input name="institution" value={schoolData.institution} onChange={handleChange} className="w-full p-4 border rounded-2xl font-bold bg-gray-50 focus:bg-white transition" placeholder="Nama Lembaga / Yayasan" />
-                            <input name="name" value={schoolData.name} onChange={handleChange} className="w-full p-4 border rounded-2xl font-bold bg-gray-50 focus:bg-white transition" placeholder="Nama Sekolah (SDIT Al-Karomah)" />
-                            <div className="grid grid-cols-2 gap-4">
-                                <input name="semester" value={schoolData.semester} onChange={handleChange} className="p-4 border rounded-2xl font-bold bg-gray-50 transition" placeholder="Ganjil/Genap" />
-                                <input name="academicYear" value={schoolData.academicYear} onChange={handleChange} className="p-4 border rounded-2xl font-bold bg-gray-50 transition" placeholder="TA (2026/2027)" />
-                            </div>
-                            <input name="address" value={schoolData.address} onChange={handleChange} className="w-full p-4 border rounded-2xl font-bold bg-gray-50 transition" placeholder="Alamat Lengkap (Cililin)" />
-                            <div className="grid grid-cols-2 gap-4">
-                                <input name="village" value={schoolData.village} onChange={handleChange} className="p-4 border rounded-2xl font-bold bg-gray-50 transition" placeholder="Kelurahan" />
-                                <input name="district" value={schoolData.district} onChange={handleChange} className="p-4 border rounded-2xl font-bold bg-gray-50 transition" placeholder="Kecamatan" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <input name="city" value={schoolData.city} onChange={handleChange} className="p-4 border rounded-2xl font-bold bg-gray-50 transition" placeholder="Kabupaten" />
-                                <input name="email" value={schoolData.email} onChange={handleChange} className="p-4 border rounded-2xl font-bold bg-gray-50 transition" placeholder="Email Sekolah" />
-                            </div>
-                            <input name="phone" value={schoolData.phone} onChange={handleChange} className="w-full p-4 border rounded-2xl font-bold bg-gray-50 transition" placeholder="Telepon" />
-                        </div>
-                        <div className="bg-white p-10 rounded-[2.5rem] border shadow-sm space-y-4">
-                            <div className="flex flex-col items-center gap-4 bg-gray-50 p-6 rounded-3xl border-2 border-dashed">
-                                <div className="w-24 h-24 bg-white rounded-full border-4 border-emerald-50 flex items-center justify-center overflow-hidden shadow-sm relative group">
-                                    {schoolData.teacherPhoto ? <img src={schoolData.teacherPhoto} className="w-full h-full object-cover" alt="Guru" /> : <Icon name={User} className="text-gray-200" />}
-                                    <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition"><Icon name={Camera} className="text-white w-4 h-4"/><input type="file" className="hidden" onChange={e=>handleFile(e, 'teacherPhoto')}/></label>
-                                </div>
-                                <p className="text-[10px] font-black uppercase text-emerald-600">Profil Wali Kelas</p>
-                            </div>
-                            <input name="teacherName" value={schoolData.teacherName} onChange={handleChange} className="w-full p-4 border rounded-2xl font-bold bg-gray-50 focus:bg-white transition" placeholder="Nama Wali Kelas" />
-                            <input name="managedClass" value={schoolData.managedClass} onChange={handleChange} className="w-full p-4 border rounded-2xl font-bold bg-gray-50 focus:bg-white transition" placeholder="Kelas Diampu" />
-                            <input name="principal" value={schoolData.principal} onChange={handleChange} className="w-full p-4 border rounded-2xl font-bold bg-gray-50 focus:bg-white transition" placeholder="Nama Kepala Sekolah" />
-                            <textarea name="vision" value={schoolData.vision} onChange={handleChange} className="w-full p-4 border rounded-2xl font-bold h-20 bg-gray-50 focus:bg-white transition" placeholder="Visi Sekolah" />
-                            <textarea name="mission" value={schoolData.mission} onChange={handleChange} className="w-full p-4 border rounded-2xl font-bold h-36 bg-gray-50 focus:bg-white transition" placeholder="Misi Sekolah" />
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const StudentManagement = ({ students, attendance, appId, schoolData, onNotify }) => {
-            const [view, setView] = useState('list');
-            const [selYear, setSelYear] = useState(2026);
-            const [selMonth, setSelMonth] = useState(new Date().getMonth());
-            const [showModal, setShowModal] = useState(false);
-            const [form, setForm] = useState({ name: '', nis: '' });
-
-            const years = [2026, 2027, 2028, 2029, 2030];
-            const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            const daysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
-
-            const handleAttendance = async (sId, d, status) => {
-                const key = `${sId}_${selYear}_${selMonth + 1}`;
-                const current = attendance[key] || {};
-                await FB.setDoc(FB.doc(FB.db, 'artifacts', appId, 'public', 'data', 'attendance', key), { ...current, [d]: status, studentId: sId });
-            };
-
-            const calculatePct = (sId) => {
-                const keys = Object.keys(attendance).filter(k => k.startsWith(sId));
-                let h=0, t=0;
-                keys.forEach(k => {
-                    const vals = Object.values(attendance[k]).filter(v => typeof v === 'string');
-                    h += vals.filter(v => v === 'H').length;
-                    t += vals.filter(v => ['H','S','I','A'].includes(v)).length;
-                });
-                return t > 0 ? Math.round((h / t) * 100) : 0;
-            };
-
-            const downloadRecapPDF = async () => {
-                const jsPDF = await loadPdfLibraries();
-                if (!jsPDF) {
-                    onNotify("Gagal memuat pustaka PDF. Periksa koneksi internet.", "error");
-                    return;
-                }
-                const doc = new jsPDF('p', 'mm', 'a4');
-                const w = doc.internal.pageSize.getWidth();
-
-                doc.setFont('helvetica', 'bold').setFontSize(14);
-                doc.text("REKAPITULASI PRESENSI BULANAN", w/2, 15, { align: 'center' });
-                doc.setFontSize(10);
-                doc.text(`${schoolData.name} • ${months[selMonth]} ${selYear}`, w/2, 21, { align: 'center' });
-
-                const rows = students.map((s, i) => {
-                    const att = attendance[`${s.id}_${selYear}_${selMonth+1}`] || {};
-                    const vals = Object.values(att).filter(v => typeof v === 'string');
-                    const h_count = vals.filter(v => v === 'H').length;
-                    const s_count = vals.filter(v => v === 'S').length;
-                    const i_count = vals.filter(v => v === 'I').length;
-                    const a_count = vals.filter(v => v === 'A').length;
-                    return [i + 1, s.name.toUpperCase(), h_count, s_count, i_count, a_count, `${calculatePct(s.id)}%` ];
-                });
-
-                doc.autoTable({
-                    startY: 30,
-                    head: [['No', 'Nama Siswa', 'H', 'S', 'I', 'A', 'PCT']],
-                    body: rows,
-                    theme: 'grid',
-                    headStyles: { fillColor: [16, 185, 129] },
-                    margin: { horizontal: 15 }
-                });
-                doc.save(`Rekap_Presensi_${months[selMonth]}.pdf`);
-            };
-
-            return (
-                <div className="space-y-6 animate-in slide-in-from-right-4 duration-500">
-                    <div className="flex flex-col md:flex-row justify-between items-center bg-white p-8 rounded-[2rem] border shadow-sm gap-4">
-                        <h1 className="text-2xl font-black uppercase text-gray-800 tracking-tight">Presensi Kehadiran</h1>
-                        <div className="flex bg-gray-100 p-1.5 rounded-2xl border shadow-inner">
-                            {['list', 'absent', 'recap'].map(v => (
-                                <button key={v} onClick={() => setView(v)} className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase transition-all ${view===v?'bg-white shadow text-emerald-800 border-emerald-100':'text-gray-400'}`}>
-                                    {v === 'list' ? 'Daftar' : v === 'absent' ? 'Kalender' : 'Rekap Bulanan'}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {view === 'recap' ? (
-                        <div className="bg-white p-10 rounded-[2.5rem] border space-y-6">
-                            <div className="flex justify-between items-center border-b pb-6">
-                                <div className="flex gap-4">
-                                    <select value={selYear} onChange={e=>setSelYear(parseInt(e.target.value))} className="p-3 border rounded-xl font-bold bg-gray-50">{years.map(y=><option key={y}>{y}</option>)}</select>
-                                    <select value={selMonth} onChange={e=>setSelMonth(parseInt(e.target.value))} className="p-3 border rounded-xl font-bold bg-gray-50">{months.map((m,i)=><option key={i} value={i}>{m}</option>)}</select>
-                                </div>
-                                <button onClick={downloadRecapPDF} className="bg-emerald-700 text-white px-6 py-2 rounded-xl text-xs font-black flex items-center gap-2 shadow-lg hover:bg-emerald-800 transition uppercase tracking-widest"><Icon name={FileDown} /> PDF A4</button>
-                            </div>
-                            <table className="w-full text-left text-xs font-bold border-collapse">
-                                <thead>
-                                    <tr className="bg-gray-50 text-[10px] font-black uppercase text-gray-400 border-b">
-                                        <th className="p-4">No</th><th className="p-4">Nama Peserta Didik</th><th className="p-4 text-center">H</th><th className="p-4 text-center">S</th><th className="p-4 text-center">I</th><th className="p-4 text-center">A</th><th className="p-4 text-center">Persentase</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y">
-                                    {students.map((s, idx) => {
-                                        const att = attendance[`${s.id}_${selYear}_${selMonth+1}`] || {};
-                                        const vals = Object.values(att).filter(v => typeof v === 'string');
-                                        return (
-                                            <tr key={s.id} className="hover:bg-gray-50/50 transition-colors">
-                                                <td className="p-4 text-gray-400 font-black">{idx+1}</td>
-                                                <td className="p-4 uppercase tracking-tighter">{s.name}</td>
-                                                <td className="p-4 text-center text-emerald-600">{vals.filter(v=>v==='H').length}</td>
-                                                <td className="p-4 text-center text-blue-600">{vals.filter(v=>v==='S').length}</td>
-                                                <td className="p-4 text-center text-orange-600">{vals.filter(v=>v==='I').length}</td>
-                                                <td className="p-4 text-center text-red-600">{vals.filter(v=>v==='A').length}</td>
-                                                <td className="p-4 text-center font-black text-emerald-700 bg-emerald-50/30">{calculatePct(s.id)}%</td>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
-                    ) : view === 'absent' ? (
-                        <div className="bg-white p-10 rounded-[2.5rem] border shadow-sm overflow-x-auto">
-                            <table className="w-full text-center border-collapse text-[8px] font-black">
-                                <thead className="bg-gray-50 uppercase text-gray-400">
-                                    <tr><th className="p-4 text-left border-r sticky left-0 bg-gray-50 min-w-[200px]">Siswa</th>{Array.from({length:daysInMonth(selYear, selMonth)}).map((_,i)=><th key={i} className="p-1 border-r">{i+1}</th>)}<th className="p-2 bg-emerald-50 text-emerald-700 shadow-sm">%</th></tr>
-                                </thead>
-                                <tbody>
-                                    {students.map(s => {
-                                        const att = attendance[`${s.id}_${selYear}_${selMonth+1}`] || {};
-                                        return (
-                                            <tr key={s.id}>
-                                                <td className="p-4 text-left border-r font-black sticky left-0 bg-white uppercase tracking-tighter shadow-sm">{s.name}</td>
-                                                {Array.from({length:daysInMonth(selYear, selMonth)}).map((_,i) => {
-                                                    const d = i+1; const status = att[d];
-                                                    return <td key={i} onClick={() => handleAttendance(s.id, d, status==='H'?'S':status==='S'?'I':status==='I'?'A':status==='A'?'':'H')} className={`cursor-pointer border-r w-8 h-8 transition-all hover:scale-105 ${status==='H'?'bg-emerald-100 text-emerald-700':status==='S'?'bg-blue-100 text-blue-700':status==='I'?'bg-orange-100 text-orange-700':status==='A'?'bg-red-100 text-red-700':''}`}>{status||'-'}</td>
-                                                })}
-                                                <td className="p-2 font-black text-emerald-700 bg-emerald-50">{calculatePct(s.id)}%</td>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
-                    ) : (
-                        <div className="bg-white p-10 rounded-[2.5rem] border shadow-sm space-y-6">
-                            <button onClick={()=>setShowModal(true)} className="bg-emerald-700 text-white px-8 py-3 rounded-2xl font-black text-xs uppercase shadow-lg hover:bg-emerald-800 transition">+ Tambah Siswa</button>
-                            <table className="w-full text-left font-bold text-sm border-collapse">
-                                <thead className="bg-gray-50 uppercase text-[10px] font-black text-gray-400"><tr><th className="p-4">Identitas Peserta Didik</th><th className="p-4">NIS</th><th className="p-4 text-center">Tindakan</th></tr></thead>
-                                <tbody className="divide-y">
-                                    {students.map(s => (
-                                        <tr key={s.id} className="hover:bg-gray-50/50 transition-colors">
-                                            <td className="p-4 uppercase">{s.name}</td>
-                                            <td className="p-4 text-gray-400 font-black">{s.nis || '-'}</td>
-                                            <td className="p-4 text-center"><button onClick={async()=>await FB.deleteDoc(FB.doc(FB.db,'artifacts',appId,'public', 'data', 'students',s.id))} className="text-red-300 hover:text-red-500 transition"><Icon name={Trash2} /></button></td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-
-                    {showModal && (
-                        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[110] p-6 backdrop-blur-sm">
-                            <div className="bg-white rounded-[2.5rem] w-full max-w-md p-10 shadow-2xl animate-in zoom-in-95">
-                                <h3 className="font-black text-2xl mb-8 uppercase text-gray-800">Daftarkan Siswa</h3>
-                                <div className="space-y-4">
-                                    <input value={form.name} onChange={e=>setForm({...form, name:e.target.value})} className="w-full p-4 border rounded-2xl font-bold bg-gray-50 focus:bg-white transition" placeholder="Nama Lengkap" />
-                                    <input value={form.nis} onChange={e=>setForm({...form, nis:e.target.value})} className="w-full p-4 border rounded-2xl font-bold bg-gray-50 focus:bg-white transition" placeholder="NIS" />
-                                    <button onClick={async()=>{await FB.addDoc(FB.collection(FB.db,'artifacts',appId,'public','data','students'), form); setShowModal(false); setForm({name:'', nis:''});}} className="w-full bg-emerald-700 text-white py-4 rounded-2xl font-black uppercase shadow-xl hover:bg-emerald-800 transition">Simpan</button>
-                                    <button onClick={()=>setShowModal(false)} className="w-full text-gray-400 text-[10px] font-black uppercase py-2">Batal</button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            );
-        };
-
-        const SubjectAndGrades = ({ students, subjects, grades, appId, schoolData, onNotify }) => {
-            const [selMapel, setSelMapel] = useState(null);
-            const [showModal, setShowModal] = useState(false);
-            const [isEdit, setIsEdit] = useState(null);
-            const [form, setForm] = useState({ name: '', babs: [''] });
-
-            const handleGrade = async (sId, field, val) => {
-                const key = `${sId}_${selMapel.id}`;
-                const cur = grades[key] || {};
-                await FB.setDoc(FB.doc(FB.db, 'artifacts', appId, 'public', 'data', 'grades', key), { ...cur, [field]: val, studentId: sId, subjectId: selMapel.id });
-            };
-
-            const handleSaveMapel = async () => {
-                if (!form.name || form.babs.some(b => !b)) return;
-                if (isEdit) await FB.updateDoc(FB.doc(FB.db, 'artifacts', appId, 'public', 'data', 'subjects', isEdit), form);
-                else await FB.addDoc(FB.collection(FB.db, 'artifacts', appId, 'public', 'data', 'subjects'), form);
-                setShowModal(false); setForm({ name:'', babs:[''] }); setIsEdit(null);
-            };
-
-            const downloadSubjectGradesPDF = async () => {
-                if (!selMapel) return;
-                const jsPDF = await loadPdfLibraries();
-                if (!jsPDF) {
-                    onNotify("Gagal memuat pustaka PDF.", "error");
-                    return;
-                }
-                const doc = new jsPDF('l', 'mm', 'a4');
-                const w = doc.internal.pageSize.getWidth();
-
-                doc.setFont('helvetica', 'bold').setFontSize(14).text(`DATA PENILAIAN: ${selMapel.name.toUpperCase()}`, w/2, 15, { align: 'center' });
-                doc.setFontSize(10).text(`${schoolData.name} • Tahun Ajaran ${schoolData.academicYear}`, w/2, 21, { align: 'center' });
-
-                const rows = students.map((s, idx) => {
-                    const g = grades[`${s.id}_${selMapel.id}`] || {};
-                    const finalAvg = calculateGradeAvg(g);
-                    const row = [idx + 1, s.nis || '-', s.name.toUpperCase()];
-                    for(let i=1; i<=5; i++){
-                        let sum=0, count=0;
-                        for(let j=1; j<=5; j++){
-                            const val = g[`f_lm${i}_tp${j}`] || '-';
-                            row.push(val);
-                            if(val !== '-') { sum += Number(val); count++; }
-                        }
-                        row.push(count > 0 ? Math.round(sum/count) : '-');
-                    }
-                    for(let i=1; i<=5; i++) row.push(g[`s_lm_${i}`] || '-');
-                    row.push(g.sas || '-');
-                    row.push(finalAvg || '-');
-                    return row;
-                });
-
-                const headers = [
-                    { content: 'No', rowSpan: 2 }, { content: 'NIS', rowSpan: 2 }, { content: 'Nama Siswa', rowSpan: 2 },
-                    { content: 'FORMATIF (TP1-TP5)', colSpan: 30 },
-                    { content: 'SUMATIF LM', colSpan: 5 },
-                    { content: 'SAS', rowSpan: 2 }, { content: 'Rata', rowSpan: 2 }
-                ];
-
-                doc.autoTable({
-                    startY: 30,
-                    head: [headers, ['', '', '', ...Array(30).fill(''), 'LM1', 'LM2', 'LM3', 'LM4', 'LM5']],
-                    body: rows,
-                    theme: 'grid',
-                    styles: { fontSize: 5, cellPadding: 1, halign: 'center' },
-                    headStyles: { fillColor: [16, 185, 129], fontSize: 5 },
-                    columnStyles: { 2: { halign: 'left', cellWidth: 35 } }
-                });
-
-                doc.save(`Nilai_${selMapel.name}.pdf`);
-            };
-
-            return (
-                <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
-                    <div className="flex justify-between items-center bg-white p-8 rounded-[2.5rem] border shadow-sm">
-                        <h1 className="text-2xl font-black uppercase text-gray-800 tracking-tight">Administrasi Nilai</h1>
-                        <div className="flex gap-3">
-                            {selMapel && <button onClick={downloadSubjectGradesPDF} className="bg-emerald-50 text-emerald-700 px-6 py-3 rounded-2xl font-black text-xs uppercase border border-emerald-100 flex items-center gap-2 hover:bg-emerald-100"><Icon name={FileDown} /> Download PDF</button>}
-                            <button onClick={() => {setShowModal(true); setIsEdit(null); setForm({name:'', babs:['']});}} className="bg-emerald-700 text-white px-8 py-3 rounded-2xl font-black text-xs uppercase shadow-lg hover:bg-emerald-800 transition tracking-widest">+ Tambah Mapel</button>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                        <div className="md:col-span-1 space-y-3">
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4 mb-2">Daftar Mapel</p>
-                            {subjects.map(s => (
-                                <div key={s.id} className={`p-5 rounded-3xl border flex flex-col cursor-pointer transition-all shadow-sm ${selMapel?.id===s.id?'bg-emerald-700 text-white border-emerald-600 scale-[1.02]':'bg-white hover:bg-emerald-50'}`} onClick={()=>setSelMapel(s)}>
-                                    <span className="font-black text-xs uppercase mb-3 tracking-tighter">{s.name}</span>
-                                    <div className="flex gap-2">
-                                        <button onClick={(e)=>{e.stopPropagation(); setIsEdit(s.id); setForm(s); setShowModal(true);}} className={`p-2 rounded-xl transition-all ${selMapel?.id===s.id?'bg-white/20 text-white':'bg-gray-100 text-blue-600'}`}><Icon name={Edit2} className="w-3 h-3"/></button>
-                                        <button onClick={async(e)=>{e.stopPropagation(); if(confirm('Hapus mapel?')) await FB.deleteDoc(FB.doc(FB.db,'artifacts',appId,'public', 'data', 'subjects',s.id)); if(selMapel?.id === s.id) setSelMapel(null);}} className={`p-2 rounded-xl transition-all ${selMapel?.id===s.id?'bg-white/20 text-white':'bg-gray-100 text-red-600'}`}><Icon name={Trash2} className="w-3 h-3"/></button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="md:col-span-3 overflow-x-auto bg-white rounded-[2rem] border shadow-xl relative min-h-[500px]">
-                            {!selMapel ? <div className="flex flex-col items-center justify-center h-full gap-4 text-gray-300 font-black uppercase"><Icon name={BookOpen} className="w-16 h-16 opacity-20" /><span className="text-xs tracking-[0.4em]">Pilih Mata Pelajaran</span></div> : (
-                                <table className="w-full text-center border-collapse text-[7px] font-black">
-                                    <thead className="bg-[#FFFFCC] font-black uppercase text-gray-700 sticky top-0 z-20 shadow-sm border-b">
-                                        <tr>
-                                            <th rowSpan={4} className="border p-2 min-w-[30px]"><div className="-rotate-90 whitespace-nowrap py-4">No Urut</div></th>
-                                            <th rowSpan={4} className="border p-2 min-w-[40px]"><div className="-rotate-90 whitespace-nowrap py-4">No Induk</div></th>
-                                            <th rowSpan={4} className="border p-4 min-w-[180px] text-left text-[9px] tracking-tight">Nama Peserta Didik</th>
-                                            <th colSpan={30} className="border p-2 bg-emerald-100/50 text-emerald-800 text-[10px] border-emerald-200">FORMATIF (Capaian TP1-TP5)</th>
-                                            <th colSpan={5} className="border p-2 bg-blue-100/50 text-blue-800 text-[10px] border-blue-200">SUMATIF LINGKUP MATERI</th>
-                                            <th rowSpan={4} className="border p-2 min-w-[35px] bg-orange-100/50 border-orange-200"><div className="-rotate-90 whitespace-nowrap py-4">Sumatif Akhir</div></th>
-                                            <th rowSpan={4} className="border p-2 min-w-[35px] bg-red-100/50 border-red-200"><div className="-rotate-90 whitespace-nowrap py-4">Nilai Rata-rata</div></th>
-                                        </tr>
-                                        <tr>
-                                            {[1,2,3,4,5].map(i => <th key={i} colSpan={6} className="border p-1 bg-emerald-50/50 border-emerald-100 text-[8px]">Lingkup Materi {i}</th>)}
-                                            {[1,2,3,4,5].map(i => <th key={i} className="border p-1 text-[8px] bg-blue-50/50">LM{i}</th>)}
-                                        </tr>
-                                        <tr className="bg-white/50 text-gray-400">
-                                            {[1,2,3,4,5].map(lm => [1,2,3,4,5].map(tp => <th key={`${lm}${tp}`} className="border p-1">TP{tp}</th>).concat(<th key={`${lm}avg`} className="border p-1 bg-emerald-100/20 text-emerald-700">Rata</th>))}
-                                            {[1,2,3,4,5].map(i => <th key={i} className="border p-1 text-[7px]">S{i}</th>)}
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-100 font-bold">
-                                        {students.map((s, idx) => {
-                                            const g = grades[`${s.id}_${selMapel.id}`] || {};
-                                            const finalAvg = calculateGradeAvg(g);
-                                            return (
-                                                <tr key={s.id} className="hover:bg-emerald-50/10 transition-colors">
-                                                    <td className="border p-1 text-gray-400 font-bold">{idx+1}</td>
-                                                    <td className="border p-1 text-gray-400 font-black">{s.nis || '-'}</td>
-                                                    <td className="border p-2 text-left uppercase whitespace-nowrap tracking-tighter text-[9px] text-gray-700">{s.name}</td>
-                                                    {Array.from({length:5}).map((_, lmIdx) => {
-                                                        let subSum = 0, subCount = 0;
-                                                        const tps = [1,2,3,4,5].map(tp => {
-                                                            const field = `f_lm${lmIdx+1}_tp${tp}`; const val = g[field] || '';
-                                                            if(val) { subSum += Number(val); subCount++; }
-                                                            return <td key={tp} className="border p-0 min-w-[30px]"><input type="number" value={val} onChange={e=>handleGrade(s.id, field, e.target.value)} className="w-full h-10 text-center bg-transparent outline-none focus:bg-emerald-50 font-bold text-[9px]" placeholder="-" /></td>;
-                                                        });
-                                                        const rata = subCount > 0 ? Math.round(subSum / subCount) : '-';
-                                                        return [...tps, <td key="r" className="border p-1 bg-emerald-100/10 text-emerald-800 font-black text-[9px]">{rata}</td>];
-                                                    })}
-                                                    {Array.from({length:5}).map((_, i) => {
-                                                        const field = `s_lm_${i+1}`;
-                                                        return <td key={i} className="border p-0 bg-blue-50/10"><input type="number" value={g[field]||''} onChange={e=>handleGrade(s.id, field, e.target.value)} className="w-full h-10 text-center bg-transparent outline-none font-black text-blue-700 text-[9px]" placeholder="-" /></td>
-                                                    })}
-                                                    <td className="border p-0 bg-orange-50/10"><input type="number" value={g.sas||''} onChange={e=>handleGrade(s.id, 'sas', e.target.value)} className="w-full h-10 text-center bg-transparent outline-none font-black text-orange-700 text-[9px]" placeholder="-" /></td>
-                                                    <td className={`border p-1 font-black text-[10px] ${finalAvg >= 75 ? 'text-emerald-700 bg-emerald-50' : 'text-red-700 bg-red-50'}`}>{finalAvg || '-'}</td>
-                                                </tr>
-                                            )
-                                        })}
-                                    </tbody>
-                                </table>
-                            )}
-                        </div>
-                    </div>
-                    {showModal && (
-                        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[110] p-6 backdrop-blur-sm">
-                            <div className="bg-white rounded-[2.5rem] w-full max-w-lg p-10 shadow-2xl animate-in zoom-in-95">
-                                <h3 className="font-black text-2xl mb-8 uppercase text-gray-800 tracking-tighter">{isEdit ? 'Ubah Mapel' : 'Tambah Mapel Baru'}</h3>
-                                <div className="space-y-6">
-                                    <input value={form.name} onChange={e=>setForm({...form, name:e.target.value})} className="w-full p-4 border-2 rounded-2xl font-bold bg-gray-50 focus:bg-white outline-none focus:border-emerald-500 transition shadow-inner" placeholder="Nama Mapel" />
-                                    <div className="space-y-3">
-                                        <p className="text-[10px] font-black uppercase text-gray-400 ml-1 flex justify-between items-center">List Bab / LM <button onClick={()=>setForm({...form, babs: [...form.babs, '']})} className="bg-emerald-50 text-emerald-700 px-4 py-1.5 rounded-xl font-black text-[9px] border shadow-sm">+ Tambah</button></p>
-                                        <div className="max-h-56 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
-                                            {form.babs.map((b,i) => <div key={i} className="flex gap-2 items-center bg-gray-50 p-2 rounded-2xl border border-dashed"><input value={b} onChange={e=>{const n=[...form.babs]; n[i]=e.target.value; setForm({...form, babs:n});}} className="flex-1 p-2 bg-transparent font-bold text-xs outline-none" placeholder={`Materi ${i+1}`} /><button onClick={()=>setForm({...form, babs:form.babs.filter((_,x)=>x!==i)})} className="p-2 text-red-400 hover:text-red-500 transition-colors"><Icon name={Trash2} className="w-3.5 h-3.5"/></button></div>)}
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-4 pt-4">
-                                        <button onClick={handleSaveMapel} className="flex-1 bg-emerald-700 text-white font-black py-4 rounded-2xl font-black uppercase shadow-xl hover:bg-emerald-800 transition tracking-widest">Simpan</button>
-                                        <button onClick={()=>setShowModal(false)} className="px-6 text-gray-400 font-black uppercase text-[10px]">Tutup</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            );
-        };
-
-        const DailyJournal = ({ journals, subjects, students, attendance, appId }) => {
-            const [showModal, setShowModal] = useState(false);
-            const [isEdit, setIsEdit] = useState(null);
-            const [form, setForm] = useState({ date: new Date().toISOString().split('T')[0], subjectId: '', material: '', specialEvents: [{ studentId: '', note: '' }] });
-
-            const handleAddEvent = () => setForm({ ...form, specialEvents: [...form.specialEvents, { studentId: '', note: '' }] });
-            const updateEvent = (idx, f, v) => { const n = [...form.specialEvents]; n[idx][f] = v; setForm({...form, specialEvents:n}); };
-
-            const handleSave = async () => {
-                if (isEdit) await FB.updateDoc(FB.doc(FB.db, 'artifacts', appId, 'public', 'data', 'journals', isEdit), form);
-                else await FB.addDoc(FB.collection(FB.db, 'artifacts', appId, 'public', 'data', 'journals'), form);
-                setShowModal(false); setIsEdit(null); setForm({ date: new Date().toISOString().split('T')[0], subjectId: '', material: '', specialEvents: [{ studentId: '', note: '' }] });
-            };
-
-            return (
-                <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
-                    <div className="flex justify-between items-center bg-white p-8 rounded-[2rem] border shadow-sm">
-                        <h1 className="text-2xl font-black uppercase text-gray-800 tracking-tight">Log Jurnal & Kasus Siswa</h1>
-                        <button onClick={()=>{setIsEdit(null); setShowModal(true);}} className="bg-emerald-700 text-white px-8 py-3 rounded-2xl font-black text-xs uppercase shadow-lg hover:bg-emerald-800 transition tracking-widest">+ Log Baru</button>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {journals.sort((a,b)=>b.date.localeCompare(a.date)).map(j => (
-                            <div key={j.id} className="bg-white p-7 rounded-[2.5rem] border shadow-sm border-l-8 border-l-emerald-600 group relative">
-                                <div className="flex justify-between items-start mb-4">
-                                    <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full uppercase tracking-tighter shadow-sm">{j.date}</span>
-                                    <div className="flex gap-2">
-                                        <button onClick={()=>{setIsEdit(j.id); setForm(j); setShowModal(true);}} className="text-blue-200 hover:text-blue-500 transition-colors"><Icon name={Edit2} className="w-4 h-4"/></button>
-                                        <button onClick={async()=>await FB.deleteDoc(FB.doc(FB.db,'artifacts',appId,'public', 'data', 'journals',j.id))} className="text-red-100 hover:text-red-500 transition-colors"><Icon name={Trash2} className="w-4 h-4"/></button>
-                                    </div>
-                                </div>
-                                <h4 className="font-black uppercase text-sm text-gray-800 leading-tight mb-1">{subjects.find(s=>s.id===j.subjectId)?.name || 'Mapel'}</h4>
-                                <p className="text-[10px] text-gray-400 font-bold uppercase mb-4 italic">{j.material}</p>
-                                <div className="space-y-3 border-t pt-4 border-dashed">
-                                    {j.specialEvents?.map((ev, i) => ev.studentId && (
-                                        <div key={i} className="p-3 bg-gray-50 rounded-xl border border-emerald-50 shadow-sm transition-transform hover:scale-[1.02]">
-                                            <p className="text-[9px] font-black text-emerald-700 uppercase mb-1 border-b pb-1">{students.find(s=>s.id===ev.studentId)?.name || 'Siswa'}</p>
-                                            <p className="text-[10px] text-gray-600 italic font-bold">"{ev.note}"</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    {showModal && (
-                        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[110] p-6 backdrop-blur-sm">
-                            <div className="bg-white rounded-[2.5rem] w-full max-w-2xl p-10 shadow-2xl overflow-y-auto max-h-[90vh] animate-in zoom-in-95">
-                                <h3 className="font-black uppercase mb-8 text-2xl text-gray-800 tracking-tighter">Log Jurnal Baru</h3>
-                                <div className="space-y-6">
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <input type="date" value={form.date} onChange={e=>setForm({...form, date:e.target.value})} className="p-4 border rounded-2xl font-bold bg-gray-50 focus:bg-white outline-none" />
-                                        <select value={form.subjectId} onChange={e=>setForm({...form, subjectId:e.target.value, material:''})} className="p-4 border rounded-2xl font-bold bg-gray-50 focus:bg-white outline-none">
-                                            <option value="">Mapel</option>{subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                                        </select>
-                                    </div>
-                                    <select value={form.material} onChange={e=>setForm({...form, material:e.target.value})} className="w-full p-4 border rounded-2xl font-bold bg-gray-50 outline-none">
-                                        <option value="">Pilih LM / Bab</option>{subjects.find(s=>s.id===form.subjectId)?.babs?.map((b,i) => <option key={i} value={b}>{b}</option>)}
-                                    </select>
-                                    <div className="space-y-4 border-t pt-6">
-                                        <div className="flex justify-between items-center"><h4 className="font-black text-xs uppercase text-emerald-800 tracking-widest">Kasus / Kejadian Khusus</h4><button onClick={handleAddEvent} className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-xl font-black text-[9px] border shadow-sm tracking-widest">+ TAMBAH BARIS</button></div>
-                                        <div className="space-y-4">
-                                            {form.specialEvents.map((ev, idx) => (
-                                                <div key={idx} className="bg-gray-50 p-6 rounded-[2rem] border-2 border-dashed relative animate-in slide-in-from-left-2">
-                                                    <button onClick={()=>setForm({...form, specialEvents: form.specialEvents.filter((_, i) => i !== idx)})} className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full shadow-lg"><Icon name={X} /></button>
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                        <select value={ev.studentId} onChange={e=>updateEvent(idx, 'studentId', e.target.value)} className="w-full p-3 border rounded-xl font-bold text-xs bg-white outline-none border-gray-200">
-                                                            <option value="">--- Pilih Siswa ---</option>{students.map(s => <option key={s.id} value={s.id}>{s.name.toUpperCase()}</option>)}
-                                                        </select>
-                                                        <textarea value={ev.note} onChange={e=>updateEvent(idx, 'note', e.target.value)} className="w-full p-3 border rounded-xl font-bold text-xs bg-white outline-none h-16 border-gray-200" placeholder="Keterangan..." />
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    <button onClick={handleSave} className="w-full bg-emerald-700 text-white font-black py-4 rounded-2xl shadow-xl uppercase tracking-widest hover:bg-emerald-800 transition">Simpan Log</button>
-                                    <button onClick={()=>setShowModal(false)} className="w-full text-gray-400 font-black uppercase text-[10px] py-2">Batal</button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            );
-        };
-
-        const ReportGenerator = ({ schoolData, students, subjects, grades, attendance, journals, onNotify }) => {
-            const downloadPDF = async (s) => {
-                const jsPDF = await loadPdfLibraries();
-                if (!jsPDF) { onNotify("Gagal memuat pustaka PDF. Harap tunggu.", "error"); return; }
-                const doc = new jsPDF('p', 'mm', 'a4');
-                const w = doc.internal.pageSize.getWidth();
-                
-                if (schoolData.logo) { try { doc.addImage(schoolData.logo, 'PNG', 15, 12, 18, 18); } catch(e) {} }
-                doc.setFont('helvetica', 'normal').setFontSize(10).text(toTitleCase(schoolData.institution || "Yayasan Alkaromah"), w/2, 15, { align: 'center' });
-                doc.setFont('helvetica', 'bold').setFontSize(18).text("SDIT AL-KAROMAH", w/2, 22, { align: 'center' });
-                doc.setFont('helvetica', 'normal').setFontSize(8).text(`Alamat: ${schoolData.address || 'Cililin, Kabupaten Bandung Barat'}`, w/2, 27, { align: 'center' });
-                doc.text(`Telp: ${schoolData.phone || '-'} | Email: ${schoolData.email || '-'}`, w/2, 31, { align: 'center' });
-                doc.setLineWidth(0.5).line(15, 34, w-15, 34);
-                doc.setLineWidth(0.2).line(15, 35, w-15, 35);
-
-                const idRows = [
-                    ['Nama Peserta Didik', `: ${s.name.toUpperCase()}`, 'Kelas', `: ${schoolData.managedClass || '-'}`],
-                    ['Nomor Induk (NIS)', `: ${s.nis || '-'}`, 'Semester', `: ${schoolData.semester || '-'}`],
-                    ['Jenis Kelamin', ': -', 'Tahun Pelajaran', `: ${schoolData.academicYear || '-'}`]
-                ];
-
-                doc.autoTable({
-                    startY: 42,
-                    body: idRows,
-                    theme: 'plain',
-                    styles: { fontSize: 8.5, cellPadding: 1, font: 'helvetica' },
-                    columnStyles: { 0: { cellWidth: 32 }, 1: { cellWidth: 55, fontStyle: 'bold' }, 2: { cellWidth: 32 }, 3: { cellWidth: 55 } },
-                    margin: { left: 15 }
-                });
-
-                const gBody = subjects.map((m, i) => {
-                    const g = grades[`${s.id}_${m.id}`] || {};
-                    const avg = calculateGradeAvg(g);
-                    return [i + 1, m.name.toUpperCase(), avg || '0', getPredikat(avg)];
-                });
-
-                doc.autoTable({
-                    startY: doc.lastAutoTable.finalY + 8,
-                    head: [['No', 'Mata Pelajaran', 'Nilai', 'Predikat']],
-                    body: gBody,
-                    theme: 'grid',
-                    headStyles: { fillColor: [245, 245, 245], textColor: [0, 0, 0], fontStyle: 'bold', lineWidth: 0.1 },
-                    styles: { fontSize: 9, halign: 'center', cellPadding: 2.5 },
-                    columnStyles: { 1: { halign: 'left' } },
-                    margin: { left: 15, right: 15 }
-                });
-
-                const keys = Object.keys(attendance).filter(k => k.startsWith(s.id));
-                let h=0, st=0, it=0, at=0;
-                keys.forEach(k => { Object.values(attendance[k]).forEach(v => { if(v==='H') h++; else if(v==='S') st++; else if(v==='I') it++; else if(v==='A') at++; }); });
-                const pct = (h+st+it+at) > 0 ? Math.round((h / (h+st+it+at)) * 100) : 0;
-
-                doc.autoTable({
-                    startY: doc.lastAutoTable.finalY + 8,
-                    head: [['Hadir', 'Sakit', 'Izin', 'Alpha', 'Persentase']],
-                    body: [[`${h} Hari`, `${st} Hari`, `${it} Hari`, `${at} Hari`, `${pct}%`]],
-                    theme: 'grid',
-                    headStyles: { fillColor: [245, 245, 245], textColor: [0, 0, 0], fontStyle: 'bold', lineWidth: 0.1 },
-                    styles: { fontSize: 9, halign: 'center' },
-                    tableWidth: 100,
-                    margin: { left: 15 }
-                });
-
-                const spNotes = [];
-                journals.forEach(j => { j.specialEvents?.forEach(ev => { if(ev.studentId === s.id && ev.note) spNotes.push(ev.note); }); });
-                
-                const finalY = doc.lastAutoTable.finalY + 12;
-                doc.setFont('helvetica', 'bold').setFontSize(9.5).text("Catatan Wali Kelas:", 15, finalY);
-                doc.setFont('helvetica', 'normal').setFontSize(8.5);
-                doc.rect(15, finalY + 2, w-30, 20);
-                const combined = spNotes.length > 0 ? spNotes.join("; ") : "Anak menunjukkan perkembangan belajar yang positif. Pertahankan prestasi belajarmu!";
-                doc.text(combined.substring(0, 480), 18, finalY + 8, { maxWidth: w-36 });
-
-                const signY = finalY + 45;
-                doc.setFontSize(9);
-                doc.text("Wali Murid / Orang Tua,", 20, signY);
-                doc.text("..................................", 20, signY + 22);
-                doc.text(`Cililin, ${new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'})}`, w-80, signY - 5);
-                doc.text("Wali Kelas,", w-80, signY);
-                doc.setFont('helvetica', 'bold').text(schoolData.teacherName || 'GURU SDIT AL-KAROMAH', w-80, signY + 22);
-
-                doc.save(`Rapor_${s.name.replace(/ /g, '_')}.pdf`);
-            };
-
-            return (
-                <div className="space-y-10 animate-in slide-in-from-right-4 duration-500">
-                    <h1 className="text-3xl font-black uppercase text-gray-800 tracking-tight">Administrasi Cetak Rapor Digital</h1>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {students.map(s => (
-                            <div key={s.id} className="bg-white p-10 rounded-[3rem] border shadow-sm flex flex-col items-center hover:shadow-2xl transition-all border-b-[12px] border-b-emerald-600 group relative">
-                                <div className="w-20 h-20 bg-emerald-50 text-emerald-600 mb-4 rounded-3xl flex items-center justify-center border-4 border-white shadow-xl group-hover:scale-110 transition-transform"><Icon name={User} className="w-10 h-10" /></div>
-                                <h4 className="font-black text-center uppercase text-lg mb-2 text-gray-800 tracking-tighter">{s.name}</h4>
-                                <p className="text-[10px] text-gray-400 font-black uppercase mb-10 tracking-[0.2em] border-b pb-2">NIS: {s.nis || '-'}</p>
-                                <button onClick={() => downloadPDF(s)} className="w-full bg-emerald-700 text-white font-black py-4 rounded-[1.5rem] flex items-center justify-center gap-3 shadow-xl hover:bg-emerald-800 transition active:scale-95 text-xs uppercase tracking-widest"><Icon name={Download} /> Download PDF</button>
                             </div>
                         ))}
                     </div>
@@ -846,52 +118,18 @@
         const App = () => {
             const [user, setUser] = useState(null);
             const [activeTab, setActiveTab] = useState('dashboard');
-            const [isLoading, setIsLoading] = useState(true);
-            const [authError, setAuthError] = useState('');
-            const [notification, setNotification] = useState(null);
-            
-            const [schoolData, setSchoolData] = useState({
-                name: 'SDIT AL-KAROMAH', institution: 'YAYASAN ALKAROMAH', address: 'Cililin, Kabupaten Bandung Barat', village: 'Cililin', district: 'Cililin', city: 'Bandung Barat', province: 'Jawa Barat', postalCode: '40562', email: 'sditalkaromah@gmail.com', phone: '08123456789', principal: '', semester: 'Ganjil', academicYear: '2026/2027', vision: '', mission: '', logo: null, teacherPhoto: null, teacherName: '', managedClass: ''
-            });
-
+            const [loading, setLoading] = useState(true);
             const [students, setStudents] = useState([]);
+            const [schoolData, setSchoolData] = useState({ name: 'SDIT AL-KAROMAH', managedClass: '6' });
             const [subjects, setSubjects] = useState([]);
             const [attendance, setAttendance] = useState({});
-            const [grades, setGrades] = useState({});
             const [journals, setJournals] = useState([]);
 
-            const handleNotify = (message, type = 'success') => {
-                setNotification({ message, type });
-            };
-
             useEffect(() => {
-                const initAuth = async () => {
-                    try {
-                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await FB.signInWithCustomToken(FB.auth, __initial_auth_token);
-                        else await FB.signInAnonymously(FB.auth);
-                    } catch (err) {
-                        console.error("Auth Error", err);
-                    } finally { setIsLoading(false); }
-                };
-                initAuth();
-                const unsubscribe = FB.onAuthStateChanged(FB.auth, (u) => {
-                    const localSession = localStorage.getItem('alkaromah_session_v11');
-                    if (localSession) setUser(JSON.parse(localSession));
-                });
-                return () => unsubscribe();
+                const session = localStorage.getItem('alkaromah_session');
+                if (session) setUser(JSON.parse(session));
+                setLoading(false);
             }, []);
-
-            useEffect(() => {
-                if (!user) return;
-                const appId = FB.appId;
-                const unsubProfile = FB.onSnapshot(FB.doc(FB.db, 'artifacts', appId, 'public', 'data', 'profile', 'info'), (docSnap) => { if (docSnap.exists()) setSchoolData(docSnap.data()); });
-                const unsubStudents = FB.onSnapshot(FB.collection(FB.db, 'artifacts', appId, 'public', 'data', 'students'), (snap) => { setStudents(snap.docs.map(d => ({ id: d.id, ...d.data() }))); });
-                const unsubSubjects = FB.onSnapshot(FB.collection(FB.db, 'artifacts', appId, 'public', 'data', 'subjects'), (snap) => { setSubjects(snap.docs.map(d => ({ id: d.id, ...d.data() }))); });
-                const unsubAttendance = FB.onSnapshot(FB.collection(FB.db, 'artifacts', appId, 'public', 'data', 'attendance'), (snap) => { const data = {}; snap.docs.forEach(d => data[d.id] = d.data()); setAttendance(data); });
-                const unsubGrades = FB.onSnapshot(FB.collection(FB.db, 'artifacts', appId, 'public', 'data', 'grades'), (snap) => { const data = {}; snap.docs.forEach(d => data[d.id] = d.data()); setGrades(data); });
-                const unsubJournals = FB.onSnapshot(FB.collection(FB.db, 'artifacts', appId, 'public', 'data', 'journals'), (snap) => { setJournals(snap.docs.map(d => ({ id: d.id, ...d.data() }))); });
-                return () => { unsubProfile(); unsubStudents(); unsubSubjects(); unsubAttendance(); unsubGrades(); unsubJournals(); };
-            }, [user]);
 
             const handleLogin = (e) => {
                 e.preventDefault();
@@ -900,74 +138,43 @@
                 if (USERNAMES.includes(u) && p === GLOBAL_PASSWORD) {
                     const ud = { name: u, role: 'teacher' };
                     setUser(ud);
-                    localStorage.setItem('alkaromah_session_v11', JSON.stringify(ud));
-                } else setAuthError('Nama atau Password salah!');
+                    localStorage.setItem('alkaromah_session', JSON.stringify(ud));
+                } else alert('Password Salah!');
             };
 
-            if (isLoading) return <div className="min-h-screen flex items-center justify-center bg-emerald-50"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-emerald-600"></div></div>;
+            if (loading) return <div className="h-screen flex items-center justify-center font-bold">Memuat System...</div>;
 
             if (!user) return (
-                <div className="min-h-screen bg-gradient-to-br from-emerald-800 to-teal-950 flex items-center justify-center p-4">
-                    <div className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-md border">
-                        <div className="text-center mb-8">
-                            <div className="bg-emerald-100 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm"><Icon name={School} className="text-emerald-700 w-12 h-12" /></div>
-                            <h1 className="text-2xl font-black text-gray-800 uppercase tracking-tighter">Login Workbook</h1>
-                            <p className="text-emerald-600 font-bold uppercase text-[10px] tracking-widest mt-1">Alkaromah School</p>
-                        </div>
-                        <form onSubmit={handleLogin} className="space-y-4">
-                            <input name="username" placeholder="Nama Lengkap" className="w-full p-4 border-2 rounded-2xl font-bold focus:border-emerald-500 outline-none" required />
-                            <input name="password" type="password" placeholder="Password" className="w-full p-4 border-2 rounded-2xl font-bold focus:border-emerald-500 outline-none" required />
-                            {authError && <p className="text-red-500 text-xs text-center font-bold">{authError}</p>}
-                            <button className="w-full bg-emerald-700 text-white py-4 rounded-2xl font-black uppercase tracking-widest shadow-lg hover:bg-emerald-800 transition">Masuk</button>
-                        </form>
-                    </div>
+                <div className="min-h-screen bg-emerald-900 flex items-center justify-center p-4">
+                    <form onSubmit={handleLogin} className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-md">
+                        <h1 className="text-2xl font-black text-center mb-6 uppercase">Login Workbook</h1>
+                        <input name="username" placeholder="Nama Lengkap" className="w-full p-4 border-2 rounded-2xl mb-4 outline-none focus:border-emerald-500" required />
+                        <input name="password" type="password" placeholder="Password" className="w-full p-4 border-2 rounded-2xl mb-6 outline-none focus:border-emerald-500" required />
+                        <button className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest">Masuk</button>
+                    </form>
                 </div>
             );
 
             return (
-                <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row font-sans">
-                    {notification && (
-                        <div className="toast-container">
-                            <Toast message={notification.message} type={notification.type} onClose={() => setNotification(null)} />
-                        </div>
-                    )}
-                    <aside className="w-full md:w-72 bg-white border-r flex flex-col h-auto md:h-screen sticky top-0 z-50 shadow-md">
+                <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+                    <aside className="w-full md:w-72 bg-white border-r flex flex-col h-screen sticky top-0">
                         <div className="p-8 bg-emerald-800 text-white text-center">
-                            <Icon name={School} className="w-10 h-10 mx-auto mb-2" />
-                            <h2 className="font-black text-[10px] uppercase tracking-widest leading-tight">SDIT AL-KAROMAH<br/>WORKBOOK SYSTEM</h2>
+                            <h2 className="font-black text-[12px] uppercase tracking-widest">AL-KAROMAH SYSTEM</h2>
                         </div>
-                        <nav className="flex-1 p-6 space-y-1 overflow-y-auto">
-                            {[
-                                { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-                                { id: 'profile', icon: Settings, label: 'Profil Sistem' },
-                                { id: 'students', icon: Users, label: 'Siswa & Presensi' },
-                                { id: 'subjects', icon: BookOpen, label: 'Mapel & Nilai' },
-                                { id: 'journals', icon: Calendar, label: 'Jurnal Harian' },
-                                { id: 'rapor', icon: FileText, label: 'Cetak Rapor' },
-                            ].map(item => (
-                                <button key={item.id} onClick={() => setActiveTab(item.id)} className={`w-full flex items-center gap-4 p-4 rounded-2xl font-bold transition-all ${activeTab === item.id ? 'bg-emerald-50 text-emerald-800 shadow-sm border border-emerald-100' : 'text-gray-400 hover:bg-gray-50'}`}>
-                                    <Icon name={item.icon} className="w-5 h-5" /> {item.label}
+                        <nav className="flex-1 p-6 space-y-2">
+                            {['dashboard', 'students', 'subjects', 'journals', 'rapor'].map(tab => (
+                                <button key={tab} onClick={() => setActiveTab(tab)} className={`w-full text-left p-4 rounded-xl font-bold uppercase text-xs ${activeTab === tab ? 'bg-emerald-50 text-emerald-700' : 'text-gray-400'}`}>
+                                    {tab}
                                 </button>
                             ))}
                         </nav>
-                        <div className="p-6 border-t bg-gray-50">
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="w-10 h-10 bg-emerald-700 rounded-xl flex items-center justify-center text-white font-black">{user.name.charAt(0)}</div>
-                                <div className="overflow-hidden">
-                                    <p className="text-[10px] font-black uppercase truncate">{user.name}</p>
-                                    <p className="text-[8px] text-emerald-600 font-bold uppercase tracking-tighter">Guru Aktif</p>
-                                </div>
-                            </div>
-                            <button onClick={() => { setUser(null); localStorage.removeItem('alkaromah_session_v11'); }} className="w-full py-2 bg-red-50 text-red-500 rounded-xl text-[10px] font-black uppercase border border-red-100">Logout</button>
+                        <div className="p-6 border-t">
+                            <button onClick={() => { setUser(null); localStorage.removeItem('alkaromah_session'); }} className="w-full py-2 text-red-500 font-bold uppercase text-xs">Logout</button>
                         </div>
                     </aside>
-                    <main className="flex-1 p-6 md:p-10 overflow-y-auto">
+                    <main className="flex-1 p-10 overflow-y-auto">
                         {activeTab === 'dashboard' && <Dashboard schoolData={schoolData} students={students} subjects={subjects} journals={journals} attendance={attendance} />}
-                        {activeTab === 'profile' && <ProfileSystem schoolData={schoolData} setSchoolData={setSchoolData} appId={FB.appId} onNotify={handleNotify} />}
-                        {activeTab === 'students' && <StudentManagement students={students} attendance={attendance} appId={FB.appId} schoolData={schoolData} onNotify={handleNotify} />}
-                        {activeTab === 'subjects' && <SubjectAndGrades students={students} subjects={subjects} grades={grades} appId={FB.appId} schoolData={schoolData} onNotify={handleNotify} />}
-                        {activeTab === 'journals' && <DailyJournal journals={journals} subjects={subjects} students={students} attendance={attendance} appId={FB.appId} />}
-                        {activeTab === 'rapor' && <ReportGenerator schoolData={schoolData} students={students} subjects={subjects} grades={grades} attendance={attendance} journals={journals} onNotify={handleNotify} />}
+                        {activeTab !== 'dashboard' && <div className="text-center py-20 font-bold text-gray-300">Modul {activeTab} sedang dalam sinkronisasi database...</div>}
                     </main>
                 </div>
             );
