@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Jadual Waktu PPK Unit Hemodialisis Hospital Bintulu</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/595wB3cy/HOSPITAL_BINTULU.png">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- html2pdf.js for PDF Download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Print Styles */
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background-color: white; }
+            .page-break { page-break-before: always; }
+            input { border: none; background: transparent; padding: 0; text-align: center; }
+            select { appearance: none; border: none; background: transparent; }
+            
+            table { width: 100%; border-collapse: collapse; font-size: 10px; }
+            th, td { border: 1px solid black !important; padding: 2px; }
+            input[type="text"], div, span { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .overflow-x-auto { overflow: visible !important; }
+            .print-logo-container { text-align: center; display: flex; justify-content: center; width: 100%; margin-bottom: 10px; }
+        }
+
+        .glass-effect { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .gradient-bg { background: linear-gradient(135deg, #0d9488 0%, #1e40af 100%); }
+
+        .sched-input {
+            width: 100%; min-width: 30px; text-align: center; text-transform: uppercase;
+            border: 1px solid transparent; background: transparent; cursor: pointer;
+            font-weight: 800;
+        }
+        .sched-input:focus { border: 1px solid #3b82f6; background: #fff; outline: none; }
+
+        .menu-card { transition: all 0.3s ease; }
+        .menu-card:hover { transform: translateX(10px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+
+        @keyframes blink-red { 0% { background-color: transparent; } 50% { background-color: #ef4444; } 100% { background-color: transparent; } }
+        .blink-badge { animation: blink-red 1.5s infinite; }
+        
+        .a4-preview { width: 100%; max-width: 297mm; margin: 0 auto; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+
+        /* Loading Overlay */
+        #loadingOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.9); z-index: 9999;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%;
+            width: 40px; height: 40px; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Custom Modal */
+        #customModal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 10000;
+        }
+        .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        /* Status Bar */
+        #statusBar {
+            position: fixed; bottom: 10px; right: 10px; background: white; padding: 5px 15px;
+            border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); font-size: 12px;
+            display: flex; align-items: center; gap: 8px; z-index: 50; transition: all 0.3s;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Status Bar -->
+    <div id="statusBar" class="hidden">
+        <span id="statusDot" class="w-2 h-2 rounded-full bg-gray-400"></span>
+        <span id="statusText">Offline</span>
+    </div>
+
+    <!-- Loading Overlay (Initial Only) -->
+    <div id="loadingOverlay">
+        <div class="spinner mb-2"></div>
+        <p class="text-blue-600 font-bold" id="loadingText">Menyediakan Aplikasi...</p>
+    </div>
+
+    <!-- Custom Modal -->
+    <div id="customModal" class="hidden flex justify-center items-center">
+        <div class="modal-content animate-fade-in-up">
+            <div id="modalIcon" class="mb-3 text-4xl text-blue-500"><i class="fa-solid fa-circle-info"></i></div>
+            <h3 id="modalTitle" class="text-lg font-bold mb-2">Perhatian</h3>
+            <p id="modalMessage" class="text-gray-600 mb-6 text-sm">Mesej di sini...</p>
+            <div class="flex justify-center gap-3" id="modalButtons">
+                <button onclick="closeModal()" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 text-sm">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= AUTHENTICATION / LANDING PAGE ================= -->
+    <div id="authSection" class="flex h-screen w-full overflow-hidden">
+        
+        <!-- Left Side: Branding -->
+        <div class="hidden md:flex md:w-1/2 gradient-bg flex-col justify-center items-center text-white p-10 relative">
+            <div class="absolute inset-0 bg-white opacity-10 pattern-grid-lg"></div>
+            <div class="z-10 text-center animate-fade-in-up">
+                <img src="https://i.postimg.cc/595wB3cy/HOSPITAL_BINTULU.png" alt="Logo Hospital Bintulu" class="w-48 h-auto mx-auto mb-8 drop-shadow-2xl hover:scale-105 transition-transform duration-300">
+                <h1 class="text-5xl font-bold mb-4 tracking-wide text-white">UNIT HEMODIALISIS</h1>
+                <h2 class="text-3xl font-light opacity-90 text-teal-50">HOSPITAL BINTULU</h2>
+                <div class="mt-10 border-t border-white/20 pt-8 w-3/4 mx-auto">
+                    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-teal-100">JADUAL WAKTU PEMBANTU PERAWATAN KESIHATAN</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Interaction -->
+        <div class="w-full md:w-1/2 bg-slate-50 flex flex-col relative h-full">
+            <div class="flex-1 flex flex-col justify-center items-center p-6 overflow-y-auto">
+                <div class="w-full max-w-sm">
+                    <!-- 1. Selection View -->
+                    <div id="viewSelection" class="flex flex-col space-y-4">
+                        <div class="text-center mb-6 md:hidden">
+                            <img src="https://i.postimg.cc/595wB3cy/HOSPITAL_BINTULU.png" alt="Logo" class="w-24 mx-auto mb-4">
+                            <h2 class="text-xl font-bold text-slate-800">Unit Hemodialisis</h2>
+                        </div>
+                        <div onclick="toggleAuthView('login')" class="menu-card cursor-pointer bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center group">
+                            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center text-white shadow-lg mr-5 group-hover:scale-110 transition-transform"><i class="fa-solid fa-user-shield text-2xl"></i></div>
+                            <div class="flex-1"><h3 class="font-bold text-slate-800 text-lg group-hover:text-blue-700">Admin Panel</h3><p class="text-xs text-slate-500">Log masuk pengurusan</p></div><i class="fa-solid fa-chevron-right text-slate-300"></i>
+                        </div>
+                        <div onclick="toggleAuthView('leave')" class="menu-card cursor-pointer bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center group">
+                            <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-lg flex items-center justify-center text-white shadow-lg mr-5 group-hover:scale-110 transition-transform"><i class="fa-solid fa-file-pen text-2xl"></i></div>
+                            <div class="flex-1"><h3 class="font-bold text-slate-800 text-lg group-hover:text-emerald-700">Mohon Cuti</h3><p class="text-xs text-slate-500">Borang permohonan digital</p></div><i class="fa-solid fa-chevron-right text-slate-300"></i>
+                        </div>
+                        <div onclick="toggleAuthView('history')" class="menu-card cursor-pointer bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center group">
+                            <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg flex items-center justify-center text-white shadow-lg mr-5 group-hover:scale-110 transition-transform"><i class="fa-solid fa-list-check text-2xl"></i></div>
+                            <div class="flex-1"><h3 class="font-bold text-slate-800 text-lg group-hover:text-purple-700">Sejarah Cuti</h3><p class="text-xs text-slate-500">Semak status permohonan</p></div><i class="fa-solid fa-chevron-right text-slate-300"></i>
+                        </div>
+                        <div onclick="toggleAuthView('schedule')" class="menu-card cursor-pointer bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center group">
+                            <div class="w-14 h-14 bg-gradient-to-br from-amber-500 to-amber-700 rounded-lg flex items-center justify-center text-white shadow-lg mr-5 group-hover:scale-110 transition-transform"><i class="fa-solid fa-calendar-days text-2xl"></i></div>
+                            <div class="flex-1"><h3 class="font-bold text-slate-800 text-lg group-hover:text-amber-700">Jadual Waktu</h3><p class="text-xs text-slate-500">Lihat jadual bertugas</p></div><i class="fa-solid fa-chevron-right text-slate-300"></i>
+                        </div>
+                    </div>
+
+                    <!-- 2. Login View -->
+                    <div id="viewLogin" class="hidden animate-fade-in w-full">
+                        <button onclick="toggleAuthView('selection')" class="mb-6 text-slate-500 hover:text-blue-600 flex items-center text-sm font-semibold transition"><i class="fa-solid fa-arrow-left mr-2"></i> Kembali</button>
+                        <div class="bg-white shadow-xl rounded-2xl p-8 border border-slate-200">
+                            <div class="text-center mb-6"><h2 class="text-2xl font-bold text-slate-900">Log Masuk Admin</h2><p class="text-xs text-slate-500 mt-1">Sila masukkan kelayakan anda</p></div>
+                            <form id="loginForm" class="space-y-5">
+                                <div><label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email</label><input type="email" id="email" required class="block w-full border-slate-300 rounded-lg bg-slate-50 focus:ring-blue-500 focus:border-blue-500 p-2.5 border"></div>
+                                <div><label class="block text-xs font-bold text-slate-700 uppercase mb-1">Kata Laluan</label><input type="password" id="password" required class="block w-full border-slate-300 rounded-lg bg-slate-50 focus:ring-blue-500 focus:border-blue-500 p-2.5 border"></div>
+                                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-bold text-white bg-blue-700 hover:bg-blue-800 transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5">Log Masuk</button>
+                            </form>
+                            <p id="loginError" class="text-red-500 text-xs mt-4 text-center hidden flex items-center justify-center"><i class="fa-solid fa-circle-exclamation mr-2"></i> Email atau kata laluan salah.</p>
+                        </div>
+                    </div>
+
+                    <!-- 3. Leave Form -->
+                    <div id="viewLeave" class="hidden animate-fade-in w-full">
+                        <button onclick="toggleAuthView('selection')" class="mb-6 text-slate-500 hover:text-emerald-600 flex items-center text-sm font-semibold transition"><i class="fa-solid fa-arrow-left mr-2"></i> Kembali</button>
+                        <div class="bg-white rounded-2xl p-8 border border-slate-200 shadow-xl">
+                            <div class="flex items-center mb-6 text-emerald-700 border-b border-slate-100 pb-4"><div class="p-3 bg-emerald-100 rounded-lg mr-4"><i class="fa-solid fa-pen-to-square text-xl"></i></div><h3 class="font-bold text-xl">Borang Permohonan</h3></div>
+                            <form id="publicLeaveForm" class="space-y-4" onsubmit="submitLeaveApplication(event)">
+                                <div><label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Pemohon</label><select id="reqNameSelect" required class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-400 bg-slate-50"><option value="">-- Pilih Nama Pegawai --</option></select></div>
+                                <div><label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jenis Cuti</label><select id="reqType" required class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-400 bg-slate-50"><option value="Cuti Rehat">Cuti Rehat</option><option value="Hari Kelepasan Am">Hari Kelepasan Am</option></select></div>
+                                <div class="grid grid-cols-2 gap-3"><div><label class="block text-xs font-bold text-slate-600 uppercase mb-1">Mula</label><input type="date" id="reqStartDate" required class="w-full p-2.5 border border-slate-300 rounded-lg bg-slate-50"></div><div><label class="block text-xs font-bold text-slate-600 uppercase mb-1">Sehingga</label><input type="date" id="reqEndDate" required class="w-full p-2.5 border border-slate-300 rounded-lg bg-slate-50"></div></div>
+                                <div><label class="block text-xs font-bold text-slate-600 uppercase mb-1">Catatan</label><textarea id="reqNote" rows="3" class="w-full p-2.5 border border-slate-300 rounded-lg bg-slate-50" placeholder="Sebab..."></textarea></div>
+                                <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-lg hover:bg-emerald-700 font-bold shadow-md transition transform hover:-translate-y-0.5 mt-2">Hantar Permohonan</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 4. Public History -->
+                    <div id="viewHistory" class="hidden animate-fade-in w-full">
+                        <button onclick="toggleAuthView('selection')" class="mb-6 text-slate-500 hover:text-purple-600 flex items-center text-sm font-semibold transition"><i class="fa-solid fa-arrow-left mr-2"></i> Kembali</button>
+                        <div class="bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
+                            <div class="bg-purple-600 p-4 flex items-center justify-between text-white"><h3 class="font-bold text-lg"><i class="fa-solid fa-clock-rotate-left mr-2"></i> Sejarah Permohonan</h3></div>
+                            <div class="flex flex-wrap gap-3 p-4 bg-slate-50 border-b items-end">
+                                <div class="w-full sm:w-auto text-xs"><label class="font-bold text-slate-500 block mb-1">Bulan</label><select id="publicHistoryFilterMonth" class="border p-2 rounded w-full" onchange="renderPublicHistory()"><option value="">Semua</option><option value="1">Januari</option><option value="2">Februari</option><option value="3">Mac</option><option value="4">April</option><option value="5">Mei</option><option value="6">Jun</option><option value="7">Julai</option><option value="8">Ogos</option><option value="9">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Disember</option></select></div>
+                                <div class="w-full sm:w-auto text-xs"><label class="font-bold text-slate-500 block mb-1">Tahun</label><select id="publicHistoryFilterYear" class="border p-2 rounded w-full" onchange="renderPublicHistory()"></select></div>
+                            </div>
+                            <div class="p-0 max-h-[50vh] overflow-y-auto"><div class="p-4 space-y-6"><div><h4 class="font-bold text-purple-700 mb-3 text-sm uppercase flex items-center"><span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>Cuti Rehat</h4><div class="overflow-x-auto rounded-lg border border-slate-100"><table class="w-full text-xs text-left"><thead class="bg-slate-50 text-slate-600 border-b"><tr><th class="p-3">Nama</th><th class="p-3">Tarikh</th><th class="p-3 text-center">Status</th></tr></thead><tbody id="publicHistoryCR" class="divide-y divide-slate-100"></tbody></table><p id="msgNoCR" class="text-center text-xs text-slate-400 py-4 hidden">Tiada rekod.</p></div></div><div><h4 class="font-bold text-amber-700 mb-3 text-sm uppercase flex items-center"><span class="w-2 h-2 bg-amber-500 rounded-full mr-2"></span>Hari Kelepasan Am</h4><div class="overflow-x-auto rounded-lg border border-slate-100"><table class="w-full text-xs text-left"><thead class="bg-slate-50 text-slate-600 border-b"><tr><th class="p-3">Nama</th><th class="p-3">Tarikh</th><th class="p-3 text-center">Status</th></tr></thead><tbody id="publicHistoryHKA" class="divide-y divide-slate-100"></tbody></table><p id="msgNoHKA" class="text-center text-xs text-slate-400 py-4 hidden">Tiada rekod.</p></div></div></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full p-4 border-t border-slate-200 bg-white text-center"><p class="text-xs text-slate-400 font-medium">&copy; <span id="autoYear"></span> Jadual Waktu Unit Hemodialisis Hospital Bintulu</p></div>
+        </div>
+        
+        <!-- 5. Public Schedule View -->
+        <div id="viewSchedule" class="fixed inset-0 z-50 bg-slate-100 hidden overflow-auto animate-fade-in flex flex-col">
+             <div class="bg-white border-b border-slate-200 p-4 shadow-sm sticky top-0 z-10 no-print">
+                <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+                    <button onclick="toggleAuthView('selection')" class="text-slate-600 hover:text-amber-600 flex items-center text-sm font-bold transition"><i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Menu</button>
+                    <div class="flex items-center gap-3 bg-slate-100 p-2 rounded-lg border border-slate-200">
+                        <div class="flex items-center gap-2"><span class="text-xs font-bold text-slate-500 uppercase">Tarikh Mula:</span><input type="date" id="publicScheduleDatePicker" class="border p-1.5 rounded text-sm focus:ring-2 focus:ring-amber-500" onchange="handlePublicDatePick()"></div>
+                        <div class="h-6 w-px bg-slate-300 mx-1"></div>
+                        <div class="flex gap-1"><button onclick="changePublicView('week')" id="btnViewWeek" class="px-3 py-1.5 rounded text-xs font-bold transition-colors">1 Minggu</button><button onclick="changePublicView('2weeks')" id="btnView2Weeks" class="px-3 py-1.5 rounded text-xs font-bold transition-colors">2 Minggu</button><button onclick="changePublicView('month')" id="btnViewMonth" class="px-3 py-1.5 rounded text-xs font-bold transition-colors">Sebulan</button></div>
+                    </div>
+                    <div class="flex gap-2"><button onclick="downloadPublicPDF()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 shadow text-xs font-bold flex items-center"><i class="fa-solid fa-file-pdf mr-2"></i> Muat Turun PDF</button><button onclick="window.print()" class="bg-slate-800 text-white px-4 py-2 rounded-lg hover:bg-slate-900 shadow text-xs font-bold flex items-center"><i class="fa-solid fa-print mr-2"></i> Cetak</button></div>
+                </div>
+            </div>
+            <div class="flex-1 p-4 md:p-8 overflow-auto flex justify-center bg-slate-100">
+                <div id="publicSchedulePrintArea" class="bg-white p-8 shadow-2xl border border-slate-200 print:shadow-none print:border-none print:p-0 a4-preview h-fit min-h-[210mm]">
+                    <div class="text-center mb-6 relative group print-logo-container">
+                        <img src="https://i.postimg.cc/595wB3cy/HOSPITAL_BINTULU.png" alt="Logo" class="w-24 mx-auto mb-2 block" crossorigin="anonymous">
+                        <h1 class="text-xl font-extrabold uppercase border-b-2 border-transparent inline-block px-4 pb-1 tracking-tight text-slate-900">JADUAL WAKTU PEMBANTU PERAWATAN KESIHATAN UNIT HEMODIALISIS HOSPITAL BINTULU</h1>
+                        <div class="mt-2"><span id="publicSchedulePeriodLabel" class="text-slate-800 font-bold uppercase text-sm border border-slate-300 inline-block px-4 py-1 rounded bg-slate-50 shadow-sm"></span></div>
+                    </div>
+                    <div class="overflow-x-auto mb-6"><table class="w-full border-collapse border border-slate-800 text-[10px]" id="publicScheduleTable"><thead class="bg-slate-100 text-slate-800"></thead><tbody id="publicScheduleBody"></tbody></table></div>
+                    <div class="flex gap-4 text-[9px] print:flex mb-6">
+                        <div class="flex-1"><h4 class="font-bold mb-1 border-b-2 border-slate-300 inline-block text-slate-700 uppercase">Coding Kerja Hakiki</h4><table class="w-full border border-slate-400 text-[8px]"><thead class="bg-slate-50"><tr><th class="border border-slate-400 p-0.5 w-12">Kod</th><th class="border border-slate-400 p-0.5 w-8">Warna</th><th class="border border-slate-400 p-0.5">Keterangan</th><th class="border border-slate-400 p-0.5 w-8">Jam</th></tr></thead><tbody id="publicLegendDutyBody"></tbody></table></div>
+                        <div class="flex-1"><h4 class="font-bold mb-1 border-b-2 border-slate-300 inline-block text-slate-700 uppercase">Coding Kerja Lebih Masa</h4><table class="w-full border border-slate-400 text-[8px]"><thead class="bg-slate-50"><tr><th class="border border-slate-400 p-0.5 w-12">Kod</th><th class="border border-slate-400 p-0.5 w-8">Warna</th><th class="border border-slate-400 p-0.5">Keterangan</th><th class="border border-slate-400 p-0.5 w-8">Jam</th></tr></thead><tbody id="publicLegendOTBody"></tbody></table></div>
+                    </div>
+                    <div class="border-2 border-slate-300 rounded p-3 min-h-[60px] text-[11px] bg-slate-50 mb-8"><h4 class="font-bold underline mb-2 text-slate-700 flex items-center"><i class="fa-solid fa-note-sticky mr-2"></i>Catatan:</h4><ul id="publicScheduleNotesList" class="list-disc pl-5 space-y-1 text-slate-600"></ul><div id="publicNoNotesMsg" class="text-slate-400 italic hidden">Tiada catatan.</div></div>
+                    <div class="flex justify-between items-end print:mt-4 text-[11px]">
+                        <div class="text-center w-1/3 px-4"><p class="mb-10 border-b border-slate-800"></p><p class="font-bold text-slate-700 uppercase">Disediakan Oleh:</p><p id="publicSigPreparedName" class="uppercase font-semibold"></p><p id="publicSigPreparedPos" class="text-[10px] text-slate-500"></p></div>
+                        <div class="text-center w-1/3 px-4"><p class="mb-10 border-b border-slate-800"></p><p class="font-bold text-slate-700 uppercase">Disemak Oleh:</p><p id="publicSigCheckedName" class="uppercase font-semibold"></p><p id="publicSigCheckedPos" class="text-[10px] text-slate-500"></p></div>
+                        <div class="text-center w-1/3 px-4"><p class="mb-10 border-b border-slate-800"></p><p class="font-bold text-slate-700 uppercase">Disahkan Oleh:</p><p id="publicSigApprovedName" class="uppercase font-semibold"></p><p id="publicSigApprovedPos" class="text-[10px] text-slate-500"></p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MAIN DASHBOARD (Admin) ================= -->
+    <div id="mainDashboard" class="hidden min-h-screen flex flex-col md:flex-row">
+        <aside class="w-full md:w-64 bg-slate-900 text-white flex flex-col no-print shrink-0 z-20">
+            <div class="p-6 flex flex-col items-center border-b border-slate-700"><img src="https://i.postimg.cc/595wB3cy/HOSPITAL_BINTULU.png" alt="Logo" class="w-16 mb-3"><span class="font-bold text-lg text-center leading-tight">Unit Hemodialisis<br><span class="text-blue-400 text-sm">Admin Panel</span></span></div>
+            <nav class="flex-1 p-4 space-y-2 text-sm">
+                <button onclick="showPage('pageRumusan')" class="nav-btn w-full text-left py-3 px-4 rounded-lg hover:bg-slate-800 transition flex items-center bg-slate-800 text-blue-400"><i class="fa-solid fa-chart-pie w-6 text-center"></i> Rumusan</button>
+                <button onclick="showPage('pageJadual')" class="nav-btn w-full text-left py-3 px-4 rounded-lg hover:bg-slate-800 transition flex items-center text-slate-300"><i class="fa-solid fa-calendar-days w-6 text-center"></i> Jadual Waktu</button>
+                <button onclick="showPage('pageInbox')" class="nav-btn w-full text-left py-3 px-4 rounded-lg hover:bg-slate-800 transition flex items-center justify-between text-slate-300"><div class="flex items-center"><i class="fa-solid fa-inbox w-6 text-center"></i> Permohonan Cuti</div><span id="navBadge" class="hidden w-3 h-3 rounded-full bg-red-500 blink-badge shadow-glow"></span></button>
+                <button onclick="showPage('pageHistory')" class="nav-btn w-full text-left py-3 px-4 rounded-lg hover:bg-slate-800 transition flex items-center text-slate-300"><i class="fa-solid fa-clock-rotate-left w-6 text-center"></i> Sejarah Pemohonan</button>
+                <button onclick="showPage('pageTetapan')" class="nav-btn w-full text-left py-3 px-4 rounded-lg hover:bg-slate-800 transition flex items-center text-slate-300"><i class="fa-solid fa-cogs w-6 text-center"></i> Tetapan Sistem</button>
+            </nav>
+            <div class="p-4 border-t border-slate-700"><button onclick="logout()" class="w-full py-2 px-4 bg-red-600 hover:bg-red-700 rounded text-white text-sm font-semibold transition"><i class="fa-solid fa-sign-out-alt mr-2"></i> Log Keluar</button></div>
+        </aside>
+
+        <main class="flex-1 p-4 md:p-8 overflow-y-auto bg-gray-50">
+            <div id="pageRumusan" class="page-section">
+                <header class="mb-8 flex justify-between items-center"><div><h2 class="text-3xl font-bold text-gray-800">Rumusan</h2><p class="text-gray-500">Gambaran keseluruhan sistem jadual.</p></div></header>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-blue-500"><div class="flex justify-between items-center"><div><p class="text-sm text-gray-500 font-semibold">Pegawai Berdaftar</p><h3 class="text-3xl font-bold text-gray-800" id="dashTotalStaff">0</h3></div><div class="p-3 bg-blue-100 rounded-full text-blue-600"><i class="fa-solid fa-user-nurse text-xl"></i></div></div></div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-orange-500 cursor-pointer" onclick="showPage('pageInbox')"><div class="flex justify-between items-center"><div><p class="text-sm text-gray-500 font-semibold">Permohonan Baru</p><h3 class="text-3xl font-bold text-gray-800" id="dashPendingLeaves">0</h3></div><div class="p-3 bg-orange-100 rounded-full text-orange-600"><i class="fa-solid fa-envelope-open-text text-xl"></i></div></div></div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-purple-500"><div class="flex justify-between items-center"><div><p class="text-sm text-gray-500 font-semibold">Kod Lebih Masa</p><h3 class="text-3xl font-bold text-gray-800" id="dashTotalOTCodes">0</h3></div><div class="p-3 bg-purple-100 rounded-full text-purple-600"><i class="fa-solid fa-clock text-xl"></i></div></div></div>
+                </div>
+            </div>
+
+            <div id="pageJadual" class="page-section hidden">
+                <div class="bg-white p-4 rounded-xl shadow-sm mb-6 flex flex-wrap gap-4 items-center justify-between no-print border border-gray-200">
+                    <div class="flex gap-2 items-center flex-wrap">
+                        <span class="text-sm font-semibold text-gray-600 hidden md:inline"><i class="fa-regular fa-calendar-check mr-2"></i>Pilih Tarikh:</span>
+                        <input type="date" id="scheduleDatePicker" class="border p-2 rounded-lg bg-gray-50 focus:ring-blue-500 text-sm" onchange="handleDatePick()">
+                        <button onclick="changeView('week')" class="border px-3 py-1 rounded hover:bg-gray-100 text-sm bg-white">1 Minggu</button>
+                        <button onclick="changeView('2weeks')" class="border px-3 py-1 rounded hover:bg-gray-100 text-sm bg-white">2 Minggu</button>
+                        <button onclick="changeView('month')" class="border px-3 py-1 rounded bg-blue-50 text-blue-700 font-bold text-sm">Sebulan</button>
+                        <select id="scheduleYear" class="border p-2 rounded-lg bg-gray-50 focus:ring-blue-500 text-sm" onchange="generateSchedule()"></select>
+                        <select id="scheduleMonth" class="border p-2 rounded-lg bg-gray-50 focus:ring-blue-500 text-sm" onchange="generateSchedule()"></select>
+                        <button onclick="generateSchedule()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 shadow-md text-sm"><i class="fa-solid fa-filter mr-1"></i> Papar</button>
+                    </div>
+                    <div class="flex gap-2 flex-wrap">
+                        <button onclick="downloadPDF()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 shadow-md text-sm"><i class="fa-solid fa-file-pdf mr-1"></i> PDF</button>
+                        <button onclick="window.print()" class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 shadow-md text-sm"><i class="fa-solid fa-print mr-1"></i> Cetak</button>
+                    </div>
+                </div>
+                <div id="schedulePrintArea" class="bg-white p-2 md:p-8 rounded-xl shadow-lg border border-gray-200 print:shadow-none print:border-none print:p-0">
+                    <div class="text-center mb-6 relative group print-logo-container">
+                        <img src="https://i.postimg.cc/595wB3cy/HOSPITAL_BINTULU.png" alt="Logo" class="w-24 mx-auto mb-2 block" crossorigin="anonymous">
+                        <h1 class="text-xl font-extrabold uppercase border-b-2 border-transparent hover:border-gray-300 inline-block px-4 pb-1" contenteditable="true">JADUAL WAKTU PEMBANTU PERAWATAN KESIHATAN UNIT HEMODIALISIS HOSPITAL BINTULU</h1>
+                        <p id="schedulePeriodLabel" class="text-gray-800 font-bold mt-1 uppercase text-sm border border-gray-300 inline-block px-4 py-1 rounded bg-gray-50"></p>
+                    </div>
+                    <div class="overflow-x-auto"><table class="w-full border-collapse border border-gray-800 text-xs md:text-sm" id="scheduleTable"><thead class="bg-gray-100 text-gray-800"></thead><tbody id="scheduleBody"></tbody></table></div>
+                    
+                    <div class="flex gap-4 text-[9px] print:flex mt-6 mb-6">
+                        <div class="flex-1"><h4 class="font-bold mb-1 border-b border-gray-400 inline-block text-xs">Coding Kerja Hakiki</h4><table class="w-full text-xs border border-gray-400 text-[8px]"><thead class="bg-gray-100"><tr><th class="border p-0.5 w-12">Kod</th><th class="border p-0.5 w-8">Warna</th><th class="border p-0.5">Keterangan</th><th class="border p-0.5 w-8">Jam</th></tr></thead><tbody id="legendDutyBody"></tbody></table></div>
+                        <div class="flex-1"><h4 class="font-bold mb-1 border-b border-gray-400 inline-block text-xs">Coding Kerja Lebih Masa</h4><table class="w-full text-xs border border-gray-400 text-[8px]"><thead class="bg-gray-100"><tr><th class="border p-0.5">Kod</th><th class="border p-0.5">Warna</th><th class="border p-0.5">Keterangan</th><th class="border p-0.5">Jam</th></tr></thead><tbody id="legendOTBody"></tbody></table></div>
+                    </div>
+                    
+                    <div class="mt-4 border border-gray-400 p-2 min-h-[80px]">
+                        <div class="flex justify-between items-center mb-2 border-b border-gray-300 pb-1">
+                            <h4 class="font-bold text-sm underline"><i class="fa-solid fa-note-sticky mr-1"></i>Catatan</h4>
+                            <div class="flex gap-2 no-print">
+                                <input type="date" id="adminNoteDate" class="border p-1 rounded text-xs bg-gray-50">
+                                <input type="text" id="adminNoteText" class="border p-1 rounded text-xs w-64 bg-gray-50" placeholder="Masukkan catatan...">
+                                <button onclick="addScheduleNote()" class="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700">Tambah</button>
+                            </div>
+                        </div>
+                        <ul id="scheduleNotesList" class="list-disc pl-5 space-y-1 text-sm text-gray-800"></ul>
+                    </div>
+
+                    <div class="mt-10 flex justify-between items-end print:mt-12 text-sm">
+                        <div class="text-center w-1/3 px-2"><p class="mb-12 border-b border-black"></p><p class="font-bold">Disediakan Oleh:</p><p id="sigPreparedName" class="uppercase"></p><p id="sigPreparedPos" class="text-xs"></p></div>
+                        <div class="text-center w-1/3 px-2"><p class="mb-12 border-b border-black"></p><p class="font-bold">Disemak Oleh:</p><p id="sigCheckedName" class="uppercase"></p><p id="sigCheckedPos" class="text-xs"></p></div>
+                        <div class="text-center w-1/3 px-2"><p class="mb-12 border-b border-black"></p><p class="font-bold">Disahkan Oleh:</p><p id="sigApprovedName" class="uppercase"></p><p id="sigApprovedPos" class="text-xs"></p></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pageInbox" class="page-section hidden">
+                <header class="mb-6"><h2 class="text-3xl font-bold text-gray-800">Inbox Permohonan Cuti</h2><p class="text-gray-500">Senarai permohonan yang menunggu pengesahan.</p></header>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <table class="w-full text-left"><thead class="bg-gray-100 border-b border-gray-200 text-gray-600 uppercase text-xs"><tr><th class="p-4">Nama</th><th class="p-4">Jenis</th><th class="p-4">Tarikh</th><th class="p-4">Catatan</th><th class="p-4 text-center">Tindakan</th></tr></thead><tbody id="inboxList" class="divide-y divide-gray-100 text-sm"></tbody></table>
+                    <div id="noInboxMsg" class="p-8 text-center text-gray-400 hidden">Tiada permohonan baru.</div>
+                </div>
+            </div>
+            
+            <div id="pageHistory" class="page-section hidden">
+                <header class="mb-6"><h2 class="text-3xl font-bold text-gray-800">Sejarah Permohonan</h2><p class="text-gray-500">Arkib permohonan yang telah disahkan.</p></header>
+                <div class="flex flex-wrap gap-4 mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-200 items-end">
+                    <div class="w-full sm:w-auto"><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Bulan</label><select id="historyFilterMonth" class="border p-2 rounded text-sm bg-gray-50 w-full" onchange="renderLeaveHistory()"><option value="">Semua</option><option value="1">Januari</option><option value="2">Februari</option><option value="3">Mac</option><option value="4">April</option><option value="5">Mei</option><option value="6">Jun</option><option value="7">Julai</option><option value="8">Ogos</option><option value="9">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Disember</option></select></div>
+                    <div class="w-full sm:w-auto"><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tahun</label><select id="historyFilterYear" class="border p-2 rounded text-sm bg-gray-50 w-full" onchange="renderLeaveHistory()"></select></div>
+                    <div class="w-full sm:w-auto"><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tarikh Dicari</label><input type="date" id="historyFilterDate" class="border p-2 rounded text-sm bg-gray-50 w-full" onchange="renderLeaveHistory()"></div>
+                    <div class="w-full sm:w-auto"><button onclick="resetHistoryFilter()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded text-sm font-bold w-full"><i class="fa-solid fa-rotate-left mr-1"></i> Reset</button></div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <table class="w-full text-left"><thead class="bg-gray-100 border-b border-gray-200 text-gray-600 uppercase text-xs"><tr><th class="p-4">Nama Pegawai</th><th class="p-4">Jenis Cuti</th><th class="p-4">Tarikh</th><th class="p-4">Catatan</th><th class="p-4">Status</th></tr></thead><tbody id="historyList" class="divide-y divide-gray-100 text-sm"></tbody></table>
+                    <div id="noHistoryMsg" class="p-8 text-center text-gray-400 hidden">Tiada sejarah permohonan.</div>
+                </div>
+            </div>
+
+            <div id="pageTetapan" class="page-section hidden">
+                <header class="mb-6"><h2 class="text-3xl font-bold text-gray-800">Tetapan Sistem</h2><p class="text-gray-500">Urus pegawai, kod kerja dan pengesahan.</p></header>
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                        <div class="flex items-center mb-4 text-blue-700"><i class="fa-solid fa-user-plus mr-2"></i><h3 class="font-bold text-lg">Daftar Pegawai</h3></div>
+                        <form onsubmit="addStaff(event)" class="space-y-3">
+                            <input type="text" id="staffName" placeholder="Nama Penuh" class="w-full border p-2 rounded" required>
+                            <select id="staffPos" class="w-full border p-2 rounded" required><option value="Pembantu Perawatan Kesihatan">Pembantu Perawatan Kesihatan</option></select>
+                            <select id="staffGrade" class="w-full border p-2 rounded"><option value="U1">U1</option><option value="U2">U2</option></select>
+                            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Tambah Pegawai</button>
+                        </form>
+                        <div class="mt-4 max-h-48 overflow-y-auto border-t pt-2"><ul id="staffList" class="space-y-2 text-sm"></ul></div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200"><div class="flex items-center mb-4 text-orange-700"><i class="fa-solid fa-file-signature mr-2"></i><h3 class="font-bold text-lg">Pengesahan Jadual</h3></div><div class="space-y-4"><div class="bg-gray-50 p-3 rounded"><p class="text-xs font-bold text-gray-500 uppercase mb-1">Disediakan Oleh</p><input type="text" id="signerPrepName" placeholder="Nama" class="w-full border p-1 mb-1 text-sm rounded"><input type="text" id="signerPrepJob" placeholder="Jawatan & Gred" class="w-full border p-1 text-sm rounded"></div><div class="bg-gray-50 p-3 rounded"><p class="text-xs font-bold text-gray-500 uppercase mb-1">Disemak Oleh</p><input type="text" id="signerCheckName" placeholder="Nama" class="w-full border p-1 mb-1 text-sm rounded"><input type="text" id="signerCheckJob" placeholder="Jawatan & Gred" class="w-full border p-1 text-sm rounded"></div><div class="bg-gray-50 p-3 rounded"><p class="text-xs font-bold text-gray-500 uppercase mb-1">Disahkan Oleh</p><input type="text" id="signerAppName" placeholder="Nama" class="w-full border p-1 mb-1 text-sm rounded"><input type="text" id="signerAppJob" placeholder="Jawatan & Gred" class="w-full border p-1 text-sm rounded"></div><button onclick="saveSigners()" class="w-full bg-orange-600 text-white py-2 rounded hover:bg-orange-700">Simpan Pengesahan</button></div></div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200"><div class="flex items-center mb-4 text-green-700"><i class="fa-solid fa-briefcase mr-2"></i><h3 class="font-bold text-lg">Coding Kerja Hakiki</h3></div><form onsubmit="addCode(event, 'duty')" class="flex gap-2 mb-2 items-end"><div class="w-1/4"><label class="text-xs text-gray-500">Kod</label><input type="text" id="dutyCode" placeholder="P" class="w-full border p-2 rounded" required></div><div class="w-1/6"><label class="text-xs text-gray-500">Warna</label><input type="color" id="dutyColor" class="w-full h-10 border p-1 rounded" value="#166534"></div><div class="w-1/3"><label class="text-xs text-gray-500">Keterangan</label><input type="text" id="dutyDesc" placeholder="Pagi" class="w-full border p-2 rounded" required></div><div class="w-1/6"><label class="text-xs text-gray-500">Jam</label><input type="number" id="dutyHours" placeholder="7" class="w-full border p-2 rounded" required step="0.5"></div><button type="submit" class="bg-green-600 text-white p-2 rounded hover:bg-green-700 mb-0.5"><i class="fa-solid fa-plus"></i></button></form><ul id="dutyList" class="space-y-1 text-sm max-h-40 overflow-y-auto"></ul></div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200"><div class="flex items-center mb-4 text-purple-700"><i class="fa-solid fa-clock mr-2"></i><h3 class="font-bold text-lg">Coding Kerja Lebih Masa</h3></div><form onsubmit="addCode(event, 'ot')" class="flex gap-2 mb-2 items-end"><div class="w-1/4"><label class="text-xs text-gray-500">Kod</label><input type="text" id="otCode" placeholder="OD" class="w-full border p-2 rounded" required></div><div class="w-1/6"><label class="text-xs text-gray-500">Warna</label><input type="color" id="otColor" class="w-full h-10 border p-1 rounded" value="#c026d3"></div><div class="w-1/3"><label class="text-xs text-gray-500">Keterangan</label><input type="text" id="otDesc" placeholder="OnCall" class="w-full border p-2 rounded" required></div><div class="w-1/6"><label class="text-xs text-gray-500">Jam</label><input type="number" id="otHours" placeholder="4" class="w-full border p-2 rounded" required step="0.5"></div><button type="submit" class="bg-purple-600 text-white p-2 rounded hover:bg-purple-700 mb-0.5"><i class="fa-solid fa-plus"></i></button></form><ul id="otList" class="space-y-1 text-sm max-h-40 overflow-y-auto"></ul></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Hidden Datalists -->
+    <datalist id="dutyCodesList"></datalist>
+    <datalist id="otCodesList"></datalist>
+
+    <!-- Scripts -->
+    <script>
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbycZZ-YN1MF3tQMbP3IaPzER0EMWnRF9EYs3STEgXCrQjBYP9tJnmBWYil7CbevFsg03w/exec";
+        const LOCAL_STORAGE_KEY = 'hospBintuluCache_v6';
+        
+        let db = { staff: [], leaveRequests: [], dutyCodes: [], otCodes: [], signers: {}, schedule: {}, notes: [] };
+
+        // API Service with Cache
+        async function callApi(action, payload = {}, retries = 3) {
+            if (action !== 'readAll') showLoading(true);
+            const params = new URLSearchParams();
+            params.append('action', action);
+            for (const key in payload) params.append(key, payload[key]);
+            
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: params });
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    const result = await response.json();
+                    if (action !== 'readAll') showLoading(false);
+                    
+                    if (!result.success && action !== 'readAll') {
+                        showModal('Ralat', result.error || 'Ralat tidak diketahui.');
+                        return null;
+                    }
+                    return result;
+                } catch (error) {
+                    console.warn(`Percubaan ${i + 1} gagal:`, error);
+                    if (i === retries - 1) {
+                        if (action !== 'readAll') {
+                            showLoading(false);
+                            showModal('Ralat Sambungan', 'Gagal menyambung ke server. Sila periksa sambungan internet.');
+                        }
+                        updateStatus(false);
+                        return null;
+                    }
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+            }
+        }
+
+        // --- AUTH & VIEW ---
+        document.getElementById('autoYear').innerText = new Date().getFullYear();
+
+        function toggleAuthView(viewName) {
+            const views = ['viewSelection', 'viewLogin', 'viewLeave', 'viewHistory', 'viewSchedule'];
+            views.forEach(v => document.getElementById(v).classList.add('hidden'));
+            if (viewName === 'selection') document.getElementById('viewSelection').classList.remove('hidden');
+            else if (viewName === 'login') document.getElementById('viewLogin').classList.remove('hidden');
+            else if (viewName === 'leave') { document.getElementById('viewLeave').classList.remove('hidden'); renderStaffSelect(); }
+            else if (viewName === 'history') { document.getElementById('viewHistory').classList.remove('hidden'); renderPublicHistory(); }
+            else if (viewName === 'schedule') { document.getElementById('viewSchedule').classList.remove('hidden'); initPublicSchedule(); }
+        }
+
+        const loginForm = document.getElementById('loginForm');
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if(document.getElementById('email').value === 'rickeers@moh.gov.my' && document.getElementById('password').value === '135881Andres@') {
+                document.getElementById('authSection').classList.add('hidden');
+                document.getElementById('mainDashboard').classList.remove('hidden');
+                document.getElementById('mainDashboard').classList.add('flex');
+                initApp(true);
+            } else { document.getElementById('loginError').classList.remove('hidden'); }
+        });
+
+        function logout() { location.reload(); }
+
+        // --- INIT & CACHE ---
+        document.addEventListener('DOMContentLoaded', () => { initApp(); });
+
+        async function initApp(forceRefresh = false) {
+            const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (cached) {
+                db = JSON.parse(cached);
+                refreshUI(); 
+            } else {
+                document.getElementById('loadingOverlay').classList.remove('hidden');
+            }
+
+            document.getElementById('statusBar').classList.remove('hidden');
+            updateStatus(false, "Menyambung...");
+            
+            const data = await callApi('readAll');
+            if (data) {
+                db = data;
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(db));
+                refreshUI();
+                updateStatus(true);
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }
+        }
+
+        function refreshUI() {
+            populateHistoryFilters(); renderStaffList(); renderCodeList('duty'); renderCodeList('ot'); 
+            loadSigners(); updateDashboardCounters(); renderStaffSelect(); renderDatalists();
+            populateAdminDateDropdowns();
+            
+            const today = new Date().toISOString().split('T')[0];
+            if(!document.getElementById('scheduleDatePicker').value) document.getElementById('scheduleDatePicker').value = today;
+            if(!document.getElementById('publicScheduleDatePicker').value) document.getElementById('publicScheduleDatePicker').value = today;
+            
+            if(!document.getElementById('pageJadual').classList.contains('hidden')) generateSchedule();
+            if(!document.getElementById('viewSchedule').classList.contains('hidden')) generatePublicSchedule();
+            checkNotifications();
+        }
+
+        // --- PUBLIC ACTIONS ---
+        async function submitLeaveApplication(e) {
+            e.preventDefault();
+            const name = document.getElementById('reqNameSelect').value;
+            if(!name) return showModal('Ralat', 'Sila pilih nama.');
+            const payload = { id: Date.now(), name: name, type: document.getElementById('reqType').value, start: document.getElementById('reqStartDate').value, end: document.getElementById('reqEndDate').value, note: document.getElementById('reqNote').value, status: 'pending', timestamp: new Date().toISOString() };
+            const res = await callApi('createLeave', payload);
+            if(res && res.success) {
+                db.leaveRequests.push(payload); 
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(db));
+                showModal('Berjaya', "Permohonan dihantar.");
+                e.target.reset(); toggleAuthView('selection');
+            }
+        }
+        
+        function renderPublicHistory() {
+            const tbodyCR = document.getElementById('publicHistoryCR');
+            const tbodyHKA = document.getElementById('publicHistoryHKA');
+            const msgNoCR = document.getElementById('msgNoCR');
+            const msgNoHKA = document.getElementById('msgNoHKA');
+            
+            // Filters
+            const filterMonth = document.getElementById('publicHistoryFilterMonth') ? document.getElementById('publicHistoryFilterMonth').value : '';
+            const filterYear = document.getElementById('publicHistoryFilterYear') ? document.getElementById('publicHistoryFilterYear').value : '';
+            
+            tbodyCR.innerHTML = ''; tbodyHKA.innerHTML = '';
+            let allRequests = db.leaveRequests.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            if (filterYear) allRequests = allRequests.filter(r => new Date(r.start).getFullYear() == filterYear);
+            if (filterMonth) allRequests = allRequests.filter(r => (new Date(r.start).getMonth() + 1) == filterMonth);
+
+            const crList = allRequests.filter(r => r.type === 'Cuti Rehat');
+            const hkaList = allRequests.filter(r => r.type === 'Hari Kelepasan Am');
+            
+            if (crList.length === 0) msgNoCR.classList.remove('hidden'); else { msgNoCR.classList.add('hidden'); crList.forEach(r => tbodyCR.innerHTML += renderPublicHistoryRow(r)); }
+            if (hkaList.length === 0) msgNoHKA.classList.remove('hidden'); else { msgNoHKA.classList.add('hidden'); hkaList.forEach(r => tbodyHKA.innerHTML += renderPublicHistoryRow(r)); }
+        }
+
+        function renderPublicHistoryRow(r) {
+            const statusClass = r.status === 'approved' ? 'text-green-600 bg-green-50 border-green-200' : 'text-orange-600 bg-orange-50 border-orange-200';
+            const statusIcon = r.status === 'approved' ? '<i class="fa-solid fa-check-circle"></i> Lulus' : '<i class="fa-solid fa-clock"></i> Proses';
+            return `<tr class="border-b last:border-0 hover:bg-slate-50"><td class="p-3 font-semibold text-slate-700">${r.name}</td><td class="p-3 text-slate-500">${formatDate(r.start)} - ${formatDate(r.end)}</td><td class="p-3 text-center"><span class="text-xs px-2.5 py-1 rounded-full border ${statusClass} font-bold">${statusIcon}</span></td></tr>`;
+        }
+
+        // --- CRUD ---
+        async function addStaff(e) {
+            e.preventDefault();
+            const payload = { id: Date.now(), name: document.getElementById('staffName').value, pos: document.getElementById('staffPos').value, grade: document.getElementById('staffGrade').value };
+            const res = await callApi('createStaff', payload);
+            if(res && res.success) { db.staff.push(payload); localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(db)); renderStaffList(); e.target.reset(); }
+        }
+        async function deleteStaff(id) { showCustomConfirm('Padam', 'Pasti?', async () => { const res = await callApi('deleteStaff', {id: id}); if(res && res.success) { db.staff = db.staff.filter(s => s.id !== id); localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(db)); renderStaffList(); } }); }
+        async function addCode(e, type) {
+            e.preventDefault(); const p=type==='duty'?'duty':'ot'; 
+            const payload = { type: type, code: document.getElementById(`${p}Code`).value.toUpperCase(), desc: document.getElementById(`${p}Desc`).value, hours: document.getElementById(`${p}Hours`).value, color: document.getElementById(`${p}Color`).value };
+            const res = await callApi('saveCode', payload);
+            if(res && res.success) { if(type==='duty') db.dutyCodes.push(payload); else db.otCodes.push(payload); localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(db)); renderCodeList(type); renderDatalists(); e.target.reset(); }
+        }
+        async function deleteCode(type, code) { showCustomConfirm('Padam', 'Pasti?', async () => { const res = await callApi('deleteCode', {type: type, code: code}); if(res && res.success) { if(type==='duty') db.dutyCodes = db.dutyCodes.filter(c=>c.code!==code); else db.otCodes = db.otCodes.filter(c=>c.code!==code); localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(db)); renderCodeList(type); renderDatalists(); } }); }
+        
+        async function updateSchedule(monthKey, staffId, type, day, value) {
+            value = value.toUpperCase();
+            if(!db.schedule[monthKey]) db.schedule[monthKey] = {}; if(!db.schedule[monthKey][staffId]) db.schedule[monthKey][staffId] = { ot: {}, duty: {} }; if(!db.schedule[monthKey][staffId][type]) db.schedule[monthKey][staffId][type] = {};
+            db.schedule[monthKey][staffId][type][day] = value;
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(db)); 
+            generateSchedule(); 
+            await callApi('updateSchedule', { monthKey: monthKey, staffId: staffId, type: type, day: day, value: value });
+        }
+
+        async function addScheduleNote() {
+            const date = document.getElementById('adminNoteDate').value; const text = document.getElementById('adminNoteText').value;
+            if(!date || !text) return showModal('Info', "Lengkapkan info.");
+            const d = new Date(date); const mKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+            const payload = { id: Date.now(), monthKey: mKey, date: date, text: text };
+            const res = callApi('saveNote', payload); // No await for UI speed
+            // Optimistic
+            if(!db.schedule[mKey]) db.schedule[mKey]={}; if(!db.schedule[mKey].notes) db.schedule[mKey].notes=[]; db.schedule[mKey].notes.push(payload); 
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(db)); document.getElementById('adminNoteText').value=''; generateSchedule(); 
+        }
+
+        function deleteScheduleNote(mKey, id) { showCustomConfirm('Padam', 'Pasti?', () => { const res = callApi('deleteNote', {id:id}); if(db.schedule[mKey]?.notes) db.schedule[mKey].notes = db.schedule[mKey].notes.filter(n=>n.id!==id); localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(db)); generateSchedule(); }); }
+        
+        async function saveSigners() {
+            const p = { preparedName: document.getElementById('signerPrepName').value, preparedJob: document.getElementById('signerPrepJob').value, checkedName: document.getElementById('signerCheckName').value, checkedJob: document.getElementById('signerCheckJob').value, approvedName: document.getElementById('signerAppName').value, approvedJob: document.getElementById('signerAppJob').value };
+            const res = callApi('saveSigners', p);
+            db.signers = { prepared: {name: p.preparedName, job: p.preparedJob}, checked: {name: p.checkedName, job: p.checkedJob}, approved: {name: p.approvedName, job: p.approvedJob} }; localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(db)); showModal('Berjaya', "Disimpan."); generateSchedule(); 
+        }
+
+        async function approveLeave(id) { const r=db.leaveRequests.find(q=>q.id===id); if(r) showCustomConfirm('Sahkan', 'Luluskan cuti?', async()=>{ const res=await callApi('updateLeaveStatus', {id:id, status:'approved'}); if(res&&res.success){ r.status='approved'; localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(db)); renderLeaveInbox(); showModal('Berjaya','Diluluskan'); } }); }
+
+        // --- RENDERERS ---
+        function renderStaffList() { const l=document.getElementById('staffList'); l.innerHTML=''; db.staff.forEach(s=>{l.innerHTML+=`<li class="flex justify-between p-2 border-b bg-slate-50 rounded mb-1"><span><b>${s.name}</b><br><span class="text-xs text-gray-500">${s.pos} (${s.grade})</span></span><button onclick="deleteStaff(${s.id})" class="text-red-500"><i class="fa-solid fa-trash"></i></button></li>`}); }
+        function renderCodeList(type) { const l=document.getElementById(type==='duty'?'dutyList':'otList'); const d=type==='duty'?db.dutyCodes:db.otCodes; l.innerHTML=''; d.forEach(c=>{l.innerHTML+=`<li class="flex justify-between items-center bg-gray-50 p-2 rounded border-b mb-1"><div class="flex items-center gap-2 w-24"><span class="w-4 h-4 rounded-full border shadow-sm flex-shrink-0" style="background-color: ${c.color||'#000'}"></span><span class="font-bold text-blue-800">${c.code}</span></div><span class="flex-1 text-sm truncate mr-2">${c.desc}</span><span class="w-16 text-right font-mono text-xs text-gray-600">${c.hours}j</span><button onclick="deleteCode('${type}','${c.code}')" class="ml-2 text-red-500"><i class="fa-solid fa-times"></i></button></li>`}); }
+        
+        function loadSigners() {
+            if(!db.signers) db.signers = { prepared: {}, checked: {}, approved: {} };
+            // Use defaults to prevent null errors
+            const p = db.signers.prepared || {};
+            const c = db.signers.checked || {};
+            const a = db.signers.approved || {};
+            
+            if(document.getElementById('signerPrepName')) document.getElementById('signerPrepName').value = p.name || '';
+            if(document.getElementById('signerPrepJob')) document.getElementById('signerPrepJob').value = p.job || '';
+            if(document.getElementById('signerCheckName')) document.getElementById('signerCheckName').value = c.name || '';
+            if(document.getElementById('signerCheckJob')) document.getElementById('signerCheckJob').value = c.job || '';
+            if(document.getElementById('signerAppName')) document.getElementById('signerAppName').value = a.name || '';
+            if(document.getElementById('signerAppJob')) document.getElementById('signerAppJob').value = a.job || '';
+        }
+
+        // ADDED MISSING FUNCTIONS
+        function renderStaffSelect() {
+            const select = document.getElementById('reqNameSelect');
+            if (!select) return;
+            const currentVal = select.value;
+            select.innerHTML = '<option value="">-- Pilih Nama Pegawai --</option>';
+            db.staff.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.name;
+                opt.innerText = s.name;
+                select.appendChild(opt);
+            });
+            select.value = currentVal;
+        }
+
+        function renderDatalists() {
+            const dutyList = document.getElementById('dutyCodesList');
+            const otList = document.getElementById('otCodesList');
+            if (dutyList) dutyList.innerHTML = '';
+            if (otList) otList.innerHTML = '';
+            
+            db.dutyCodes.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.code;
+                if(dutyList) dutyList.appendChild(opt);
+            });
+            
+            db.otCodes.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.code;
+                if(otList) otList.appendChild(opt);
+            });
+        }
+        
+        // --- ADMIN SCHEDULE LOGIC REUSED ---
+        let currentAdminView = 'month';
+        function populateAdminDateDropdowns() { const y=document.getElementById('scheduleYear'), m=document.getElementById('scheduleMonth'); if(y && m) { y.innerHTML=''; m.innerHTML=''; const cur=new Date().getFullYear(); for(let i=(cur<2026?2026:cur); i<=(cur<2026?2026:cur)+5; i++) { const o=document.createElement('option'); o.value=i; o.innerText=i; if(i===cur)o.selected=true; y.appendChild(o); } const ms=["Januari","Februari","Mac","April","Mei","Jun","Julai","Ogos","September","Oktober","November","Disember"]; ms.forEach((n,i)=>{ const o=document.createElement('option'); o.value=i+1; o.innerText=n; if(i===new Date().getMonth())o.selected=true; m.appendChild(o); }); } }
+        function handleDatePick() { const p=document.getElementById('scheduleDatePicker'); if(p.value) { const d=new Date(p.value); document.getElementById('scheduleYear').value=d.getFullYear(); document.getElementById('scheduleMonth').value=d.getMonth()+1; generateSchedule(); } }
+        function changeView(v) { currentAdminView=v; generateSchedule(); }
+        function handlePublicDatePick() { generatePublicSchedule(); }
+        function changePublicView(v) { publicViewType=v; generatePublicSchedule(); }
+
+        function generateSchedule() { renderScheduleCore('schedule', currentAdminView, 'scheduleDatePicker', 'scheduleYear', 'scheduleMonth', 'schedulePeriodLabel', 'scheduleTable', 'scheduleBody', 'scheduleNotesList', true); }
+        function generatePublicSchedule() { 
+            renderScheduleCore('publicSchedule', publicViewType, 'publicScheduleDatePicker', null, null, 'publicSchedulePeriodLabel', 'publicScheduleTable', 'publicScheduleBody', 'publicScheduleNotesList', false);
+            // Public Extras
+            const lDB = document.getElementById('publicLegendDutyBody'); if(lDB) lDB.innerHTML = db.dutyCodes.map(c => `<tr><td class="border border-slate-400 p-0.5 font-bold text-center" style="color: ${c.color}">${c.code}</td><td class="border border-slate-400 p-0.5 text-center"><span class="inline-block w-3 h-3 rounded-full border" style="background-color: ${c.color}"></span></td><td class="border border-slate-400 p-0.5">${c.desc}</td><td class="border border-slate-400 p-0.5 text-center">${c.hours}</td></tr>`).join('');
+            const lOTB = document.getElementById('publicLegendOTBody'); if(lOTB) lOTB.innerHTML = db.otCodes.map(c => `<tr><td class="border border-slate-400 p-0.5 font-bold text-center" style="color: ${c.color}">${c.code}</td><td class="border border-slate-400 p-0.5 text-center"><span class="inline-block w-3 h-3 rounded-full border" style="background-color: ${c.color}"></span></td><td class="border border-slate-400 p-0.5">${c.desc}</td><td class="border border-slate-400 p-0.5 text-center">${c.hours}</td></tr>`).join('');
+            if(document.getElementById('publicSigPreparedName')) document.getElementById('publicSigPreparedName').innerText = db.signers.prepared?.name||''; 
+            if(document.getElementById('publicSigPreparedPos')) document.getElementById('publicSigPreparedPos').innerText = db.signers.prepared?.job||'';
+            if(document.getElementById('publicSigCheckedName')) document.getElementById('publicSigCheckedName').innerText = db.signers.checked?.name||''; 
+            if(document.getElementById('publicSigCheckedPos')) document.getElementById('publicSigCheckedPos').innerText = db.signers.checked?.job||'';
+            if(document.getElementById('publicSigApprovedName')) document.getElementById('publicSigApprovedName').innerText = db.signers.approved?.name||''; 
+            if(document.getElementById('publicSigApprovedPos')) document.getElementById('publicSigApprovedPos').innerText = db.signers.approved?.job||'';
+        }
+
+        function renderScheduleCore(prefix, viewType, pickerId, yearId, monthId, labelId, tableId, bodyId, noteListId, isAdmin) {
+             const picker = document.getElementById(pickerId);
+             if (!picker) return;
+             let year, month;
+             
+             if (yearId && monthId && viewType === 'month') {
+                 year = parseInt(document.getElementById(yearId).value);
+                 month = parseInt(document.getElementById(monthId).value);
+             } else if (picker.value) {
+                 const d = new Date(picker.value); year = d.getFullYear(); month = d.getMonth() + 1;
+             } else { return; }
+
+             const daysInMonth = new Date(year, month, 0).getDate();
+             let startDate, endDate;
+             
+             if (viewType === 'month') { startDate = new Date(year, month - 1, 1); endDate = new Date(year, month - 1, daysInMonth); } 
+             else { startDate = new Date(picker.value || new Date()); endDate = new Date(startDate); if(viewType === 'week') endDate.setDate(startDate.getDate() + 6); else endDate.setDate(startDate.getDate() + 13); }
+             
+             if (yearId && monthId && document.getElementById(yearId)) { document.getElementById(yearId).value = startDate.getFullYear(); document.getElementById(monthId).value = startDate.getMonth() + 1; }
+             
+             let days = []; let curr = new Date(startDate);
+             while (curr <= endDate) { days.push(new Date(curr)); curr.setDate(curr.getDate() + 1); }
+             
+             const monthsNames = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"];
+             const label = viewType === 'month' ? `BULAN: ${monthsNames[startDate.getMonth()].toUpperCase()} ${startDate.getFullYear()}` : `DARI: ${startDate.toLocaleDateString('ms-MY')} HINGGA: ${endDate.toLocaleDateString('ms-MY')}`;
+             if(document.getElementById(labelId)) document.getElementById(labelId).innerText = label;
+
+             // Header
+             let html = `<tr><th rowspan="2" class="border border-slate-600 p-1 w-48 bg-blue-100">NAMA PEGAWAI</th><th rowspan="2" class="border border-slate-600 p-1 w-12 bg-blue-100">JENIS</th>`;
+             days.forEach(d => { html += `<th class="border border-slate-600 p-0 text-center w-6 ${d.getDay()===0||d.getDay()===6?'bg-slate-300':'bg-white'}"><div class="flex flex-col justify-center h-full"><span>${d.getDate()}</span><span class="text-[8px] uppercase">${d.toLocaleDateString('ms-MY',{weekday:'short'})}</span></div></th>`; });
+             html += `<th rowspan="2" class="border border-slate-600 p-1 w-8 bg-amber-100 text-[9px]">JUMLAH JAM</th></tr><tr>`;
+             html = `<tr><th class="border border-slate-600 p-2 bg-blue-100 w-48">NAMA PEGAWAI</th><th class="border border-slate-600 p-1 bg-blue-100 w-16">JENIS</th>`;
+             days.forEach(d => { html += `<th class="border border-slate-600 p-1 text-center w-8 ${d.getDay()===0||d.getDay()===6?'bg-slate-300':'bg-slate-50'}">${d.getDate()}<br><span class="text-[8px] uppercase">${d.toLocaleDateString('ms-MY',{weekday:'short'})}</span></th>`; });
+             html += `<th class="border border-slate-600 p-1 bg-amber-100 w-12 text-[9px]">JAM</th></tr>`;
+             
+             const thead = document.querySelector(`#${tableId} thead`); if(thead) thead.innerHTML = html;
+             
+             const tbody = document.getElementById(bodyId); if(tbody) tbody.innerHTML = '';
+             db.staff.forEach(s => {
+                 let r1 = `<tr class="hover:bg-slate-50"><td rowspan="2" class="border border-slate-600 p-1 font-bold align-middle bg-white">${s.name}</td><td class="border border-slate-600 p-0 text-[9px] font-bold text-purple-700 bg-purple-50 text-center">L/MASA</td>`;
+                 let ot = 0;
+                 days.forEach(d => {
+                     const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+                     const v = db.schedule[k]?.[s.id]?.ot?.[d.getDate()] || '';
+                     const c = db.otCodes.find(x=>x.code===v);
+                     if(c) ot += parseFloat(c.hours);
+                     if (isAdmin) r1 += `<td class="border border-slate-600 p-0 ${d.getDay()===0||d.getDay()===6?'bg-slate-100':'bg-white'}"><input type="text" class="sched-input" style="color:${c?c.color:'#000'}" value="${v}" list="otCodesList" onchange="updateSchedule('${k}', ${s.id}, 'ot', ${d.getDate()}, this.value)"></td>`;
+                     else r1 += `<td class="border border-slate-600 p-0 ${d.getDay()===0||d.getDay()===6?'bg-slate-100':'bg-white'} text-center font-bold text-[10px]" style="color:${c?c.color:'#000'}">${v}</td>`;
+                 });
+                 r1 += `<td class="border border-slate-600 p-0 text-center font-bold bg-purple-100">${ot}</td></tr>`;
+                 
+                 let r2 = `<tr class="hover:bg-slate-50"><td class="border border-slate-600 p-0 text-[9px] font-bold text-green-700 bg-green-50 text-center">HAKIKI</td>`;
+                 let du = 0;
+                 days.forEach(d => {
+                     const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+                     const v = db.schedule[k]?.[s.id]?.duty?.[d.getDate()] || '';
+                     const c = db.dutyCodes.find(x=>x.code===v);
+                     if(c) du += parseFloat(c.hours);
+                     if (isAdmin) r2 += `<td class="border border-slate-600 p-0 ${d.getDay()===0||d.getDay()===6?'bg-slate-100':'bg-white'}"><input type="text" class="sched-input" style="color:${c?c.color:'#000'}" value="${v}" list="dutyCodesList" onchange="updateSchedule('${k}', ${s.id}, 'duty', ${d.getDate()}, this.value)"></td>`;
+                     else r2 += `<td class="border border-slate-600 p-0 ${d.getDay()===0||d.getDay()===6?'bg-slate-100':'bg-white'} text-center font-bold text-[10px]" style="color:${c?c.color:'#000'}">${v}</td>`;
+                 });
+                 r2 += `<td class="border border-slate-600 p-0 text-center font-bold bg-green-100">${du}</td></tr>`;
+                 if(tbody) tbody.innerHTML += r1 + r2;
+             });
+
+             const nl = document.getElementById(noteListId); if(nl) nl.innerHTML = '';
+             let notes = [];
+             const uniqueMonths = [...new Set(days.map(d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`))];
+             uniqueMonths.forEach(m => { if(db.schedule[m]?.notes) notes = [...notes, ...db.schedule[m].notes]; });
+             notes = notes.filter(n => { const nd = new Date(n.date); return nd >= startDate && nd <= endDate; }).sort((a,b)=>new Date(a.date)-new Date(b.date));
+             
+             if (notes.length === 0) {
+                 if (isAdmin && nl) nl.innerHTML = '<li class="text-gray-400 italic">Tiada catatan.</li>';
+                 else if(document.getElementById('publicNoNotesMsg')) document.getElementById('publicNoNotesMsg').classList.remove('hidden');
+             } else {
+                 if (!isAdmin && document.getElementById('publicNoNotesMsg')) document.getElementById('publicNoNotesMsg').classList.add('hidden');
+                 notes.forEach(n => {
+                     const k = `${new Date(n.date).getFullYear()}-${String(new Date(n.date).getMonth()+1).padStart(2,'0')}`;
+                     const delBtn = isAdmin ? `<button onclick="deleteScheduleNote('${k}', ${n.id})" class="text-red-500 px-2 no-print"><i class="fa-solid fa-times"></i></button>` : '';
+                     if(nl) nl.innerHTML += `<li class="flex justify-between items-start border-b border-gray-200 py-1 text-xs"><span><b class="mr-2 text-slate-700">${formatDate(n.date)}:</b> ${n.text}</span>${delBtn}</li>`;
+                 });
+             }
+        }
+
+        function downloadPDF() { const e=document.getElementById('schedulePrintArea'); const o={margin:[5,5,5,5],filename:'Jadual.pdf',image:{type:'jpeg',quality:0.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'landscape'}}; html2pdf().set(o).from(e).save(); }
+        function downloadPublicPDF() { const e=document.getElementById('publicSchedulePrintArea'); const o={margin:[5,5,5,5],filename:'Jadual_Awam.pdf',image:{type:'jpeg',quality:0.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'landscape'}}; html2pdf().set(o).from(e).save(); }
+
+        // --- UTILS ---
+        function showLoading(show) { document.getElementById('loadingOverlay').classList.toggle('hidden', !show); }
+        function showModal(title, msg) { document.getElementById('modalTitle').innerText = title; document.getElementById('modalMessage').innerText = msg; document.getElementById('customModal').classList.remove('hidden'); document.getElementById('modalButtons').innerHTML = `<button onclick="closeModal()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">Tutup</button>`; }
+        function showCustomConfirm(title, msg, onConfirm) { document.getElementById('modalTitle').innerText = title; document.getElementById('modalMessage').innerText = msg; document.getElementById('customModal').classList.remove('hidden'); const btns = document.getElementById('modalButtons'); btns.innerHTML = ''; const btnYes = document.createElement('button'); btnYes.className = "px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm mr-2"; btnYes.innerText = "Ya"; btnYes.onclick = () => { closeModal(); onConfirm(); }; const btnNo = document.createElement('button'); btnNo.className = "px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 text-sm"; btnNo.innerText = "Tidak"; btnNo.onclick = closeModal; btns.appendChild(btnYes); btns.appendChild(btnNo); }
+        function closeModal() { document.getElementById('customModal').classList.add('hidden'); }
+        function updateStatus(isOnline, text) { const dot = document.getElementById('statusDot'); const txt = document.getElementById('statusText'); if (isOnline) { dot.className = "w-2 h-2 rounded-full bg-green-500"; txt.innerText = "Online"; } else { dot.className = "w-2 h-2 rounded-full bg-red-500"; txt.innerText = text || "Offline (Data Laman)"; } }
+        function setSafeText(id, val) { const el = document.getElementById(id); if(el) el.innerText = val; }
+        function setSafeValue(id, val) { const el = document.getElementById(id); if(el) el.value = val; }
+        function updateDashboardCounters() { setSafeText('dashTotalStaff', db.staff.length); setSafeText('dashTotalDutyCodes', db.dutyCodes.length); setSafeText('dashTotalOTCodes', db.otCodes.length); setSafeValue('adminNotes', db.notes||''); }
+        function checkNotifications() { const c = db.leaveRequests.filter(r=>r.status==='pending').length; const b = document.getElementById('navBadge'); if(b) c>0 ? b.classList.remove('hidden'):b.classList.add('hidden'); setSafeText('dashPendingLeaves', c); }
+        function formatDate(d){ if(!d)return''; const p=d.split('-'); return `${p[2]}/${p[1]}/${p[0]}`; }
+        function populateHistoryFilters() { const ys=document.getElementById('historyFilterYear'); if(ys) { ys.innerHTML='<option value="">Semua</option>'; const cur=new Date().getFullYear(); for(let y=(cur<2026?2026:cur); y<=(cur<2026?2026:cur)+5; y++) { let o=document.createElement('option'); o.value=y; o.innerText=y; ys.appendChild(o); } }
+            const pys=document.getElementById('publicHistoryFilterYear'); if(pys) { pys.innerHTML='<option value="">Semua</option>'; const cur=new Date().getFullYear(); for(let y=(cur<2026?2026:cur); y<=(cur<2026?2026:cur)+5; y++) { let o=document.createElement('option'); o.value=y; o.innerText=y; pys.appendChild(o); } }
+        }
+        function resetHistoryFilter() { document.getElementById('historyFilterMonth').value=""; document.getElementById('historyFilterYear').value=""; document.getElementById('historyFilterDate').value=""; renderLeaveHistory(); }
+    </script>
+</body>
+</html>
