@@ -1,0 +1,2254 @@
+<!doctype html>
+<html lang="id" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aplikasi Program Guru Mapel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .tab-active {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+      color: white;
+    }
+    .card-shadow {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+      transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(30,58,95,0.4);
+    }
+    .input-focus:focus {
+      border-color: #2d5a87;
+      box-shadow: 0 0 0 3px rgba(45,90,135,0.1);
+    }
+    .status-hadir { background: #dcfce7; color: #166534; }
+    .status-izin { background: #fef3c7; color: #92400e; }
+    .status-sakit { background: #dbeafe; color: #1e40af; }
+    .status-alpha { background: #fee2e2; color: #991b1b; }
+    .toast {
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full bg-slate-50">
+  <div id="app" class="h-full overflow-auto"><!-- Header -->
+   <header class="bg-gradient-to-br from-blue-700 via-indigo-600 to-blue-800 text-white py-8 px-6 sticky top-0 z-40 shadow-lg">
+    <div class="max-w-6xl mx-auto">
+     <div class="flex items-start gap-4 mb-4"><!-- Logo Pendidikan -->
+      <div class="flex-shrink-0">
+       <svg width="64" height="64" viewbox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><!-- Tut Wuri Handayani Logo --> <circle cx="32" cy="32" r="30" fill="white" opacity="0.95" /> <!-- Flame/Api --> <path d="M32 12 C28 18, 26 24, 26 28 C26 34, 28 38, 32 38 C36 38, 38 34, 38 28 C38 24, 36 18, 32 12 Z" fill="#FDB913" stroke="#E67E22" stroke-width="1" /> <!-- Inner flame --> <path d="M32 16 C30 20, 29 24, 29 27 C29 31, 30 34, 32 34 C34 34, 35 31, 35 27 C35 24, 34 20, 32 16 Z" fill="#F39C12" /> <!-- Book pages --> <rect x="20" y="36" width="24" height="16" rx="1" fill="#3498DB" stroke="#2980B9" stroke-width="1" /> <line x1="32" y1="36" x2="32" y2="52" stroke="white" stroke-width="1.5" /> <line x1="20" y1="40" x2="44" y2="40" stroke="white" stroke-width="0.5" opacity="0.5" /> <line x1="20" y1="44" x2="44" y2="44" stroke="white" stroke-width="0.5" opacity="0.5" /> <line x1="20" y1="48" x2="44" y2="48" stroke="white" stroke-width="0.5" opacity="0.5" /> <!-- Stars --> <circle cx="18" cy="20" r="1.5" fill="white" /> <circle cx="46" cy="20" r="1.5" fill="white" /> <circle cx="18" cy="44" r="1.5" fill="white" /> <circle cx="46" cy="44" r="1.5" fill="white" />
+       </svg>
+      </div><!-- Title and Info -->
+      <div class="flex-1">
+       <div class="flex items-center gap-3 mb-2">
+        <h1 id="app-title" class="text-3xl font-bold">Aplikasi Program Guru Mapel</h1><span class="bg-yellow-400 text-blue-900 px-3 py-1 rounded-full text-sm font-bold shadow-md">Kurikulum Merdeka</span>
+       </div>
+       <div class="flex items-center gap-2 text-blue-100"><span id="teacher-name-display" class="font-medium"></span> <span id="separator-display" class="hidden">•</span> <span id="school-name-display"></span>
+       </div>
+      </div>
+     </div>
+    </div>
+   </header><!-- Toast Container -->
+   <div id="toast-container" class="fixed top-20 right-4 z-50 space-y-2"></div><!-- Navigation Tabs -->
+   <nav class="bg-white border-b border-slate-200 sticky top-24 z-30 overflow-x-auto">
+    <div class="max-w-6xl mx-auto px-4">
+     <div class="flex gap-2 py-3 min-w-max"><button onclick="switchTab('identity')" class="tab-btn tab-active px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap flex items-center gap-2" data-tab="identity"> <span>👤</span> <span>Identitas Guru</span> </button> <button onclick="switchTab('classes')" class="tab-btn px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap flex items-center gap-2 bg-slate-100 text-slate-600 hover:bg-slate-200" data-tab="classes"> <span>🏫</span> <span>Kelas &amp; Siswa</span> </button> <button onclick="switchTab('attendance')" class="tab-btn px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap flex items-center gap-2 bg-slate-100 text-slate-600 hover:bg-slate-200" data-tab="attendance"> <span>📋</span> <span>Absensi</span> </button> <button onclick="switchTab('lm')" class="tab-btn px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap flex items-center gap-2 bg-slate-100 text-slate-600 hover:bg-slate-200" data-tab="lm"> <span>📚</span> <span>Lingkup Materi, TP &amp; KKTP</span> </button> <button onclick="switchTab('journal')" class="tab-btn px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap flex items-center gap-2 bg-slate-100 text-slate-600 hover:bg-slate-200" data-tab="journal"> <span>📝</span> <span>Jurnal Mengajar</span> </button> <button onclick="switchTab('assessment')" class="tab-btn px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap flex items-center gap-2 bg-slate-100 text-slate-600 hover:bg-slate-200" data-tab="assessment"> <span>📊</span> <span>Asesmen Formatif</span> </button>
+     </div>
+    </div>
+   </nav><!-- Main Content -->
+   <main class="max-w-6xl mx-auto p-4 pb-8"><!-- Identity Tab -->
+    <section id="section-identity" class="tab-content">
+     <div class="bg-white rounded-2xl card-shadow p-6">
+      <div class="flex items-center justify-between mb-6">
+       <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><span class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">👤</span> Identitas Guru</h2><button onclick="downloadIdentity()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm transition-all flex items-center gap-2">     Download Data </button>
+      </div>
+      <form id="identity-form" class="space-y-4">
+       <div class="grid md:grid-cols-2 gap-4">
+        <div><label class="block text-sm font-medium text-slate-700 mb-1">Nama Lengkap</label> <input type="text" id="teacher-name" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none" placeholder="Masukkan nama lengkap">
+        </div>
+        <div><label class="block text-sm font-medium text-slate-700 mb-1">Nama Sekolah</label> <input type="text" id="teacher-school" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none" placeholder="Masukkan nama sekolah">
+        </div>
+        <div><label class="block text-sm font-medium text-slate-700 mb-1">NIP</label> <input type="text" id="teacher-nip" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none" placeholder="Masukkan NIP">
+        </div>
+        <div><label class="block text-sm font-medium text-slate-700 mb-1">Mata Pelajaran</label> <input type="text" id="teacher-subject" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none" placeholder="Masukkan mata pelajaran">
+        </div>
+        <div><label class="block text-sm font-medium text-slate-700 mb-1">Semester</label> <select id="teacher-semester" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none bg-white"> <option value="">-- Pilih Semester --</option> <option value="Ganjil">Ganjil</option> <option value="Genap">Genap</option> </select>
+        </div>
+       </div><button type="submit" class="btn-primary text-white px-6 py-3 rounded-xl font-medium">    Simpan Identitas </button>
+      </form>
+      <div id="identity-display" class="mt-6 hidden">
+       <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-6 border border-slate-200">
+        <h3 class="font-semibold text-slate-800 mb-4">Data Tersimpan:</h3>
+        <div id="identity-info" class="space-y-2"></div>
+       </div>
+      </div>
+     </div>
+    </section><!-- Classes Tab -->
+    <section id="section-classes" class="tab-content hidden">
+     <div class="grid lg:grid-cols-2 gap-6"><!-- Class Management -->
+      <div class="bg-white rounded-2xl card-shadow p-6">
+       <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><span class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">🏫</span> Manajemen Kelas</h2><button onclick="downloadClasses()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm transition-all flex items-center gap-2"> 📥 Download </button>
+       </div>
+       <form id="class-form" class="space-y-4 mb-6">
+        <div><label class="block text-sm font-medium text-slate-700 mb-1">Nama Kelas</label> <input type="text" id="class-name" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none" placeholder="Contoh: X IPA 1">
+        </div><button type="submit" class="btn-primary text-white px-6 py-3 rounded-xl font-medium w-full"> ➕ Tambah Kelas </button>
+       </form>
+       <div id="class-list" class="space-y-2"></div>
+      </div><!-- Student Management -->
+      <div class="bg-white rounded-2xl card-shadow p-6">
+       <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><span class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">👨‍🎓</span> Data Siswa</h2><button onclick="downloadStudents()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm transition-all flex items-center gap-2"> 📥 Download </button>
+       </div><!-- Quick Add Toggle -->
+       <div class="mb-4 flex gap-2"><button type="button" onclick="toggleQuickAdd()" id="quick-add-btn" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg font-medium text-sm hover:bg-slate-300 transition-all">     Input Cepat (Multiple) </button> <button type="button" onclick="toggleSingleAdd()" id="single-add-btn" class="px-4 py-2 btn-primary text-white rounded-lg font-medium text-sm"> ➕ Input Satuan </button>
+       </div><!-- Single Add Form -->
+       <form id="student-form" class="space-y-4 mb-6">
+        <div><label class="block text-sm font-medium text-slate-700 mb-1">Pilih Kelas</label> <select id="student-class-select" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none bg-white"> <option value="">-- Pilih Kelas --</option> </select>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+         <div><label class="block text-sm font-medium text-slate-700 mb-1">NIS</label> <input type="text" id="student-nis" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none" placeholder="Masukkan NIS">
+         </div>
+         <div><label class="block text-sm font-medium text-slate-700 mb-1">Nama Siswa</label> <input type="text" id="student-name" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none" placeholder="Masukkan nama siswa">
+         </div>
+        </div>
+        <div><label class="block text-sm font-medium text-slate-700 mb-1">Jenis Kelamin</label> <select id="student-gender" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none bg-white"> <option value="">-- Pilih Jenis Kelamin --</option> <option value="Laki-laki">Laki-laki</option> <option value="Perempuan">Perempuan</option> </select>
+        </div><button type="submit" class="btn-primary text-white px-6 py-3 rounded-xl font-medium w-full"> ➕ Tambah Siswa </button>
+       </form><!-- Quick Add Form (Hidden by default) -->
+       <div id="quick-add-form" class="hidden space-y-4 mb-6">
+        <div><label class="block text-sm font-medium text-slate-700 mb-1">Pilih Kelas</label> <select id="quick-class-select" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none bg-white"> <option value="">-- Pilih Kelas --</option> </select>
+        </div>
+        <div><label class="block text-sm font-medium text-slate-700 mb-2">Input Multiple Siswa (satu baris per siswa)</label>
+         <p class="text-xs text-slate-500 mb-2">Format: <strong>NIS | Nama Siswa | Jenis Kelamin (L/P)</strong> atau hanya <strong>Nama Siswa | L/P</strong></p><textarea id="bulk-student-input" rows="8" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none font-mono text-sm" placeholder="12345 | Ahmad Fauzi | L
+12346 | Siti Nurhaliza | P
+12347 | Budi Santoso | L
+atau
+Ahmad Fauzi | L
+Siti Nurhaliza | P
+Budi Santoso | L"></textarea>
+        </div>
+        <div class="flex gap-2"><button type="button" onclick="processBulkStudents()" class="flex-1 btn-primary text-white px-6 py-3 rounded-xl font-medium"> 💾 Simpan Semua </button> <button type="button" onclick="clearBulkInput()" class="px-6 py-3 bg-slate-200 text-slate-700 rounded-xl font-medium hover:bg-slate-300"> 🗑️ Hapus </button>
+        </div>
+        <div id="bulk-preview" class="hidden bg-slate-50 rounded-xl p-4">
+         <h4 class="font-semibold text-slate-700 mb-2">Preview:</h4>
+         <div id="bulk-preview-list" class="text-sm space-y-1"></div>
+        </div>
+       </div>
+       <div id="student-list" class="space-y-2 max-h-64 overflow-y-auto"></div>
+      </div>
+     </div>
+    </section><!-- Attendance Tab -->
+    <section id="section-attendance" class="tab-content hidden">
+     <div class="bg-white rounded-2xl card-shadow p-6">
+      <div class="flex items-center justify-between mb-6">
+       <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><span class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">📋</span> Absensi Kehadiran</h2><button onclick="downloadAttendance()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm transition-all flex items-center gap-2"> 📥 Download Data </button>
+      </div>
+      <div class="grid md:grid-cols-2 gap-4 mb-6">
+       <div><label class="block text-sm font-medium text-slate-700 mb-1">Pilih Kelas</label> <select id="attendance-class-select" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none bg-white" onchange="loadStudentsForAttendance()"> <option value="">-- Pilih Kelas --</option> </select>
+       </div>
+       <div><label class="block text-sm font-medium text-slate-700 mb-1">Tanggal</label> <input type="date" id="attendance-date" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none">
+       </div>
+      </div>
+      <div id="attendance-list" class="space-y-3"></div>
+      <div id="attendance-summary" class="mt-6 hidden">
+       <div class="bg-slate-50 rounded-xl p-4">
+        <h3 class="font-semibold text-slate-800 mb-3">Ringkasan Absensi:</h3>
+        <div class="grid grid-cols-4 gap-2 text-center">
+         <div class="bg-green-100 rounded-lg p-3">
+          <div id="count-hadir" class="text-2xl font-bold text-green-700">
+           0
+          </div>
+          <div class="text-xs text-green-600">
+           Hadir
+          </div>
+         </div>
+         <div class="bg-yellow-100 rounded-lg p-3">
+          <div id="count-izin" class="text-2xl font-bold text-yellow-700">
+           0
+          </div>
+          <div class="text-xs text-yellow-600">
+           Izin
+          </div>
+         </div>
+         <div class="bg-blue-100 rounded-lg p-3">
+          <div id="count-sakit" class="text-2xl font-bold text-blue-700">
+           0
+          </div>
+          <div class="text-xs text-blue-600">
+           Sakit
+          </div>
+         </div>
+         <div class="bg-red-100 rounded-lg p-3">
+          <div id="count-alpha" class="text-2xl font-bold text-red-700">
+           0
+          </div>
+          <div class="text-xs text-red-600">
+           Alpha
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div><!-- Attendance History -->
+     <div class="bg-white rounded-2xl card-shadow p-6 mt-6">
+      <h3 class="text-lg font-bold text-slate-800 mb-4">📊 Riwayat Absensi</h3>
+      <div id="attendance-history" class="space-y-2 max-h-64 overflow-y-auto"></div>
+     </div>
+    </section><!-- Lingkup Materi Tab -->
+    <section id="section-lm" class="tab-content hidden">
+     <div class="bg-white rounded-2xl card-shadow p-6">
+      <div class="flex items-center justify-between mb-6">
+       <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><span class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">📚</span> Lingkup Materi, TP &amp; KKTP</h2><button onclick="downloadLM()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm transition-all flex items-center gap-2"> 📥 Download Data </button>
+      </div>
+      <form id="lm-form" class="space-y-4 mb-6">
+       <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2"><span>➕</span> <span>Tambah Data per Kelas</span></h3>
+        <div class="space-y-4">
+         <div><label class="block text-sm font-medium text-slate-700 mb-1">Pilih Kelas</label> <select id="lm-class-select" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none bg-white" onchange="renderLingkupMateri()"> <option value="">-- Pilih Kelas --</option> </select>
+         </div>
+         <div class="space-y-4">
+          <div class="grid md:grid-cols-2 gap-4">
+           <div><label class="block text-sm font-medium text-slate-700 mb-1">Lingkup Materi (LM)</label> <input type="text" id="lm-code" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none">
+           </div>
+           <div><label class="block text-sm font-medium text-slate-700 mb-1">Tujuan Pembelajaran (TP)</label> <input type="text" id="lm-tp" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none">
+           </div>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+           <div><label class="block text-sm font-medium text-slate-700 mb-1">KKTP 1</label> <input type="text" id="lm-kktp-1" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none">
+           </div>
+           <div><label class="block text-sm font-medium text-slate-700 mb-1">KKTP 2</label> <input type="text" id="lm-kktp-2" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none">
+           </div>
+           <div><label class="block text-sm font-medium text-slate-700 mb-1">KKTP 3</label> <input type="text" id="lm-kktp-3" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none">
+           </div>
+           <div><label class="block text-sm font-medium text-slate-700 mb-1">KKTP 4</label> <input type="text" id="lm-kktp-4" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none">
+           </div>
+          </div>
+         </div>
+         <div class="flex gap-2"><button type="submit" class="flex-1 btn-primary text-white px-6 py-3 rounded-xl font-medium"> 💾 Tambah ke Tabel </button> <button type="button" onclick="clearLMForm()" class="px-6 py-3 bg-slate-200 text-slate-700 rounded-xl font-medium hover:bg-slate-300"> 🗑️ Bersihkan </button>
+         </div>
+        </div>
+       </div>
+      </form>
+      <div id="lm-list" class="space-y-3"></div>
+     </div>
+    </section><!-- Asesmen Formatif Tab -->
+    <section id="section-assessment" class="tab-content hidden">
+     <div class="bg-white rounded-2xl card-shadow p-6">
+      <div class="flex items-center justify-between mb-6">
+       <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><span class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">📊</span> Asesmen Formatif</h2><button onclick="downloadAssessment()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm transition-all flex items-center gap-2"> 📥 Download Data </button>
+      </div><!-- Toggle Input Mode -->
+      <div class="mb-4 flex gap-2"><button type="button" onclick="toggleQuickAssessment()" id="quick-assessment-btn" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg font-medium text-sm hover:bg-slate-300 transition-all"> ⚡ Input Cepat Per Kelas </button> <button type="button" onclick="toggleSingleAssessment()" id="single-assessment-btn" class="px-4 py-2 btn-primary text-white rounded-lg font-medium text-sm"> ➕ Input Per Siswa </button>
+      </div>
+      <form id="assessment-form" class="space-y-4 mb-6">
+       <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2"><span>➕</span> <span>Input Penilaian Siswa</span></h3>
+        <div class="space-y-4">
+         <div class="grid md:grid-cols-2 gap-4">
+          <div><label class="block text-sm font-medium text-slate-700 mb-1">Pilih Kelas</label> <select id="assessment-class-select" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none bg-white" onchange="loadStudentsForAssessment()"> <option value="">-- Pilih Kelas --</option> </select>
+          </div>
+          <div><label class="block text-sm font-medium text-slate-700 mb-1">Pilih Siswa</label> <select id="assessment-student-select" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none bg-white"> <option value="">-- Pilih Siswa --</option> </select>
+          </div>
+         </div>
+         <div><label class="block text-sm font-medium text-slate-700 mb-1">Pilih Tujuan Pembelajaran (TP)</label> <select id="assessment-tp-select" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none bg-white" onchange="displayKKTP()"> <option value="">-- Pilih Tujuan Pembelajaran --</option> </select>
+         </div>
+         <div id="kktp-display" class="hidden bg-blue-50 rounded-xl p-4 border border-blue-200">
+          <h4 class="font-semibold text-slate-800 mb-2">📌 Nilai KKTP (Kriteria Ketercapaian Tujuan Pembelajaran)</h4>
+          <div class="grid grid-cols-4 gap-2 text-center">
+           <div class="bg-white rounded-lg p-2">
+            <div class="text-xs text-slate-600 mb-1">
+             KKTP 1
+            </div>
+            <div id="display-kktp-1" class="text-lg font-bold text-blue-700">
+             -
+            </div>
+           </div>
+           <div class="bg-white rounded-lg p-2">
+            <div class="text-xs text-slate-600 mb-1">
+             KKTP 2
+            </div>
+            <div id="display-kktp-2" class="text-lg font-bold text-blue-700">
+             -
+            </div>
+           </div>
+           <div class="bg-white rounded-lg p-2">
+            <div class="text-xs text-slate-600 mb-1">
+             KKTP 3
+            </div>
+            <div id="display-kktp-3" class="text-lg font-bold text-blue-700">
+             -
+            </div>
+           </div>
+           <div class="bg-white rounded-lg p-2">
+            <div class="text-xs text-slate-600 mb-1">
+             KKTP 4
+            </div>
+            <div id="display-kktp-4" class="text-lg font-bold text-blue-700">
+             -
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div><label class="block text-sm font-medium text-slate-700 mb-1">KKTP 1</label> <input type="number" id="assessment-score-1" step="0.01" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none" placeholder="0.00">
+          </div>
+          <div><label class="block text-sm font-medium text-slate-700 mb-1">KKTP 2</label> <input type="number" id="assessment-score-2" step="0.01" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none" placeholder="0.00">
+          </div>
+          <div><label class="block text-sm font-medium text-slate-700 mb-1">KKTP 3</label> <input type="number" id="assessment-score-3" step="0.01" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none" placeholder="0.00">
+          </div>
+          <div><label class="block text-sm font-medium text-slate-700 mb-1">KKTP 4</label> <input type="number" id="assessment-score-4" step="0.01" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none" placeholder="0.00">
+          </div>
+         </div>
+         <div class="flex gap-2"><button type="submit" class="flex-1 btn-primary text-white px-6 py-3 rounded-xl font-medium"> 💾 Simpan Penilaian </button> <button type="button" onclick="clearAssessmentForm()" class="px-6 py-3 bg-slate-200 text-slate-700 rounded-xl font-medium hover:bg-slate-300"> 🗑️ Bersihkan </button>
+         </div>
+        </div>
+       </div>
+      </form><!-- Quick Assessment Form (Hidden by default) -->
+      <div id="quick-assessment-form" class="hidden mb-6">
+       <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
+        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2"><span>⚡</span> <span>Input Cepat - Nilai Semua Siswa Sekaligus</span></h3>
+        <div class="space-y-4">
+         <div class="grid md:grid-cols-2 gap-4">
+          <div><label class="block text-sm font-medium text-slate-700 mb-1">Pilih Kelas</label> <select id="quick-assessment-class" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none bg-white" onchange="loadQuickAssessmentStudents()"> <option value="">-- Pilih Kelas --</option> </select>
+          </div>
+          <div><label class="block text-sm font-medium text-slate-700 mb-1">Pilih Tujuan Pembelajaran (TP)</label> <select id="quick-assessment-tp" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none bg-white" onchange="displayQuickKKTP()"> <option value="">-- Pilih Tujuan Pembelajaran --</option> </select>
+          </div>
+         </div>
+         <div id="quick-kktp-display" class="hidden bg-blue-50 rounded-xl p-4 border border-blue-200">
+          <h4 class="font-semibold text-slate-800 mb-2">📌 Nilai KKTP yang Diharapkan</h4>
+          <div class="grid grid-cols-4 gap-2 text-center">
+           <div class="bg-white rounded-lg p-2">
+            <div class="text-xs text-slate-600 mb-1">
+             KKTP 1
+            </div>
+            <div id="quick-display-kktp-1" class="text-lg font-bold text-blue-700">
+             -
+            </div>
+           </div>
+           <div class="bg-white rounded-lg p-2">
+            <div class="text-xs text-slate-600 mb-1">
+             KKTP 2
+            </div>
+            <div id="quick-display-kktp-2" class="text-lg font-bold text-blue-700">
+             -
+            </div>
+           </div>
+           <div class="bg-white rounded-lg p-2">
+            <div class="text-xs text-slate-600 mb-1">
+             KKTP 3
+            </div>
+            <div id="quick-display-kktp-3" class="text-lg font-bold text-blue-700">
+             -
+            </div>
+           </div>
+           <div class="bg-white rounded-lg p-2">
+            <div class="text-xs text-slate-600 mb-1">
+             KKTP 4
+            </div>
+            <div id="quick-display-kktp-4" class="text-lg font-bold text-blue-700">
+             -
+            </div>
+           </div>
+          </div>
+         </div>
+         <div id="quick-assessment-list" class="space-y-2"></div>
+         <div class="flex gap-2"><button type="button" onclick="saveAllQuickAssessments()" class="flex-1 btn-primary text-white px-6 py-3 rounded-xl font-medium"> 💾 Simpan Semua Nilai </button> <button type="button" onclick="clearQuickAssessment()" class="px-6 py-3 bg-slate-200 text-slate-700 rounded-xl font-medium hover:bg-slate-300"> 🗑️ Bersihkan </button>
+         </div>
+        </div>
+       </div>
+      </div>
+      <div class="mb-4"><label class="block text-sm font-medium text-slate-700 mb-1">Filter Kelas</label> <select id="assessment-history-class" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none bg-white" onchange="renderAssessmentHistory()"> <option value="">Semua Kelas</option> </select>
+      </div>
+      <div id="assessment-list" class="space-y-3"></div>
+     </div>
+    </section><!-- Jurnal Mengajar Tab -->
+    <section id="section-journal" class="tab-content hidden">
+     <div class="bg-white rounded-2xl card-shadow p-6">
+      <div class="flex items-center justify-between mb-6">
+       <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><span class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">📝</span> Jurnal Mengajar</h2><button onclick="downloadJournal()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm transition-all flex items-center gap-2">     Download Data </button>
+      </div>
+      <form id="journal-form" class="space-y-4 mb-6">
+       <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2"><span>➕</span> <span>Tambah Jurnal Mengajar</span></h3>
+        <div class="space-y-4">
+         <div class="grid md:grid-cols-3 gap-4">
+          <div><label class="block text-sm font-medium text-slate-700 mb-1">Tanggal</label> <input type="date" id="journal-date" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none">
+          </div>
+          <div><label class="block text-sm font-medium text-slate-700 mb-1">Jam Mengajar</label> <input type="text" id="journal-time" placeholder="Contoh: 07:00 - 08:30" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none">
+          </div>
+          <div><label class="block text-sm font-medium text-slate-700 mb-1">Kelas</label> <select id="journal-class-select" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none bg-white" onchange="loadLMForJournal()"> <option value="">-- Pilih Kelas --</option> </select>
+          </div>
+         </div>
+         <div><label class="block text-sm font-medium text-slate-700 mb-1">Lingkup Materi</label> <select id="journal-lm-select" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none bg-white" onchange="fillTPFromLM()"> <option value="">-- Pilih Lingkup Materi --</option> </select>
+         </div>
+         <div><label class="block text-sm font-medium text-slate-700 mb-1">Tujuan Pembelajaran</label> <textarea id="journal-tp" rows="2" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none resize-none" readonly></textarea>
+         </div>
+         <div><label class="block text-sm font-medium text-slate-700 mb-1">Kegiatan Pembelajaran</label> <textarea id="journal-kegiatan" rows="3" class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus outline-none resize-none"></textarea>
+         </div>
+         <div class="flex gap-2"><button type="submit" class="flex-1 btn-primary text-white px-6 py-3 rounded-xl font-medium"> 💾 Simpan Jurnal </button> <button type="button" onclick="clearJournalForm()" class="px-6 py-3 bg-slate-200 text-slate-700 rounded-xl font-medium hover:bg-slate-300"> 🗑️ Bersihkan </button>
+         </div>
+        </div>
+       </div>
+      </form>
+      <div id="journal-list" class="space-y-3"></div>
+     </div>
+    </section>
+   </main>
+  </div>
+  <script>
+    // Default Config
+    const defaultConfig = {
+      app_title: 'Aplikasi Program Guru Mapel',
+      primary_color: '#1e3a5f',
+      secondary_color: '#f8fafc',
+      text_color: '#1e293b',
+      accent_color: '#2d5a87',
+      font_family: 'Plus Jakarta Sans'
+    };
+
+    let config = { ...defaultConfig };
+    let allData = [];
+    let currentTab = 'identity';
+    let isLoading = false;
+
+    // Toast notification
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+      toast.className = `toast ${bgColor} text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2`;
+      toast.innerHTML = `
+        <span>${type === 'success' ? '   ' : type === 'error' ? '❌' : 'ℹ️'}</span>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Tab switching function
+    function switchTab(tab) {
+      currentTab = tab;
+      
+      // Update tab buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('tab-active');
+        btn.classList.add('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
+      });
+      
+      const activeBtn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+      if (activeBtn) {
+        activeBtn.classList.add('tab-active');
+        activeBtn.classList.remove('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
+      }
+      
+      // Hide all sections
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      
+      // Show selected section
+      document.getElementById(`section-${tab}`).classList.remove('hidden');
+    }
+
+    // Data helpers
+    function getTeacherIdentity() {
+      return allData.find(d => d.type === 'teacher');
+    }
+
+    function getClasses() {
+      return allData.filter(d => d.type === 'class');
+    }
+
+    function getStudents(classId = null) {
+      const students = allData.filter(d => d.type === 'student');
+      return classId ? students.filter(s => s.class_id === classId) : students;
+    }
+
+    function getAttendance() {
+      return allData.filter(d => d.type === 'attendance');
+    }
+
+    function getLingkupMateri() {
+      return allData.filter(d => d.type === 'lm');
+    }
+
+    function getJournal() {
+      return allData.filter(d => d.type === 'journal');
+    }
+
+    function getAssessments() {
+      return allData.filter(d => d.type === 'assessment');
+    }
+
+    // Render functions
+    function renderIdentity() {
+      const teacher = getTeacherIdentity();
+      const display = document.getElementById('identity-display');
+      const info = document.getElementById('identity-info');
+      
+      // Update header
+      const teacherNameDisplay = document.getElementById('teacher-name-display');
+      const schoolNameDisplay = document.getElementById('school-name-display');
+      const separatorDisplay = document.getElementById('separator-display');
+      
+      if (teacher) {
+        document.getElementById('teacher-name').value = teacher.name || '';
+        document.getElementById('teacher-school').value = teacher.school_name || '';
+        document.getElementById('teacher-nip').value = teacher.nip || '';
+        document.getElementById('teacher-subject').value = teacher.subject || '';
+        document.getElementById('teacher-semester').value = teacher.semester || '';
+        
+        // Update header display
+        if (teacher.name) {
+          teacherNameDisplay.textContent = teacher.name;
+          teacherNameDisplay.classList.remove('hidden');
+          if (teacher.school_name) {
+            separatorDisplay.classList.remove('hidden');
+          }
+        } else {
+          teacherNameDisplay.textContent = '';
+          teacherNameDisplay.classList.add('hidden');
+          separatorDisplay.classList.add('hidden');
+        }
+        
+        if (teacher.school_name) {
+          schoolNameDisplay.textContent = teacher.school_name;
+        } else {
+          schoolNameDisplay.textContent = '';
+        }
+        
+        info.innerHTML = `
+          <div class="grid md:grid-cols-2 gap-3">
+            <div class="flex items-center gap-2"><span class="text-slate-500">Nama:</span><span class="font-medium">${teacher.name || '-'}</span></div>
+            <div class="flex items-center gap-2"><span class="text-slate-500">Sekolah:</span><span class="font-medium">${teacher.school_name || '-'}</span></div>
+            <div class="flex items-center gap-2"><span class="text-slate-500">NIP:</span><span class="font-medium">${teacher.nip || '-'}</span></div>
+            <div class="flex items-center gap-2"><span class="text-slate-500">Mapel:</span><span class="font-medium">${teacher.subject || '-'}</span></div>
+            <div class="flex items-center gap-2"><span class="text-slate-500">Semester:</span><span class="font-medium">${teacher.semester || '-'}</span></div>
+          </div>
+        `;
+        display.classList.remove('hidden');
+      } else {
+        display.classList.add('hidden');
+        teacherNameDisplay.textContent = '';
+        teacherNameDisplay.classList.add('hidden');
+        schoolNameDisplay.textContent = '';
+        separatorDisplay.classList.add('hidden');
+      }
+    }
+
+    function renderClasses() {
+      const classes = getClasses();
+      const listEl = document.getElementById('class-list');
+      
+      if (classes.length === 0) {
+        listEl.innerHTML = '<p class="text-slate-400 text-center py-4">Belum ada kelas</p>';
+        return;
+      }
+      
+      listEl.innerHTML = classes.map(c => `
+        <div class="flex items-center justify-between bg-slate-50 rounded-xl p-3 group" data-id="${c.__backendId}">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 bg-slate-200 rounded-lg flex items-center justify-center text-sm">🏫</span>
+            <input type="text" value="${c.class_name}" 
+              class="bg-transparent font-medium text-slate-800 outline-none border-b border-transparent focus:border-slate-400 class-name-input"
+              data-id="${c.__backendId}">
+          </div>
+          <div class="flex gap-2">
+            <button onclick="saveClassName('${c.__backendId}')" class="text-green-600 hover:bg-green-100 p-2 rounded-lg transition-all" title="Simpan">   </button>
+            <button onclick="confirmDeleteClass('${c.__backendId}')" class="text-red-500 hover:bg-red-100 p-2 rounded-lg transition-all delete-btn" title="Hapus">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+      
+      updateClassSelects();
+    }
+
+    function updateClassSelects() {
+      const classes = getClasses();
+      const options = '<option value="">-- Pilih Kelas --</option>' + 
+        classes.map(c => `<option value="${c.__backendId}">${c.class_name}</option>`).join('');
+      
+      ['student-class-select', 'quick-class-select', 'attendance-class-select', 'assessment-class-select', 'assessment-history-class', 'lm-class-select', 'journal-class-select'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          const currentValue = el.value;
+          el.innerHTML = id === 'assessment-history-class' ? '<option value="">Semua Kelas</option>' + classes.map(c => `<option value="${c.__backendId}">${c.class_name}</option>`).join('') : options;
+          if (currentValue && classes.some(c => c.__backendId === currentValue)) {
+            el.value = currentValue;
+          }
+        }
+      });
+    }
+
+    function renderStudents() {
+      const classId = document.getElementById('student-class-select').value;
+      const students = getStudents(classId);
+      const listEl = document.getElementById('student-list');
+      
+      if (!classId) {
+        listEl.innerHTML = '<p class="text-slate-400 text-center py-4">Pilih kelas terlebih dahulu</p>';
+        return;
+      }
+      
+      if (students.length === 0) {
+        listEl.innerHTML = '<p class="text-slate-400 text-center py-4">Belum ada siswa di kelas ini</p>';
+        return;
+      }
+      
+      listEl.innerHTML = students.map((s, i) => {
+        const genderIcon = s.gender === 'Laki-laki' ? '👨' : s.gender === 'Perempuan' ? '   ' : '👤';
+        return `
+          <div class="flex items-center justify-between bg-slate-50 rounded-xl p-3" data-id="${s.__backendId}">
+            <div class="flex items-center gap-3 flex-1">
+              <span class="w-8 h-8 bg-slate-200 rounded-lg flex items-center justify-center text-sm font-medium">${i + 1}</span>
+              <div class="flex-1">
+                <div class="font-medium text-slate-800 flex items-center gap-2">
+                  <span>${genderIcon}</span>
+                  <span>${s.student_name}</span>
+                </div>
+                <div class="text-xs text-slate-500">${s.student_nis ? 'NIS: ' + s.student_nis : 'NIS: -'}    ${s.gender || '-'}</div>
+              </div>
+            </div>
+            <button onclick="confirmDeleteStudent('${s.__backendId}')" class="text-red-500 hover:bg-red-100 p-2 rounded-lg transition-all delete-btn" title="Hapus">🗑️</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loadStudentsForAttendance() {
+      const classId = document.getElementById('attendance-class-select').value;
+      const date = document.getElementById('attendance-date').value;
+      const students = getStudents(classId);
+      const listEl = document.getElementById('attendance-list');
+      const summaryEl = document.getElementById('attendance-summary');
+      
+      if (!classId) {
+        listEl.innerHTML = '<p class="text-slate-400 text-center py-4">Pilih kelas untuk mulai absensi</p>';
+        summaryEl.classList.add('hidden');
+        return;
+      }
+      
+      if (students.length === 0) {
+        listEl.innerHTML = '<p class="text-slate-400 text-center py-4">Belum ada siswa di kelas ini</p>';
+        summaryEl.classList.add('hidden');
+        return;
+      }
+      
+      const existingAttendance = getAttendance().filter(a => a.class_id === classId && a.date === date);
+      
+      // Auto-create "Hadir" records for students without attendance
+      if (date && !isLoading) {
+        for (const student of students) {
+          const hasRecord = existingAttendance.find(a => a.student_name === student.student_name);
+          if (!hasRecord) {
+            if (allData.length < 999) {
+              isLoading = true;
+              await window.dataSdk.create({
+                type: 'attendance',
+                class_id: classId,
+                student_name: student.student_name,
+                date: date,
+                status: 'Hadir',
+                created_at: new Date().toISOString()
+              });
+              isLoading = false;
+            }
+          }
+        }
+      }
+      
+      // Re-fetch after auto-creation
+      const updatedAttendance = getAttendance().filter(a => a.class_id === classId && a.date === date);
+      
+      listEl.innerHTML = students.map((s, i) => {
+        const attendance = updatedAttendance.find(a => a.student_name === s.student_name);
+        const status = attendance ? attendance.status : 'Hadir';
+        const genderIcon = s.gender === 'Laki-laki' ? '👨' : s.gender === 'Perempuan' ? '    ' : '👤';
+        return `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between bg-slate-50 rounded-xl p-3 gap-3">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 bg-slate-200 rounded-lg flex items-center justify-center text-sm font-medium">${i + 1}</span>
+              <span class="font-medium text-slate-800 flex items-center gap-2">
+                <span>${genderIcon}</span>
+                <span>${s.student_name}</span>
+              </span>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <button onclick="setAttendance('${s.__backendId}', '${s.student_name}', 'Hadir')" 
+                class="px-3 py-1 rounded-lg text-sm font-medium transition-all ${status === 'Hadir' ? 'status-hadir ring-2 ring-green-400' : 'bg-slate-200 text-slate-600 hover:bg-green-100'}">
+                Hadir
+              </button>
+              <button onclick="setAttendance('${s.__backendId}', '${s.student_name}', 'Izin')"
+                class="px-3 py-1 rounded-lg text-sm font-medium transition-all ${status === 'Izin' ? 'status-izin ring-2 ring-yellow-400' : 'bg-slate-200 text-slate-600 hover:bg-yellow-100'}">
+                Izin
+              </button>
+              <button onclick="setAttendance('${s.__backendId}', '${s.student_name}', 'Sakit')"
+                class="px-3 py-1 rounded-lg text-sm font-medium transition-all ${status === 'Sakit' ? 'status-sakit ring-2 ring-blue-400' : 'bg-slate-200 text-slate-600 hover:bg-blue-100'}">
+                Sakit
+              </button>
+              <button onclick="setAttendance('${s.__backendId}', '${s.student_name}', 'Alpha')"
+                class="px-3 py-1 rounded-lg text-sm font-medium transition-all ${status === 'Alpha' ? 'status-alpha ring-2 ring-red-400' : 'bg-slate-200 text-slate-600 hover:bg-red-100'}">
+                Alpha
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      updateAttendanceSummary(classId, date);
+    }
+
+    function updateAttendanceSummary(classId, date) {
+      const attendance = getAttendance().filter(a => a.class_id === classId && a.date === date);
+      const summaryEl = document.getElementById('attendance-summary');
+      
+      if (attendance.length > 0) {
+        const counts = { Hadir: 0, Izin: 0, Sakit: 0, Alpha: 0 };
+        attendance.forEach(a => { if (counts[a.status] !== undefined) counts[a.status]++; });
+        
+        document.getElementById('count-hadir').textContent = counts.Hadir;
+        document.getElementById('count-izin').textContent = counts.Izin;
+        document.getElementById('count-sakit').textContent = counts.Sakit;
+        document.getElementById('count-alpha').textContent = counts.Alpha;
+        summaryEl.classList.remove('hidden');
+      } else {
+        summaryEl.classList.add('hidden');
+      }
+    }
+
+    function renderAttendanceHistory() {
+      const attendance = getAttendance().sort((a, b) => new Date(b.date) - new Date(a.date));
+      const historyEl = document.getElementById('attendance-history');
+      
+      if (attendance.length === 0) {
+        historyEl.innerHTML = '<p class="text-slate-400 text-center py-4">Belum ada riwayat absensi</p>';
+        return;
+      }
+      
+      const grouped = {};
+      attendance.forEach(a => {
+        const key = `${a.class_id}-${a.date}`;
+        if (!grouped[key]) {
+          const classData = getClasses().find(c => c.__backendId === a.class_id);
+          grouped[key] = { class_name: classData ? classData.class_name : 'Unknown', date: a.date, records: [] };
+        }
+        grouped[key].records.push(a);
+      });
+      
+      historyEl.innerHTML = Object.values(grouped).slice(0, 10).map(g => `
+        <div class="bg-slate-50 rounded-xl p-3">
+          <div class="flex justify-between items-center mb-2">
+            <span class="font-medium text-slate-800">${g.class_name}</span>
+            <span class="text-sm text-slate-500">${formatDate(g.date)}</span>
+          </div>
+          <div class="flex gap-2 text-xs">
+            <span class="status-hadir px-2 py-1 rounded">H: ${g.records.filter(r => r.status === 'Hadir').length}</span>
+            <span class="status-izin px-2 py-1 rounded">I: ${g.records.filter(r => r.status === 'Izin').length}</span>
+            <span class="status-sakit px-2 py-1 rounded">S: ${g.records.filter(r => r.status === 'Sakit').length}</span>
+            <span class="status-alpha px-2 py-1 rounded">A: ${g.records.filter(r => r.status === 'Alpha').length}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderLingkupMateri() {
+      const classId = document.getElementById('lm-class-select').value;
+      const listEl = document.getElementById('lm-list');
+      
+      if (!classId) {
+        listEl.innerHTML = '<p class="text-slate-400 text-center py-4">Pilih kelas untuk melihat data</p>';
+        return;
+      }
+      
+      const lmData = getLingkupMateri().filter(lm => lm.class_id === classId);
+      const classData = getClasses().find(c => c.__backendId === classId);
+      
+      if (lmData.length === 0) {
+        listEl.innerHTML = `
+          <div class="text-center py-8">
+            <p class="text-slate-400 mb-2">Belum ada data untuk kelas ${classData ? classData.class_name : ''}</p>
+            <p class="text-sm text-slate-500">Mulai tambahkan Lingkup Materi, TP, dan KKTP</p>
+          </div>
+        `;
+        return;
+      }
+      
+      listEl.innerHTML = `
+        <div class="bg-slate-50 rounded-xl p-4 mb-3">
+          <h3 class="font-bold text-slate-800 text-lg mb-1">Kelas: ${classData ? classData.class_name : '-'}</h3>
+          <p class="text-sm text-slate-600">Total: ${lmData.length} data</p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                <th class="px-4 py-3 text-left text-sm font-semibold border border-blue-700 rounded-tl-lg">No</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold border border-blue-700">Lingkup Materi (LM)</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold border border-blue-700">Tujuan Pembelajaran (TP)</th>
+                <th class="px-4 py-3 text-center text-sm font-semibold border border-blue-700">KKTP 1</th>
+                <th class="px-4 py-3 text-center text-sm font-semibold border border-blue-700">KKTP 2</th>
+                <th class="px-4 py-3 text-center text-sm font-semibold border border-blue-700">KKTP 3</th>
+                <th class="px-4 py-3 text-center text-sm font-semibold border border-blue-700">KKTP 4</th>
+                <th class="px-4 py-3 text-center text-sm font-semibold border border-blue-700 rounded-tr-lg w-20">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white">
+              ${lmData.map((lm, i) => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                  <td class="px-4 py-3 border border-slate-200 text-slate-700 font-medium">${i + 1}</td>
+                  <td class="px-4 py-3 border border-slate-200 text-slate-800">${lm.lm_code || '-'}</td>
+                  <td class="px-4 py-3 border border-slate-200 text-slate-800">${lm.lm_tp || '-'}</td>
+                  <td class="px-4 py-3 border border-slate-200 text-center text-slate-800">${lm.kktp_1 || '-'}</td>
+                  <td class="px-4 py-3 border border-slate-200 text-center text-slate-800">${lm.kktp_2 || '-'}</td>
+                  <td class="px-4 py-3 border border-slate-200 text-center text-slate-800">${lm.kktp_3 || '-'}</td>
+                  <td class="px-4 py-3 border border-slate-200 text-center text-slate-800">${lm.kktp_4 || '-'}</td>
+                  <td class="px-4 py-3 border border-slate-200 text-center">
+                    <button onclick="confirmDeleteLM('${lm.__backendId}')" class="text-red-500 hover:bg-red-100 p-2 rounded-lg transition-all delete-btn inline-flex items-center justify-center" title="Hapus">
+                      🗑️
+                    </button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function clearLMForm() {
+      document.getElementById('lm-code').value = '';
+      document.getElementById('lm-tp').value = '';
+      document.getElementById('lm-kktp-1').value = '';
+      document.getElementById('lm-kktp-2').value = '';
+      document.getElementById('lm-kktp-3').value = '';
+      document.getElementById('lm-kktp-4').value = '';
+    }
+
+    function renderJournal() {
+      const journals = getJournal().sort((a, b) => new Date(b.journal_date) - new Date(a.journal_date));
+      const listEl = document.getElementById('journal-list');
+      
+      if (journals.length === 0) {
+        listEl.innerHTML = '<p class="text-slate-400 text-center py-8">Belum ada jurnal mengajar</p>';
+        return;
+      }
+      
+      listEl.innerHTML = `
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                <th class="px-4 py-3 text-left text-sm font-semibold border border-blue-700 rounded-tl-lg">No</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold border border-blue-700">Tanggal</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold border border-blue-700">Jam</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold border border-blue-700">Kelas</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold border border-blue-700">Lingkup Materi</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold border border-blue-700">Tujuan Pembelajaran</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold border border-blue-700">Kegiatan Pembelajaran</th>
+                <th class="px-4 py-3 text-center text-sm font-semibold border border-blue-700 rounded-tr-lg w-20">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white">
+              ${journals.map((journal, i) => {
+                const classData = getClasses().find(c => c.__backendId === journal.journal_class_id);
+                return `
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-3 border border-slate-200 text-slate-700 font-medium">${i + 1}</td>
+                    <td class="px-4 py-3 border border-slate-200 text-slate-800">${formatDate(journal.journal_date)}</td>
+                    <td class="px-4 py-3 border border-slate-200 text-slate-800">${journal.journal_time || '-'}</td>
+                    <td class="px-4 py-3 border border-slate-200 text-slate-800">${classData ? classData.class_name : '-'}</td>
+                    <td class="px-4 py-3 border border-slate-200 text-slate-800">${journal.journal_lm || '-'}</td>
+                    <td class="px-4 py-3 border border-slate-200 text-slate-800">${journal.journal_tp || '-'}</td>
+                    <td class="px-4 py-3 border border-slate-200 text-slate-800">${journal.journal_kegiatan || '-'}</td>
+                    <td class="px-4 py-3 border border-slate-200 text-center">
+                      <button onclick="confirmDeleteJournal('${journal.__backendId}')" class="text-red-500 hover:bg-red-100 p-2 rounded-lg transition-all delete-btn inline-flex items-center justify-center" title="Hapus">
+                        🗑️
+                      </button>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function clearJournalForm() {
+      document.getElementById('journal-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('journal-time').value = '';
+      document.getElementById('journal-class-select').value = '';
+      document.getElementById('journal-lm-select').value = '';
+      document.getElementById('journal-tp').value = '';
+      document.getElementById('journal-kegiatan').value = '';
+    }
+
+    function toggleQuickAssessment() {
+      document.getElementById('assessment-form').classList.add('hidden');
+      document.getElementById('quick-assessment-form').classList.remove('hidden');
+      document.getElementById('quick-assessment-btn').classList.remove('bg-slate-200', 'text-slate-700');
+      document.getElementById('quick-assessment-btn').classList.add('btn-primary', 'text-white');
+      document.getElementById('single-assessment-btn').classList.remove('btn-primary', 'text-white');
+      document.getElementById('single-assessment-btn').classList.add('bg-slate-200', 'text-slate-700');
+      updateQuickAssessmentClassSelect();
+    }
+
+    function toggleSingleAssessment() {
+      document.getElementById('assessment-form').classList.remove('hidden');
+      document.getElementById('quick-assessment-form').classList.add('hidden');
+      document.getElementById('single-assessment-btn').classList.remove('bg-slate-200', 'text-slate-700');
+      document.getElementById('single-assessment-btn').classList.add('btn-primary', 'text-white');
+      document.getElementById('quick-assessment-btn').classList.remove('btn-primary', 'text-white');
+      document.getElementById('quick-assessment-btn').classList.add('bg-slate-200', 'text-slate-700');
+    }
+
+    function updateQuickAssessmentClassSelect() {
+      const classes = getClasses();
+      const select = document.getElementById('quick-assessment-class');
+      const options = '<option value="">-- Pilih Kelas --</option>' + 
+        classes.map(c => `<option value="${c.__backendId}">${c.class_name}</option>`).join('');
+      select.innerHTML = options;
+    }
+
+    function loadQuickAssessmentStudents() {
+      const classId = document.getElementById('quick-assessment-class').value;
+      const tpSelect = document.getElementById('quick-assessment-tp');
+      const listEl = document.getElementById('quick-assessment-list');
+      
+      if (!classId) {
+        tpSelect.innerHTML = '<option value="">-- Pilih Tujuan Pembelajaran --</option>';
+        listEl.innerHTML = '';
+        document.getElementById('quick-kktp-display').classList.add('hidden');
+        return;
+      }
+      
+      const lmData = getLingkupMateri().filter(lm => lm.class_id === classId);
+      tpSelect.innerHTML = '<option value="">-- Pilih Tujuan Pembelajaran --</option>' +
+        lmData.map(lm => `<option value="${lm.__backendId}">${lm.lm_tp || lm.lm_code}</option>`).join('');
+      
+      const students = getStudents(classId);
+      if (students.length === 0) {
+        listEl.innerHTML = '<p class="text-slate-400 text-center py-4">Belum ada siswa di kelas ini</p>';
+        return;
+      }
+      
+      listEl.innerHTML = students.map((s, i) => {
+        const genderIcon = s.gender === 'Laki-laki' ? '👨' : s.gender === 'Perempuan' ? '👩' : '👤';
+        return `
+          <div class="bg-white rounded-xl p-4 border border-slate-200">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-8 h-8 bg-slate-200 rounded-lg flex items-center justify-center text-sm font-medium">${i + 1}</span>
+              <span class="font-medium text-slate-800 flex items-center gap-2 flex-1">
+                <span>${genderIcon}</span>
+                <span>${s.student_name}</span>
+              </span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <input type="number" step="0.01" placeholder="KKTP 1" 
+                class="quick-score px-3 py-2 border border-slate-200 rounded-lg input-focus outline-none text-sm"
+                data-student-id="${s.__backendId}"
+                data-student-name="${s.student_name}"
+                data-score-index="1">
+              <input type="number" step="0.01" placeholder="KKTP 2"
+                class="quick-score px-3 py-2 border border-slate-200 rounded-lg input-focus outline-none text-sm"
+                data-student-id="${s.__backendId}"
+                data-student-name="${s.student_name}"
+                data-score-index="2">
+              <input type="number" step="0.01" placeholder="KKTP 3"
+                class="quick-score px-3 py-2 border border-slate-200 rounded-lg input-focus outline-none text-sm"
+                data-student-id="${s.__backendId}"
+                data-student-name="${s.student_name}"
+                data-score-index="3">
+              <input type="number" step="0.01" placeholder="KKTP 4"
+                class="quick-score px-3 py-2 border border-slate-200 rounded-lg input-focus outline-none text-sm"
+                data-student-id="${s.__backendId}"
+                data-student-name="${s.student_name}"
+                data-score-index="4">
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function displayQuickKKTP() {
+      const tpId = document.getElementById('quick-assessment-tp').value;
+      const kktpDisplay = document.getElementById('quick-kktp-display');
+      
+      if (!tpId) {
+        kktpDisplay.classList.add('hidden');
+        return;
+      }
+      
+      const lmData = allData.find(d => d.__backendId === tpId);
+      if (lmData) {
+        document.getElementById('quick-display-kktp-1').textContent = lmData.kktp_1 || '-';
+        document.getElementById('quick-display-kktp-2').textContent = lmData.kktp_2 || '-';
+        document.getElementById('quick-display-kktp-3').textContent = lmData.kktp_3 || '-';
+        document.getElementById('quick-display-kktp-4').textContent = lmData.kktp_4 || '-';
+        kktpDisplay.classList.remove('hidden');
+      }
+    }
+
+    async function saveAllQuickAssessments() {
+      if (isLoading) return;
+      
+      const classId = document.getElementById('quick-assessment-class').value;
+      const tpId = document.getElementById('quick-assessment-tp').value;
+      
+      if (!classId) {
+        showToast('Pilih kelas terlebih dahulu', 'error');
+        return;
+      }
+      
+      if (!tpId) {
+        showToast('Pilih Tujuan Pembelajaran', 'error');
+        return;
+      }
+      
+      const lmData = allData.find(d => d.__backendId === tpId);
+      const scoreInputs = document.querySelectorAll('.quick-score');
+      
+      const studentScores = {};
+      scoreInputs.forEach(input => {
+        const studentId = input.dataset.studentId;
+        const studentName = input.dataset.studentName;
+        const scoreIndex = input.dataset.scoreIndex;
+        const value = input.value.trim();
+        
+        if (!studentScores[studentId]) {
+          studentScores[studentId] = {
+            name: studentName,
+            scores: {}
+          };
+        }
+        
+        studentScores[studentId].scores[scoreIndex] = value;
+      });
+      
+      let successCount = 0;
+      let skippedCount = 0;
+      
+      isLoading = true;
+      
+      for (const [studentId, data] of Object.entries(studentScores)) {
+        const score1 = data.scores['1'] || '';
+        const score2 = data.scores['2'] || '';
+        const score3 = data.scores['3'] || '';
+        const score4 = data.scores['4'] || '';
+        
+        if (!score1 && !score2 && !score3 && !score4) {
+          skippedCount++;
+          continue;
+        }
+        
+        if (allData.length >= 999) {
+          showToast('Batas data tercapai (999)', 'error');
+          break;
+        }
+        
+        const result = await window.dataSdk.create({
+          type: 'assessment',
+          assessment_class_id: classId,
+          assessment_student_id: studentId,
+          assessment_student_name: data.name,
+          assessment_tp_id: tpId,
+          assessment_tp: lmData ? lmData.lm_tp : '',
+          score_1: score1 || '0',
+          score_2: score2 || '0',
+          score_3: score3 || '0',
+          score_4: score4 || '0',
+          created_at: new Date().toISOString()
+        });
+        
+        if (result.isOk) {
+          successCount++;
+        }
+      }
+      
+      isLoading = false;
+      
+      if (successCount > 0) {
+        showToast(`${successCount} penilaian berhasil disimpan!`);
+        clearQuickAssessment();
+      } else {
+        showToast('Tidak ada nilai yang disimpan', 'error');
+      }
+    }
+
+    function clearQuickAssessment() {
+      document.getElementById('quick-assessment-class').value = '';
+      document.getElementById('quick-assessment-tp').value = '';
+      document.getElementById('quick-assessment-list').innerHTML = '';
+      document.getElementById('quick-kktp-display').classList.add('hidden');
+    }
+
+    function loadStudentsForAssessment() {
+      const classId = document.getElementById('assessment-class-select').value;
+      const studentSelect = document.getElementById('assessment-student-select');
+      const tpSelect = document.getElementById('assessment-tp-select');
+      
+      if (!classId) {
+        studentSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>';
+        tpSelect.innerHTML = '<option value="">-- Pilih Tujuan Pembelajaran --</option>';
+        document.getElementById('kktp-display').classList.add('hidden');
+        return;
+      }
+      
+      const students = getStudents(classId);
+      studentSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>' +
+        students.map(s => `<option value="${s.__backendId}">${s.student_name}</option>`).join('');
+      
+      const lmData = getLingkupMateri().filter(lm => lm.class_id === classId);
+      tpSelect.innerHTML = '<option value="">-- Pilih Tujuan Pembelajaran --</option>' +
+        lmData.map(lm => `<option value="${lm.__backendId}">${lm.lm_tp || lm.lm_code}</option>`).join('');
+    }
+
+    function displayKKTP() {
+      const tpId = document.getElementById('assessment-tp-select').value;
+      const kktpDisplay = document.getElementById('kktp-display');
+      
+      if (!tpId) {
+        kktpDisplay.classList.add('hidden');
+        return;
+      }
+      
+      const lmData = allData.find(d => d.__backendId === tpId);
+      if (lmData) {
+        document.getElementById('display-kktp-1').textContent = lmData.kktp_1 || '-';
+        document.getElementById('display-kktp-2').textContent = lmData.kktp_2 || '-';
+        document.getElementById('display-kktp-3').textContent = lmData.kktp_3 || '-';
+        document.getElementById('display-kktp-4').textContent = lmData.kktp_4 || '-';
+        kktpDisplay.classList.remove('hidden');
+      }
+    }
+
+    function clearAssessmentForm() {
+      document.getElementById('assessment-class-select').value = '';
+      document.getElementById('assessment-student-select').value = '';
+      document.getElementById('assessment-tp-select').value = '';
+      document.getElementById('assessment-score-1').value = '';
+      document.getElementById('assessment-score-2').value = '';
+      document.getElementById('assessment-score-3').value = '';
+      document.getElementById('assessment-score-4').value = '';
+      document.getElementById('kktp-display').classList.add('hidden');
+    }
+
+    function renderAssessmentHistory() {
+      const filterClassId = document.getElementById('assessment-history-class').value;
+      let assessments = getAssessments();
+      
+      if (filterClassId) {
+        assessments = assessments.filter(a => a.assessment_class_id === filterClassId);
+      }
+      
+      assessments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      
+      const listEl = document.getElementById('assessment-list');
+      
+      if (assessments.length === 0) {
+        listEl.innerHTML = '<p class="text-slate-400 text-center py-8">Belum ada data penilaian</p>';
+        return;
+      }
+      
+      // Group by class
+      const groupedByClass = {};
+      assessments.forEach(a => {
+        if (!groupedByClass[a.assessment_class_id]) {
+          const classData = getClasses().find(c => c.__backendId === a.assessment_class_id);
+          groupedByClass[a.assessment_class_id] = {
+            className: classData ? classData.class_name : 'Unknown',
+            assessments: []
+          };
+        }
+        groupedByClass[a.assessment_class_id].assessments.push(a);
+      });
+      
+      listEl.innerHTML = Object.entries(groupedByClass).map(([classId, data]) => `
+        <div class="mb-8">
+          <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-xl p-4 flex items-center justify-between">
+            <div>
+              <h3 class="text-xl font-bold">Kelas: ${data.className}</h3>
+              <p class="text-sm text-blue-100">Total: ${data.assessments.length} penilaian</p>
+            </div>
+            <div class="text-3xl">📊</div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+              <thead>
+                <tr class="bg-slate-100">
+                  <th class="px-4 py-3 text-left text-sm font-semibold border border-slate-300">No</th>
+                  <th class="px-4 py-3 text-left text-sm font-semibold border border-slate-300">Nama Siswa</th>
+                  <th class="px-4 py-3 text-left text-sm font-semibold border border-slate-300">Tujuan Pembelajaran</th>
+                  <th class="px-4 py-3 text-center text-sm font-semibold border border-slate-300">KKTP 1</th>
+                  <th class="px-4 py-3 text-center text-sm font-semibold border border-slate-300">KKTP 2</th>
+                  <th class="px-4 py-3 text-center text-sm font-semibold border border-slate-300">KKTP 3</th>
+                  <th class="px-4 py-3 text-center text-sm font-semibold border border-slate-300">KKTP 4</th>
+                  <th class="px-4 py-3 text-center text-sm font-semibold border border-slate-300">Rata-rata</th>
+                  <th class="px-4 py-3 text-center text-sm font-semibold border border-slate-300">Status</th>
+                  <th class="px-4 py-3 text-center text-sm font-semibold border border-slate-300 w-20">Aksi</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white">
+                ${data.assessments.map((assessment, i) => {
+                  const lmData = allData.find(d => d.__backendId === assessment.assessment_tp_id);
+                  
+                  const score1 = parseFloat(assessment.score_1) || 0;
+                  const score2 = parseFloat(assessment.score_2) || 0;
+                  const score3 = parseFloat(assessment.score_3) || 0;
+                  const score4 = parseFloat(assessment.score_4) || 0;
+                  const average = ((score1 + score2 + score3 + score4) / 4).toFixed(2);
+                  
+                  let status = 'Belum Tuntas';
+                  let statusClass = 'bg-red-100 text-red-700';
+                  
+                  if (lmData) {
+                    const kktp1 = parseFloat(lmData.kktp_1) || 0;
+                    const kktp2 = parseFloat(lmData.kktp_2) || 0;
+                    const kktp3 = parseFloat(lmData.kktp_3) || 0;
+                    const kktp4 = parseFloat(lmData.kktp_4) || 0;
+                    
+                    if (score1 >= kktp1 && score2 >= kktp2 && score3 >= kktp3 && score4 >= kktp4) {
+                      status = 'Tuntas';
+                      statusClass = 'bg-green-100 text-green-700';
+                    }
+                  }
+                  
+                  return `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                      <td class="px-4 py-3 border border-slate-200 text-slate-700 font-medium">${i + 1}</td>
+                      <td class="px-4 py-3 border border-slate-200 text-slate-800">${assessment.assessment_student_name || '-'}</td>
+                      <td class="px-4 py-3 border border-slate-200 text-slate-800">${assessment.assessment_tp || '-'}</td>
+                      <td class="px-4 py-3 border border-slate-200 text-center text-slate-800">${score1.toFixed(2)}</td>
+                      <td class="px-4 py-3 border border-slate-200 text-center text-slate-800">${score2.toFixed(2)}</td>
+                      <td class="px-4 py-3 border border-slate-200 text-center text-slate-800">${score3.toFixed(2)}</td>
+                      <td class="px-4 py-3 border border-slate-200 text-center text-slate-800">${score4.toFixed(2)}</td>
+                      <td class="px-4 py-3 border border-slate-200 text-center text-slate-800 font-bold">${average}</td>
+                      <td class="px-4 py-3 border border-slate-200 text-center">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold ${statusClass}">${status}</span>
+                      </td>
+                      <td class="px-4 py-3 border border-slate-200 text-center">
+                        <button onclick="confirmDeleteAssessment('${assessment.__backendId}')" class="text-red-500 hover:bg-red-100 p-2 rounded-lg transition-all delete-btn inline-flex items-center justify-center" title="Hapus">
+                          🗑️
+                        </button>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function loadLMForJournal() {
+      const classId = document.getElementById('journal-class-select').value;
+      const lmSelect = document.getElementById('journal-lm-select');
+      
+      if (!classId) {
+        lmSelect.innerHTML = '<option value="">-- Pilih Lingkup Materi --</option>';
+        document.getElementById('journal-tp').value = '';
+        return;
+      }
+      
+      const lmData = getLingkupMateri().filter(lm => lm.class_id === classId);
+      
+      if (lmData.length === 0) {
+        lmSelect.innerHTML = '<option value="">-- Belum ada data LM untuk kelas ini --</option>';
+        document.getElementById('journal-tp').value = '';
+        return;
+      }
+      
+      lmSelect.innerHTML = '<option value="">-- Pilih Lingkup Materi --</option>' +
+        lmData.map(lm => `<option value="${lm.__backendId}">${lm.lm_code}</option>`).join('');
+    }
+
+    function fillTPFromLM() {
+      const lmId = document.getElementById('journal-lm-select').value;
+      
+      if (!lmId) {
+        document.getElementById('journal-tp').value = '';
+        return;
+      }
+      
+      const lmData = allData.find(d => d.__backendId === lmId);
+      if (lmData) {
+        document.getElementById('journal-tp').value = lmData.lm_tp || '';
+      }
+    }
+
+    async function loadStudentsForAttendance() {
+      const classId = document.getElementById('attendance-class-select').value;
+      const date = document.getElementById('attendance-date').value;
+      const students = getStudents(classId);
+      const listEl = document.getElementById('attendance-list');
+      const summaryEl = document.getElementById('attendance-summary');
+      
+      if (!classId) {
+        listEl.innerHTML = '<p class="text-slate-400 text-center py-4">Pilih kelas untuk mulai absensi</p>';
+        summaryEl.classList.add('hidden');
+        return;
+      }
+      
+      if (students.length === 0) {
+        listEl.innerHTML = '<p class="text-slate-400 text-center py-4">Belum ada siswa di kelas ini</p>';
+        summaryEl.classList.add('hidden');
+        return;
+      }
+      
+      const existingAttendance = getAttendance().filter(a => a.class_id === classId && a.date === date);
+      
+      // Auto-create "Hadir" records for students without attendance
+      if (date && !isLoading) {
+        for (const student of students) {
+          const hasRecord = existingAttendance.find(a => a.student_name === student.student_name);
+          if (!hasRecord) {
+            if (allData.length < 999) {
+              isLoading = true;
+              await window.dataSdk.create({
+                type: 'attendance',
+                class_id: classId,
+                student_name: student.student_name,
+                date: date,
+                status: 'Hadir',
+                created_at: new Date().toISOString()
+              });
+              isLoading = false;
+            }
+          }
+        }
+      }
+      
+      // Re-fetch after auto-creation
+      const updatedAttendance = getAttendance().filter(a => a.class_id === classId && a.date === date);
+      
+      listEl.innerHTML = students.map((s, i) => {
+        const attendance = updatedAttendance.find(a => a.student_name === s.student_name);
+        const status = attendance ? attendance.status : 'Hadir';
+        const genderIcon = s.gender === 'Laki-laki' ? '👨' : s.gender === 'Perempuan' ? '👩' : '👤';
+        return `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between bg-slate-50 rounded-xl p-3 gap-3">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 bg-slate-200 rounded-lg flex items-center justify-center text-sm font-medium">${i + 1}</span>
+              <span class="font-medium text-slate-800 flex items-center gap-2">
+                <span>${genderIcon}</span>
+                <span>${s.student_name}</span>
+              </span>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <button onclick="setAttendance('${s.__backendId}', '${s.student_name}', 'Hadir')" 
+                class="px-3 py-1 rounded-lg text-sm font-medium transition-all ${status === 'Hadir' ? 'status-hadir ring-2 ring-green-400' : 'bg-slate-200 text-slate-600 hover:bg-green-100'}">
+                Hadir
+              </button>
+              <button onclick="setAttendance('${s.__backendId}', '${s.student_name}', 'Izin')"
+                class="px-3 py-1 rounded-lg text-sm font-medium transition-all ${status === 'Izin' ? 'status-izin ring-2 ring-yellow-400' : 'bg-slate-200 text-slate-600 hover:bg-yellow-100'}">
+                Izin
+              </button>
+              <button onclick="setAttendance('${s.__backendId}', '${s.student_name}', 'Sakit')"
+                class="px-3 py-1 rounded-lg text-sm font-medium transition-all ${status === 'Sakit' ? 'status-sakit ring-2 ring-blue-400' : 'bg-slate-200 text-slate-600 hover:bg-blue-100'}">
+                Sakit
+              </button>
+              <button onclick="setAttendance('${s.__backendId}', '${s.student_name}', 'Alpha')"
+                class="px-3 py-1 rounded-lg text-sm font-medium transition-all ${status === 'Alpha' ? 'status-alpha ring-2 ring-red-400' : 'bg-slate-200 text-slate-600 hover:bg-red-100'}">
+                Alpha
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      updateAttendanceSummary(classId, date);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    // Download functions
+    function downloadCSV(filename, headers, rows) {
+      try {
+        const csvRows = [];
+        csvRows.push(headers.join(','));
+        
+        rows.forEach(row => {
+          const escapedRow = row.map(cell => {
+            const cellStr = String(cell || '-');
+            if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
+              return `"${cellStr.replace(/"/g, '""')}"`;
+            }
+            return cellStr;
+          });
+          csvRows.push(escapedRow.join(','));
+        });
+        
+        const csvContent = csvRows.join('\n');
+        const BOM = '\uFEFF';
+        
+        const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        window.URL.revokeObjectURL(url);
+        
+        showToast(`✅ File ${filename} berhasil diunduh!`, 'success');
+      } catch (error) {
+        showToast('❌ Gagal mengunduh file. Coba lagi.', 'error');
+      }
+    }
+
+    function downloadIdentity() {
+      const teacher = getTeacherIdentity();
+      if (!teacher) {
+        showToast('Belum ada data identitas guru untuk diunduh', 'error');
+        return;
+      }
+      
+      const headers = ['Nama', 'Nama Sekolah', 'NIP', 'Mata Pelajaran', 'Semester'];
+      const rows = [[teacher.name || '-', teacher.school_name || '-', teacher.nip || '-', teacher.subject || '-', teacher.semester || '-']];
+      
+      downloadCSV('Identitas_Guru.csv', headers, rows);
+    }
+
+    function downloadClasses() {
+      const classes = getClasses();
+      if (classes.length === 0) {
+        showToast('Belum ada data kelas untuk diunduh', 'error');
+        return;
+      }
+      
+      const headers = ['No', 'Nama Kelas', 'Jumlah Siswa'];
+      const rows = classes.map((c, i) => {
+        const studentCount = getStudents(c.__backendId).length;
+        return [i + 1, c.class_name, studentCount];
+      });
+      
+      downloadCSV('Data_Kelas.csv', headers, rows);
+    }
+
+    function downloadStudents() {
+      const students = getStudents();
+      if (students.length === 0) {
+        showToast('Belum ada data siswa untuk diunduh', 'error');
+        return;
+      }
+      
+      const headers = ['No', 'Nama Siswa', 'NIS', 'Jenis Kelamin', 'Kelas'];
+      const rows = students.map((s, i) => {
+        const classData = getClasses().find(c => c.__backendId === s.class_id);
+        return [i + 1, s.student_name, s.student_nis || '-', s.gender || '-', classData ? classData.class_name : '-'];
+      });
+      
+      downloadCSV('Data_Siswa.csv', headers, rows);
+    }
+
+    function downloadAttendance() {
+      const attendance = getAttendance();
+      if (attendance.length === 0) {
+        showToast('Belum ada data absensi untuk diunduh', 'error');
+        return;
+      }
+      
+      const headers = ['No', 'Nama Siswa', 'Kelas', 'Tanggal', 'Status'];
+      const rows = attendance.map((a, i) => {
+        const classData = getClasses().find(c => c.__backendId === a.class_id);
+        return [i + 1, a.student_name, classData ? classData.class_name : '-', a.date, a.status];
+      });
+      
+      downloadCSV('Data_Absensi.csv', headers, rows);
+    }
+
+    function downloadLM() {
+      const lmData = getLingkupMateri();
+      if (lmData.length === 0) {
+        showToast('Belum ada data untuk diunduh', 'error');
+        return;
+      }
+      
+      const headers = ['No', 'Kelas', 'Lingkup Materi (LM)', 'Tujuan Pembelajaran (TP)', 'KKTP 1', 'KKTP 2', 'KKTP 3', 'KKTP 4'];
+      const rows = lmData.map((lm, i) => {
+        const classData = getClasses().find(c => c.__backendId === lm.class_id);
+        return [
+          i + 1, 
+          classData ? classData.class_name : '-',
+          lm.lm_code || '-', 
+          lm.lm_tp || '-',
+          lm.kktp_1 || '-',
+          lm.kktp_2 || '-',
+          lm.kktp_3 || '-',
+          lm.kktp_4 || '-'
+        ];
+      });
+      
+      downloadCSV('Data_Lingkup_Materi_TP_KKTP.csv', headers, rows);
+    }
+
+    function downloadJournal() {
+      const journals = getJournal();
+      if (journals.length === 0) {
+        showToast('Belum ada data jurnal untuk diunduh', 'error');
+        return;
+      }
+      
+      const headers = ['No', 'Tanggal', 'Jam', 'Kelas', 'Lingkup Materi', 'Tujuan Pembelajaran', 'Kegiatan Pembelajaran'];
+      const rows = journals.map((j, i) => {
+        const classData = getClasses().find(c => c.__backendId === j.journal_class_id);
+        return [
+          i + 1,
+          j.journal_date || '-',
+          j.journal_time || '-',
+          classData ? classData.class_name : '-',
+          j.journal_lm || '-',
+          j.journal_tp || '-',
+          j.journal_kegiatan || '-'
+        ];
+      });
+      
+      downloadCSV('Jurnal_Mengajar.csv', headers, rows);
+    }
+
+    // Delete confirmations
+    function confirmDeleteClass(id) {
+      const btn = event.target.closest('.delete-btn');
+      if (btn.dataset.confirming === 'true') {
+        deleteClass(id);
+      } else {
+        btn.dataset.confirming = 'true';
+        btn.innerHTML = '⚠️';
+        btn.title = 'Klik lagi untuk konfirmasi';
+        setTimeout(() => {
+          btn.dataset.confirming = 'false';
+          btn.innerHTML = '🗑️';
+          btn.title = 'Hapus';
+        }, 3000);
+      }
+    }
+
+    function confirmDeleteStudent(id) {
+      const btn = event.target.closest('.delete-btn');
+      if (btn.dataset.confirming === 'true') {
+        deleteStudent(id);
+      } else {
+        btn.dataset.confirming = 'true';
+        btn.innerHTML = '⚠️';
+        btn.title = 'Klik lagi untuk konfirmasi';
+        setTimeout(() => {
+          btn.dataset.confirming = 'false';
+          btn.innerHTML = '🗑️';
+          btn.title = 'Hapus';
+        }, 3000);
+      }
+    }
+
+    function confirmDeleteLM(id) {
+      const btn = event.target.closest('.delete-btn');
+      if (btn.dataset.confirming === 'true') {
+        deleteLM(id);
+      } else {
+        btn.dataset.confirming = 'true';
+        btn.innerHTML = '⚠  ';
+        btn.title = 'Klik lagi untuk konfirmasi';
+        setTimeout(() => {
+          btn.dataset.confirming = 'false';
+          btn.innerHTML = '🗑️';
+          btn.title = 'Hapus';
+        }, 3000);
+      }
+    }
+
+    // CRUD Operations
+    async function saveIdentity(e) {
+      e.preventDefault();
+      if (isLoading) return;
+      
+      const name = document.getElementById('teacher-name').value.trim();
+      const schoolName = document.getElementById('teacher-school').value.trim();
+      const nip = document.getElementById('teacher-nip').value.trim();
+      const subject = document.getElementById('teacher-subject').value.trim();
+      const semester = document.getElementById('teacher-semester').value;
+      
+      if (!name) {
+        showToast('Nama tidak boleh kosong', 'error');
+        return;
+      }
+      
+      isLoading = true;
+      const existingTeacher = getTeacherIdentity();
+      
+      if (existingTeacher) {
+        const result = await window.dataSdk.update({ ...existingTeacher, name, school_name: schoolName, nip, subject, semester });
+        if (!result.isOk) showToast('Gagal menyimpan', 'error');
+        else showToast('Identitas diperbarui');
+      } else {
+        if (allData.length >= 999) {
+          showToast('Batas data tercapai (999)', 'error');
+          isLoading = false;
+          return;
+        }
+        const result = await window.dataSdk.create({ type: 'teacher', name, school_name: schoolName, nip, subject, semester, created_at: new Date().toISOString() });
+        if (!result.isOk) showToast('Gagal menyimpan', 'error');
+        else showToast('Identitas tersimpan');
+      }
+      isLoading = false;
+    }
+
+    async function addClass(e) {
+      e.preventDefault();
+      if (isLoading) return;
+      
+      const className = document.getElementById('class-name').value.trim();
+      if (!className) {
+        showToast('Nama kelas tidak boleh kosong', 'error');
+        return;
+      }
+      
+      if (allData.length >= 999) {
+        showToast('Batas data tercapai (999)', 'error');
+        return;
+      }
+      
+      isLoading = true;
+      const result = await window.dataSdk.create({ type: 'class', class_name: className, created_at: new Date().toISOString() });
+      if (!result.isOk) showToast('Gagal menambah kelas', 'error');
+      else {
+        showToast('Kelas ditambahkan');
+        document.getElementById('class-name').value = '';
+      }
+      isLoading = false;
+    }
+
+    async function saveClassName(id) {
+      if (isLoading) return;
+      
+      const input = document.querySelector(`.class-name-input[data-id="${id}"]`);
+      const newName = input.value.trim();
+      if (!newName) {
+        showToast('Nama kelas tidak boleh kosong', 'error');
+        return;
+      }
+      
+      const classData = allData.find(d => d.__backendId === id);
+      if (classData) {
+        isLoading = true;
+        const result = await window.dataSdk.update({ ...classData, class_name: newName });
+        if (!result.isOk) showToast('Gagal menyimpan', 'error');
+        else showToast('Nama kelas diperbarui');
+        isLoading = false;
+      }
+    }
+
+    async function deleteClass(id) {
+      if (isLoading) return;
+      
+      const classData = allData.find(d => d.__backendId === id);
+      if (classData) {
+        isLoading = true;
+        const result = await window.dataSdk.delete(classData);
+        if (!result.isOk) showToast('Gagal menghapus', 'error');
+        else showToast('Kelas dihapus');
+        isLoading = false;
+      }
+    }
+
+    async function addStudent(e) {
+      e.preventDefault();
+      if (isLoading) return;
+      
+      const classId = document.getElementById('student-class-select').value;
+      const studentName = document.getElementById('student-name').value.trim();
+      const studentNis = document.getElementById('student-nis').value.trim();
+      const studentGender = document.getElementById('student-gender').value;
+      
+      if (!classId) {
+        showToast('Pilih kelas terlebih dahulu', 'error');
+        return;
+      }
+      if (!studentName) {
+        showToast('Nama siswa tidak boleh kosong', 'error');
+        return;
+      }
+      if (!studentGender) {
+        showToast('Pilih jenis kelamin', 'error');
+        return;
+      }
+      if (allData.length >= 999) {
+        showToast('Batas data tercapai (999)', 'error');
+        return;
+      }
+      
+      isLoading = true;
+      const result = await window.dataSdk.create({ 
+        type: 'student', 
+        class_id: classId, 
+        student_name: studentName, 
+        student_nis: studentNis || '',
+        gender: studentGender,
+        created_at: new Date().toISOString() 
+      });
+      if (!result.isOk) showToast('Gagal menambah siswa', 'error');
+      else {
+        showToast('Siswa ditambahkan');
+        document.getElementById('student-name').value = '';
+        document.getElementById('student-nis').value = '';
+        document.getElementById('student-gender').value = '';
+      }
+      isLoading = false;
+    }
+
+    // Toggle between single and bulk add
+    function toggleQuickAdd() {
+      document.getElementById('student-form').classList.add('hidden');
+      document.getElementById('quick-add-form').classList.remove('hidden');
+      document.getElementById('quick-add-btn').classList.remove('bg-slate-200', 'text-slate-700');
+      document.getElementById('quick-add-btn').classList.add('btn-primary', 'text-white');
+      document.getElementById('single-add-btn').classList.remove('btn-primary', 'text-white');
+      document.getElementById('single-add-btn').classList.add('bg-slate-200', 'text-slate-700');
+      updateQuickClassSelect();
+    }
+
+    function toggleSingleAdd() {
+      document.getElementById('student-form').classList.remove('hidden');
+      document.getElementById('quick-add-form').classList.add('hidden');
+      document.getElementById('single-add-btn').classList.remove('bg-slate-200', 'text-slate-700');
+      document.getElementById('single-add-btn').classList.add('btn-primary', 'text-white');
+      document.getElementById('quick-add-btn').classList.remove('btn-primary', 'text-white');
+      document.getElementById('quick-add-btn').classList.add('bg-slate-200', 'text-slate-700');
+    }
+
+    function updateQuickClassSelect() {
+      const classes = getClasses();
+      const select = document.getElementById('quick-class-select');
+      const options = '<option value="">-- Pilih Kelas --</option>' + 
+        classes.map(c => `<option value="${c.__backendId}">${c.class_name}</option>`).join('');
+      select.innerHTML = options;
+    }
+
+    function clearBulkInput() {
+      document.getElementById('bulk-student-input').value = '';
+      document.getElementById('bulk-preview').classList.add('hidden');
+    }
+
+    async function processBulkStudents() {
+      if (isLoading) return;
+      
+      const classId = document.getElementById('quick-class-select').value;
+      const input = document.getElementById('bulk-student-input').value.trim();
+      
+      if (!classId) {
+        showToast('Pilih kelas terlebih dahulu', 'error');
+        return;
+      }
+      
+      if (!input) {
+        showToast('Masukkan data siswa', 'error');
+        return;
+      }
+      
+      const lines = input.split('\n').filter(line => line.trim());
+      const students = [];
+      
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) continue;
+        
+        let nis = '';
+        let name = '';
+        let gender = '';
+        
+        if (trimmedLine.includes('|')) {
+          const parts = trimmedLine.split('|').map(p => p.trim());
+          
+          if (parts.length === 3) {
+            nis = parts[0] || '';
+            name = parts[1] || '';
+            const genderInput = parts[2].toUpperCase();
+            gender = genderInput === 'L' ? 'Laki-laki' : genderInput === 'P' ? 'Perempuan' : parts[2];
+          } else if (parts.length === 2) {
+            name = parts[0] || '';
+            const genderInput = parts[1].toUpperCase();
+            gender = genderInput === 'L' ? 'Laki-laki' : genderInput === 'P' ? 'Perempuan' : parts[1];
+          }
+        } else {
+          name = trimmedLine;
+        }
+        
+        if (name && gender) {
+          students.push({ nis, name, gender });
+        }
+      }
+      
+      if (students.length === 0) {
+        showToast('Tidak ada data siswa yang valid', 'error');
+        return;
+      }
+      
+      if (allData.length + students.length > 999) {
+        showToast('Melebihi batas data (999)', 'error');
+        return;
+      }
+      
+      isLoading = true;
+      let successCount = 0;
+      
+      for (const student of students) {
+        const result = await window.dataSdk.create({
+          type: 'student',
+          class_id: classId,
+          student_name: student.name,
+          student_nis: student.nis,
+          gender: student.gender,
+          created_at: new Date().toISOString()
+        });
+        
+        if (result.isOk) {
+          successCount++;
+        }
+      }
+      
+      isLoading = false;
+      
+      if (successCount === students.length) {
+        showToast(`${successCount} siswa berhasil ditambahkan`);
+        document.getElementById('bulk-student-input').value = '';
+        document.getElementById('bulk-preview').classList.add('hidden');
+      } else {
+        showToast(`${successCount} dari ${students.length} siswa berhasil ditambahkan`, 'error');
+      }
+    }
+
+    async function deleteStudent(id) {
+      if (isLoading) return;
+      
+      const studentData = allData.find(d => d.__backendId === id);
+      if (studentData) {
+        isLoading = true;
+        const result = await window.dataSdk.delete(studentData);
+        if (!result.isOk) showToast('Gagal menghapus', 'error');
+        else showToast('Siswa dihapus');
+        isLoading = false;
+      }
+    }
+
+    async function setAttendance(studentId, studentName, status) {
+      if (isLoading) return;
+      
+      const classId = document.getElementById('attendance-class-select').value;
+      const date = document.getElementById('attendance-date').value;
+      
+      if (!date) {
+        showToast('Pilih tanggal terlebih dahulu', 'error');
+        return;
+      }
+      
+      isLoading = true;
+      const existing = allData.find(d => d.type === 'attendance' && d.class_id === classId && d.date === date && d.student_name === studentName);
+      
+      if (existing) {
+        const result = await window.dataSdk.update({ ...existing, status });
+        if (!result.isOk) showToast('Gagal menyimpan', 'error');
+      } else {
+        if (allData.length >= 999) {
+          showToast('Batas data tercapai (999)', 'error');
+          isLoading = false;
+          return;
+        }
+        const result = await window.dataSdk.create({ type: 'attendance', class_id: classId, student_name: studentName, date, status, created_at: new Date().toISOString() });
+        if (!result.isOk) showToast('Gagal menyimpan', 'error');
+      }
+      isLoading = false;
+    }
+
+    async function saveLM(e) {
+      e.preventDefault();
+      if (isLoading) return;
+      
+      const classId = document.getElementById('lm-class-select').value;
+      const lmCode = document.getElementById('lm-code').value.trim();
+      const lmTp = document.getElementById('lm-tp').value.trim();
+      const kktp1 = document.getElementById('lm-kktp-1').value.trim();
+      const kktp2 = document.getElementById('lm-kktp-2').value.trim();
+      const kktp3 = document.getElementById('lm-kktp-3').value.trim();
+      const kktp4 = document.getElementById('lm-kktp-4').value.trim();
+      
+      if (!classId) {
+        showToast('Pilih kelas terlebih dahulu', 'error');
+        return;
+      }
+      if (!lmCode) {
+        showToast('Lingkup Materi tidak boleh kosong', 'error');
+        return;
+      }
+      if (!lmTp) {
+        showToast('Tujuan Pembelajaran tidak boleh kosong', 'error');
+        return;
+      }
+      if (allData.length >= 999) {
+        showToast('Batas data tercapai (999)', 'error');
+        return;
+      }
+      
+      isLoading = true;
+      const result = await window.dataSdk.create({ 
+        type: 'lm',
+        class_id: classId,
+        lm_code: lmCode,
+        lm_tp: lmTp,
+        kktp_1: kktp1,
+        kktp_2: kktp2,
+        kktp_3: kktp3,
+        kktp_4: kktp4,
+        created_at: new Date().toISOString() 
+      });
+      
+      if (!result.isOk) showToast('Gagal menyimpan', 'error');
+      else {
+        showToast('Data berhasil ditambahkan');
+        clearLMForm();
+      }
+      isLoading = false;
+    }
+
+    async function deleteLM(id) {
+      if (isLoading) return;
+      
+      const lmData = allData.find(d => d.__backendId === id);
+      if (lmData) {
+        isLoading = true;
+        const result = await window.dataSdk.delete(lmData);
+        if (!result.isOk) showToast('Gagal menghapus', 'error');
+        else showToast('Lingkup materi dihapus');
+        isLoading = false;
+      }
+    }
+
+    async function saveJournal(e) {
+      e.preventDefault();
+      if (isLoading) return;
+      
+      const date = document.getElementById('journal-date').value;
+      const time = document.getElementById('journal-time').value.trim();
+      const classId = document.getElementById('journal-class-select').value;
+      const lmId = document.getElementById('journal-lm-select').value;
+      const tp = document.getElementById('journal-tp').value.trim();
+      const kegiatan = document.getElementById('journal-kegiatan').value.trim();
+      
+      if (!date) {
+        showToast('Tanggal tidak boleh kosong', 'error');
+        return;
+      }
+      if (!classId) {
+        showToast('Pilih kelas terlebih dahulu', 'error');
+        return;
+      }
+      if (!lmId) {
+        showToast('Pilih Lingkup Materi', 'error');
+        return;
+      }
+      if (!kegiatan) {
+        showToast('Kegiatan Pembelajaran tidak boleh kosong', 'error');
+        return;
+      }
+      if (allData.length >= 999) {
+        showToast('Batas data tercapai (999)', 'error');
+        return;
+      }
+      
+      // Get LM code from selected LM data
+      const lmData = allData.find(d => d.__backendId === lmId);
+      const lmCode = lmData ? lmData.lm_code : '';
+      
+      isLoading = true;
+      const result = await window.dataSdk.create({
+        type: 'journal',
+        journal_date: date,
+        journal_time: time,
+        journal_class_id: classId,
+        journal_lm: lmCode,
+        journal_tp: tp,
+        journal_kegiatan: kegiatan,
+        created_at: new Date().toISOString()
+      });
+      
+      if (!result.isOk) showToast('Gagal menyimpan jurnal', 'error');
+      else {
+        showToast('Jurnal berhasil disimpan');
+        clearJournalForm();
+      }
+      isLoading = false;
+    }
+
+    function confirmDeleteJournal(id) {
+      const btn = event.target.closest('.delete-btn');
+      if (btn.dataset.confirming === 'true') {
+        deleteJournal(id);
+      } else {
+        btn.dataset.confirming = 'true';
+        btn.innerHTML = '⚠️';
+        btn.title = 'Klik lagi untuk konfirmasi';
+        setTimeout(() => {
+          btn.dataset.confirming = 'false';
+          btn.innerHTML = '🗑️';
+          btn.title = 'Hapus';
+        }, 3000);
+      }
+    }
+
+    async function deleteJournal(id) {
+      if (isLoading) return;
+      
+      const journalData = allData.find(d => d.__backendId === id);
+      if (journalData) {
+        isLoading = true;
+        const result = await window.dataSdk.delete(journalData);
+        if (!result.isOk) showToast('Gagal menghapus', 'error');
+        else showToast('Jurnal dihapus');
+        isLoading = false;
+      }
+    }
+
+    async function saveAssessment(e) {
+      e.preventDefault();
+      if (isLoading) return;
+      
+      const classId = document.getElementById('assessment-class-select').value;
+      const studentId = document.getElementById('assessment-student-select').value;
+      const tpId = document.getElementById('assessment-tp-select').value;
+      const score1 = document.getElementById('assessment-score-1').value.trim();
+      const score2 = document.getElementById('assessment-score-2').value.trim();
+      const score3 = document.getElementById('assessment-score-3').value.trim();
+      const score4 = document.getElementById('assessment-score-4').value.trim();
+      
+      if (!classId) {
+        showToast('Pilih kelas terlebih dahulu', 'error');
+        return;
+      }
+      if (!studentId) {
+        showToast('Pilih siswa terlebih dahulu', 'error');
+        return;
+      }
+      if (!tpId) {
+        showToast('Pilih Tujuan Pembelajaran', 'error');
+        return;
+      }
+      if (!score1 || !score2 || !score3 || !score4) {
+        showToast('Semua nilai harus diisi', 'error');
+        return;
+      }
+      if (allData.length >= 999) {
+        showToast('Batas data tercapai (999)', 'error');
+        return;
+      }
+      
+      const studentData = allData.find(d => d.__backendId === studentId);
+      const lmData = allData.find(d => d.__backendId === tpId);
+      
+      isLoading = true;
+      const result = await window.dataSdk.create({
+        type: 'assessment',
+        assessment_class_id: classId,
+        assessment_student_id: studentId,
+        assessment_student_name: studentData ? studentData.student_name : '',
+        assessment_tp_id: tpId,
+        assessment_tp: lmData ? lmData.lm_tp : '',
+        score_1: score1,
+        score_2: score2,
+        score_3: score3,
+        score_4: score4,
+        created_at: new Date().toISOString()
+      });
+      
+      if (!result.isOk) showToast('Gagal menyimpan penilaian', 'error');
+      else {
+        showToast('Penilaian berhasil disimpan');
+        clearAssessmentForm();
+      }
+      isLoading = false;
+    }
+
+    function confirmDeleteAssessment(id) {
+      const btn = event.target.closest('.delete-btn');
+      if (btn.dataset.confirming === 'true') {
+        deleteAssessment(id);
+      } else {
+        btn.dataset.confirming = 'true';
+        btn.innerHTML = '⚠️';
+        btn.title = 'Klik lagi untuk konfirmasi';
+        setTimeout(() => {
+          btn.dataset.confirming = 'false';
+          btn.innerHTML = '🗑️';
+          btn.title = 'Hapus';
+        }, 3000);
+      }
+    }
+
+    async function deleteAssessment(id) {
+      if (isLoading) return;
+      
+      const assessmentData = allData.find(d => d.__backendId === id);
+      if (assessmentData) {
+        isLoading = true;
+        const result = await window.dataSdk.delete(assessmentData);
+        if (!result.isOk) showToast('Gagal menghapus', 'error');
+        else showToast('Penilaian dihapus');
+        isLoading = false;
+      }
+    }
+
+    function downloadAssessment() {
+      const assessments = getAssessments();
+      if (assessments.length === 0) {
+        showToast('Belum ada data penilaian untuk diunduh', 'error');
+        return;
+      }
+      
+      const headers = ['No', 'Kelas', 'Nama Siswa', 'Tujuan Pembelajaran', 'Nilai 1', 'Nilai 2', 'Nilai 3', 'Nilai 4', 'Rata-rata', 'Status'];
+      const rows = assessments.map((a, i) => {
+        const classData = getClasses().find(c => c.__backendId === a.assessment_class_id);
+        const lmData = allData.find(d => d.__backendId === a.assessment_tp_id);
+        
+        const score1 = parseFloat(a.score_1) || 0;
+        const score2 = parseFloat(a.score_2) || 0;
+        const score3 = parseFloat(a.score_3) || 0;
+        const score4 = parseFloat(a.score_4) || 0;
+        const average = ((score1 + score2 + score3 + score4) / 4).toFixed(2);
+        
+        let status = 'Belum Tuntas';
+        if (lmData) {
+          const kktp1 = parseFloat(lmData.kktp_1) || 0;
+          const kktp2 = parseFloat(lmData.kktp_2) || 0;
+          const kktp3 = parseFloat(lmData.kktp_3) || 0;
+          const kktp4 = parseFloat(lmData.kktp_4) || 0;
+          
+          if (score1 >= kktp1 && score2 >= kktp2 && score3 >= kktp3 && score4 >= kktp4) {
+            status = 'Tuntas';
+          }
+        }
+        
+        return [
+          i + 1,
+          classData ? classData.class_name : '-',
+          a.assessment_student_name || '-',
+          a.assessment_tp || '-',
+          score1.toFixed(2),
+          score2.toFixed(2),
+          score3.toFixed(2),
+          score4.toFixed(2),
+          average,
+          status
+        ];
+      });
+      
+      downloadCSV('Data_Asesmen_Formatif.csv', headers, rows);
+    }
+
+    // Data Handler
+    const dataHandler = {
+      onDataChanged(data) {
+        allData = data;
+        renderIdentity();
+        renderClasses();
+        renderStudents();
+        loadStudentsForAttendance();
+        renderAttendanceHistory();
+        renderLingkupMateri();
+        renderJournal();
+        renderAssessmentHistory();
+      }
+    };
+
+    // Config change handler
+    async function onConfigChange(cfg) {
+      config = { ...defaultConfig, ...cfg };
+      
+      document.getElementById('app-title').textContent = config.app_title || defaultConfig.app_title;
+      
+      document.body.style.fontFamily = `${config.font_family || defaultConfig.font_family}, sans-serif`;
+    }
+
+    // Element SDK setup
+    const elementApi = {
+      defaultConfig,
+      onConfigChange,
+      mapToCapabilities: (cfg) => ({
+        recolorables: [
+          {
+            get: () => cfg.primary_color || defaultConfig.primary_color,
+            set: (v) => { cfg.primary_color = v; if (window.elementSdk) window.elementSdk.setConfig({ primary_color: v }); }
+          },
+          {
+            get: () => cfg.secondary_color || defaultConfig.secondary_color,
+            set: (v) => { cfg.secondary_color = v; if (window.elementSdk) window.elementSdk.setConfig({ secondary_color: v }); }
+          },
+          {
+            get: () => cfg.text_color || defaultConfig.text_color,
+            set: (v) => { cfg.text_color = v; if (window.elementSdk) window.elementSdk.setConfig({ text_color: v }); }
+          },
+          {
+            get: () => cfg.accent_color || defaultConfig.accent_color,
+            set: (v) => { cfg.accent_color = v; if (window.elementSdk) window.elementSdk.setConfig({ accent_color: v }); }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => cfg.font_family || defaultConfig.font_family,
+          set: (v) => { cfg.font_family = v; if (window.elementSdk) window.elementSdk.setConfig({ font_family: v }); }
+        },
+        fontSizeable: undefined
+      }),
+      mapToEditPanelValues: (cfg) => new Map([
+        ['app_title', cfg.app_title || defaultConfig.app_title]
+      ])
+    };
+
+    // Initialize
+    async function init() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('attendance-date').value = today;
+      document.getElementById('journal-date').value = today;
+      
+      document.getElementById('identity-form').addEventListener('submit', saveIdentity);
+      document.getElementById('class-form').addEventListener('submit', addClass);
+      document.getElementById('student-form').addEventListener('submit', addStudent);
+      document.getElementById('student-class-select').addEventListener('change', renderStudents);
+      document.getElementById('attendance-date').addEventListener('change', loadStudentsForAttendance);
+      document.getElementById('lm-form').addEventListener('submit', saveLM);
+      document.getElementById('journal-form').addEventListener('submit', saveJournal);
+      document.getElementById('assessment-form').addEventListener('submit', saveAssessment);
+      
+      if (window.elementSdk) {
+        window.elementSdk.init(elementApi);
+      }
+      
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init(dataHandler);
+        if (!result.isOk) {
+          showToast('Gagal memuat data', 'error');
+        }
+      }
+    }
+
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c0a8a09f0dbce2e',t:'MTc2ODg2OTgyMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
