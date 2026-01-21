@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ms" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Rekod Cuti - Unit Hemodialisis Hospital Bintulu</title>
+    
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/595wB3cy/HOSPITAL_BINTULU.png">
+
+    <!-- Tailwind CSS with Dark Mode Config -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff7ed', 100: '#ffedd5', 200: '#fed7aa', 300: '#fdba74',
+                            400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c',
+                            800: '#9a3412', 900: '#7c2d12',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- HTML2PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s; }
+        .sidebar-active { background-color: #c2410c; border-left: 4px solid #fdba74; }
+        .sidebar-active i { color: #fdba74; }
+        @media print { .no-print { display: none !important; } body { background: white; color: black; } }
+        .hidden-section { display: none; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #ea580c; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-track { background: #374151; }
+        .dark ::-webkit-scrollbar-thumb { background: #fb923c; }
+        
+        /* Loader */
+        .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(5px); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .dark .loader-overlay { background: rgba(0, 0, 0, 0.7); }
+        .spinner { width: 50px; height: 50px; border-radius: 50%; border: 4px solid transparent; border-top-color: #ea580c; border-right-color: #fdba74; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Toast */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 10000; }
+        .toast { padding: 10px 20px; border-radius: 5px; color: white; margin-top: 10px; transition: opacity 0.5s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .toast-success { background-color: #10b981; }
+        .toast-error { background-color: #ef4444; }
+    </style>
+</head>
+<body class="bg-orange-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
+
+    <!-- CONFIG -->
+    <script>
+        const CONFIG = {
+            SHEET_ID: '16wmcDIfuRszjvXq13GgrhZV0L7OcvFmJp4EWLz2DN5w',
+            APP_URL: 'https://script.google.com/macros/s/AKfycbwQU_pQbXnfxlFw-oTdVdKFrkBs3AhDYJVbbvCZyA9Fy9Re3ncmvHvyCMKEn2x8NTTUSg/exec'
+        };
+    </script>
+
+    <!-- UI COMPONENTS -->
+    <div id="loader" class="loader-overlay hidden"><div class="bg-white dark:bg-gray-800 p-6 rounded-full shadow-xl"><div class="spinner"></div></div></div>
+    <div id="toast-container"></div>
+    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-6 max-w-sm w-full">
+            <h3 class="font-bold text-lg mb-2">Pengesahan</h3>
+            <p id="confirmMessage" class="mb-6 text-gray-600 dark:text-gray-300">Teruskan?</p>
+            <div class="flex justify-end gap-3">
+                <button onclick="closeConfirmModal()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded">Batal</button>
+                <button id="confirmBtnAction" class="px-4 py-2 bg-red-600 text-white rounded font-bold">Sah</button>
+            </div>
+        </div>
+    </div>
+    <button onclick="toggleTheme()" class="fixed top-4 right-4 z-50 p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:scale-110 transition"><i class="fas fa-adjust text-orange-600 dark:text-orange-400"></i></button>
+
+    <!-- LOGIN PAGE -->
+    <div id="public-view" class="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-orange-100 to-orange-200 dark:from-gray-900 dark:to-black">
+        <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-4xl border-t-4 border-primary-600">
+            <div class="text-center mb-8">
+                <img src="https://i.postimg.cc/595wB3cy/HOSPITAL_BINTULU.png" class="h-24 mx-auto mb-4">
+                <h1 class="text-2xl font-bold uppercase text-primary-700 dark:text-primary-400">Sistem Rekod Cuti</h1>
+                <p class="text-gray-600 dark:text-gray-400">Unit Hemodialisis Hospital Bintulu</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-xl border border-gray-200 dark:border-gray-600">
+                    <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><i class="fas fa-lock text-orange-500"></i> Admin Login</h3>
+                    <form onsubmit="handleLogin(event)">
+                        <input type="email" id="loginEmail" class="w-full mb-4 px-4 py-2 border rounded dark:bg-gray-600 dark:border-gray-500" placeholder="Email" required>
+                        <input type="password" id="loginPassword" class="w-full mb-6 px-4 py-2 border rounded dark:bg-gray-600 dark:border-gray-500" placeholder="Kata Laluan" required>
+                        <button class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 rounded">Masuk</button>
+                    </form>
+                </div>
+                <div class="bg-amber-50 dark:bg-gray-700 p-6 rounded-xl border border-amber-200 dark:border-gray-600">
+                    <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><i class="fas fa-search text-orange-500"></i> Semak Cuti</h3>
+                    <form onsubmit="handlePublicCheck(event)">
+                        <input type="text" id="checkIC" class="w-full mb-6 px-4 py-2 border rounded dark:bg-gray-600 dark:border-gray-500" placeholder="No. KP (12 Digit)" required>
+                        <button class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 rounded">Semak Rekod</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="mt-8 text-sm font-semibold">&copy; <span class="auto-year"></span> Sistem Rekod Cuti & Hari Kelepasan Am</div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="admin-view" class="hidden min-h-screen flex">
+        <aside class="w-64 bg-gray-900 text-white flex flex-col fixed h-full overflow-y-auto z-10">
+            <div class="p-6 text-center border-b border-gray-800">
+                <img src="https://i.postimg.cc/595wB3cy/HOSPITAL_BINTULU.png" class="h-16 mx-auto mb-2">
+                <h2 class="font-bold text-primary-400">Admin Panel</h2>
+            </div>
+            <nav class="flex-1 py-4 space-y-1">
+                <a href="#" onclick="showSection('dashboard')" id="nav-dashboard" class="block px-6 py-3 hover:bg-gray-800"><i class="fas fa-tachometer-alt w-6"></i> Dashboard</a>
+                <a href="#" onclick="showSection('pegawai')" id="nav-pegawai" class="block px-6 py-3 hover:bg-gray-800"><i class="fas fa-user-nurse w-6"></i> Daftar Pegawai</a>
+                <a href="#" onclick="showSection('cuti')" id="nav-cuti" class="block px-6 py-3 hover:bg-gray-800"><i class="fas fa-calendar-alt w-6"></i> Rekod Cuti Tahunan</a>
+                <a href="#" onclick="showSection('rekod-kelepasan')" id="nav-rekod-kelepasan" class="block px-6 py-3 hover:bg-gray-800"><i class="fas fa-calendar-check w-6"></i> Rekod Cuti Gantian</a>
+                <a href="#" onclick="showSection('jenis-kelepasan')" id="nav-jenis-kelepasan" class="block px-6 py-3 hover:bg-gray-800"><i class="fas fa-calendar-day w-6"></i> Jenis Kelepasan</a>
+                <a href="#" onclick="showSection('admin-reg')" id="nav-admin-reg" class="block px-6 py-3 hover:bg-gray-800"><i class="fas fa-users-cog w-6"></i> Daftar Admin</a>
+            </nav>
+            <div class="p-4 border-t border-gray-800">
+                <div id="adminInfoDisplay" class="text-xs text-gray-400 mb-2"></div>
+                <button onclick="logout()" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded text-sm"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+            </div>
+        </aside>
+
+        <main class="flex-1 ml-64 p-8 overflow-y-auto bg-orange-50 dark:bg-gray-900">
+            <!-- DASHBOARD -->
+            <section id="sec-dashboard" class="content-section">
+                <h2 class="text-3xl font-bold mb-6">Rumusan Sistem</h2>
+                <div class="grid grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded shadow border-l-4 border-blue-500">
+                        <div class="text-xs font-bold uppercase text-gray-500">Pegawai</div>
+                        <div class="text-3xl font-bold" id="stat-total-pegawai">0</div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded shadow border-l-4 border-green-500">
+                        <div class="text-xs font-bold uppercase text-gray-500">Cuti Hari Ini</div>
+                        <div class="text-3xl font-bold" id="stat-cuti-today">0</div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded shadow border-l-4 border-purple-500">
+                        <div class="text-xs font-bold uppercase text-gray-500">Jenis Cuti Umum</div>
+                        <div class="text-3xl font-bold" id="stat-total-holidays">0</div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded shadow border-l-4 border-yellow-500">
+                        <div class="text-xs font-bold uppercase text-gray-500">Tahun</div>
+                        <div class="text-3xl font-bold" id="stat-current-year">...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DAFTAR PEGAWAI -->
+            <section id="sec-pegawai" class="content-section hidden-section">
+                <h2 class="text-2xl font-bold mb-6">Pendaftaran Pegawai</h2>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded shadow mb-6">
+                    <form onsubmit="registerOfficer(event)">
+                        <div class="grid grid-cols-2 gap-6 mb-4">
+                            <div><label class="block text-sm font-bold mb-1">Nama Penuh</label><input type="text" id="regName" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" required></div>
+                            <div><label class="block text-sm font-bold mb-1">No. KP</label><input type="text" id="regIC" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" maxlength="12" required></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-6 mb-4">
+                            <div>
+                                <label class="block text-sm font-bold mb-1">Jawatan</label>
+                                <select id="regPosition" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600">
+                                    <option value="Pembantu Perawatan Kesihatan">Pembantu Perawatan Kesihatan</option>
+                                    <option value="Penolong Pegawai Perubatan">Penolong Pegawai Perubatan</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold mb-1">Gred</label>
+                                <select id="regGrade" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600">
+                                    <option value="U1">U1</option><option value="U2">U2</option><option value="U5">U5</option><option value="U6">U6</option><option value="U7">U7</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Daftar</button>
+                    </form>
+                </div>
+                <div class="bg-white dark:bg-gray-800 rounded shadow overflow-hidden">
+                    <table class="w-full text-sm text-left"><thead class="bg-gray-100 dark:bg-gray-700 uppercase font-bold"><tr><th class="px-6 py-3">Nama</th><th class="px-6 py-3">IC</th><th class="px-6 py-3">Jawatan</th><th class="px-6 py-3">Tindakan</th></tr></thead><tbody id="officerTableBody" class="divide-y divide-gray-200 dark:divide-gray-700"></tbody></table>
+                </div>
+            </section>
+
+            <!-- REKOD CUTI TAHUNAN -->
+            <section id="sec-cuti" class="content-section hidden-section">
+                <h2 class="text-2xl font-bold mb-6 text-green-700 dark:text-green-400">Rekod Cuti Tahunan</h2>
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6 border-l-4 border-green-500">
+                    <label class="block font-bold mb-2">Pilih Pegawai:</label>
+                    <select id="leaveOfficerSelect" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" onchange="loadOfficerLeaveData()"><option value="">-- Sila Pilih Pegawai --</option></select>
+                </div>
+
+                <div id="leaveActionPanel" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-1 bg-white dark:bg-gray-800 p-6 rounded shadow">
+                        <h3 class="font-bold border-b pb-2 mb-4">Baki & Kelayakan</h3>
+                        <div class="mb-2"><label class="text-xs font-bold uppercase">Kelayakan</label><input type="number" id="bal_entitlement" class="w-full border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600" onchange="updateBalanceSettings()"></div>
+                        <div class="mb-4"><label class="text-xs font-bold uppercase">Baki Bawa Depan</label><input type="number" id="bal_carryForward" class="w-full border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600" onchange="updateBalanceSettings()"></div>
+                        <div class="bg-blue-50 dark:bg-gray-700 p-3 rounded text-center mb-4"><div class="text-xs font-bold text-blue-800 dark:text-blue-300">BAKI CUTI REHAT</div><div class="text-3xl font-bold text-green-600 dark:text-green-400" id="display_balanceAnnual">0</div></div>
+                        <div class="text-xs grid grid-cols-2 gap-2">
+                            <div>Sakit (90):</div><div id="display_mc" class="font-bold text-right">0</div>
+                            <div>Tanpa Rekod (20):</div><div id="display_unrecorded" class="font-bold text-right">0</div>
+                            <div>Bersalin (90):</div><div id="display_maternity" class="font-bold text-right">0</div>
+                            <div>Paterniti (7):</div><div id="display_paternity" class="font-bold text-right">0</div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded shadow border-t-4 border-green-500">
+                        <h3 class="font-bold mb-4">Borang Permohonan Cuti</h3>
+                        <form onsubmit="submitLeave(event)">
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div><label class="block text-xs font-bold mb-1">Jenis Cuti</label><select id="leaveType" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" onchange="toggleLeaveInputs()" required><option value="Tahunan">Cuti Rehat Tahunan</option><option value="Sakit">Cuti Sakit (MC)</option><option value="Tanpa Rekod">Cuti Tanpa Rekod</option><option value="Bersalin">Cuti Bersalin</option><option value="Paterniti">Cuti Paterniti</option><option value="Lain-Lain">Lain-Lain</option></select></div>
+                                <div id="otherLeaveDiv" class="hidden"><label class="block text-xs font-bold mb-1">Nyatakan</label><input type="text" id="otherLeaveName" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600"></div>
+                                <div id="mcDiv" class="hidden"><label class="block text-xs font-bold mb-1">No. Sijil</label><input type="text" id="mcNo" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600"></div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-4 mb-4">
+                                <div><label class="block text-xs font-bold mb-1">Mula</label><input type="date" id="leaveStart" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" required onchange="calcDaysPreview()"></div>
+                                <div><label class="block text-xs font-bold mb-1">Tamat</label><input type="date" id="leaveEnd" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" required onchange="calcDaysPreview()"></div>
+                                <div class="bg-gray-100 dark:bg-gray-700 p-2 rounded text-center"><span class="text-xs block">Hari (Kecuali Ahad)</span><span id="previewDays" class="font-bold text-xl text-blue-600 dark:text-blue-400">0</span></div>
+                            </div>
+                            <div class="mb-4"><label class="block text-xs font-bold mb-1">Catatan</label><input type="text" id="leaveReason" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600"></div>
+                            <button class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded shadow">Simpan Rekod</button>
+                        </form>
+                        
+                        <div class="mt-8 border-t dark:border-gray-700 pt-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-bold text-sm">Sejarah Cuti Pegawai Ini</h4>
+                                <button onclick="generatePDF('leaveHistoryTable', 'Rekod Cuti Tahunan')" class="bg-red-600 text-white text-xs px-3 py-1 rounded hover:bg-red-700"><i class="fas fa-file-pdf"></i> PDF</button>
+                            </div>
+                            <div class="overflow-x-auto max-h-60 border dark:border-gray-600 rounded">
+                                <table id="leaveHistoryTable" class="w-full text-xs text-left"><thead class="bg-gray-100 dark:bg-gray-700 sticky top-0 uppercase"><tr><th class="p-3">Jenis</th><th class="p-3">Tarikh</th><th class="p-3">Hari</th><th class="p-3">Tindakan</th></tr></thead><tbody id="leaveHistoryTableBody" class="divide-y divide-gray-100 dark:divide-gray-600"></tbody></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- REKOD CUTI GANTIAN -->
+            <section id="sec-rekod-kelepasan" class="content-section hidden-section">
+                <h2 class="text-2xl font-bold mb-6 text-purple-700 dark:text-purple-400">Rekod Cuti Gantian</h2>
+                
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6 border-l-4 border-purple-500">
+                    <label class="block font-bold mb-2">Pilih Pegawai:</label>
+                    <select id="holRecordOfficerSelect" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" onchange="loadOfficerHolidayData()"><option value="">-- Sila Pilih Pegawai --</option></select>
+                </div>
+                
+                <div id="holidayRecordPanel" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded shadow">
+                        <h4 class="font-bold text-sm mb-3">1. Pilih Cuti Bertugas (Klik untuk pilih)</h4>
+                        <div id="holidaySelectionList" class="bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 p-3 rounded-lg h-64 overflow-y-auto space-y-2"></div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded shadow border-t-4 border-purple-500">
+                        <h4 class="font-bold text-sm mb-3">2. Rekod Ganti</h4>
+                        <form onsubmit="submitHolidayReplacement(event)" class="bg-green-50 dark:bg-green-900/20 p-4 rounded border border-green-200 dark:border-green-800">
+                            <input type="hidden" id="selectedHolidayId">
+                            <label class="block text-xs font-bold mb-1">Cuti Terpilih</label>
+                            <input type="text" id="displaySelectedHol" class="w-full border p-2 rounded mb-3 bg-white dark:bg-gray-700 dark:border-gray-600" readonly placeholder="Pilih dari senarai kiri">
+                            <label class="block text-xs font-bold mb-1">Tarikh Ganti</label>
+                            <input type="date" id="replacementDate" class="w-full border p-2 rounded mb-4 dark:bg-gray-700 dark:border-gray-600" required>
+                            <button type="submit" id="btnSaveReplacement" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded disabled:opacity-50" disabled>Simpan</button>
+                        </form>
+                        <div class="mt-4 p-3 bg-gray-100 dark:bg-gray-700 rounded text-center">
+                            <span class="text-xs font-bold uppercase">Baki Cuti Gantian</span>
+                            <div id="holBalanceDisplay" class="font-bold text-green-600 dark:text-green-400 text-2xl">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="holidayHistoryDiv" class="hidden mt-8 bg-white dark:bg-gray-800 p-6 rounded shadow">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="font-bold text-sm">Sejarah Gantian Pegawai Ini</h4>
+                        <button onclick="generatePDF('replacementHistoryTable', 'Rekod Cuti Gantian')" class="bg-red-600 text-white text-xs px-3 py-1 rounded hover:bg-red-700"><i class="fas fa-file-pdf"></i> PDF</button>
+                    </div>
+                    <div class="overflow-hidden border dark:border-gray-600 rounded">
+                        <table id="replacementHistoryTable" class="w-full text-xs text-left"><thead class="bg-gray-100 dark:bg-gray-700 uppercase font-bold"><tr><th class="p-3">Cuti Asal</th><th class="p-3">Tarikh Asal</th><th class="p-3">Tarikh Ganti</th><th class="p-3">Tindakan</th></tr></thead><tbody id="replacementHistoryTableBody" class="divide-y divide-gray-100 dark:divide-gray-600"></tbody></table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- JENIS KELEPASAN -->
+            <section id="sec-jenis-kelepasan" class="content-section hidden-section">
+                <h2 class="text-2xl font-bold mb-6">Senarai Hari Kelepasan Am</h2>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded shadow mb-6">
+                    <form onsubmit="addHolidayType(event)" class="flex gap-4 items-end">
+                        <div class="flex-1"><label class="block text-xs font-bold mb-1">Tarikh</label><input type="date" id="holDate" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" required></div>
+                        <div class="flex-[2]"><label class="block text-xs font-bold mb-1">Nama Cuti</label><input type="text" id="holName" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" required></div>
+                        <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-bold">Tambah</button>
+                    </form>
+                </div>
+                <div class="bg-white dark:bg-gray-800 rounded shadow overflow-hidden"><table class="w-full text-sm text-left"><thead class="bg-gray-800 text-white uppercase"><tr><th class="px-6 py-3">Tarikh</th><th class="px-6 py-3">Nama</th><th class="px-6 py-3">Padam</th></tr></thead><tbody id="holidayTypeTable" class="divide-y divide-gray-200 dark:divide-gray-700"></tbody></table></div>
+            </section>
+
+            <!-- DAFTAR ADMIN -->
+            <section id="sec-admin-reg" class="content-section hidden-section">
+                <h2 class="text-2xl font-bold mb-6">Pendaftaran Admin</h2>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded shadow max-w-xl mb-6">
+                    <form onsubmit="registerAdmin(event)">
+                        <div class="mb-4"><label class="block font-bold mb-1">Nama</label><input type="text" id="newAdminName" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" required></div>
+                        <div class="mb-4"><label class="block font-bold mb-1">Email</label><input type="email" id="newAdminEmail" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" required></div>
+                        <div class="mb-6"><label class="block font-bold mb-1">Kata Laluan</label><input type="password" id="newAdminPass" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" required></div>
+                        <button class="bg-purple-600 hover:bg-purple-700 text-white w-full py-2 rounded font-bold">Daftar Admin</button>
+                    </form>
+                </div>
+                <div class="bg-white dark:bg-gray-800 rounded shadow overflow-hidden"><table class="w-full text-sm text-left"><thead class="bg-gray-100 dark:bg-gray-700 font-bold uppercase"><tr><th class="px-6 py-3">Nama</th><th class="px-6 py-3">Email</th></tr></thead><tbody id="adminTableBody" class="divide-y divide-gray-200 dark:divide-gray-700"></tbody></table></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- PUBLIC MODAL -->
+    <div id="publicResultModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b dark:border-gray-700 flex justify-between items-center sticky top-0 bg-white dark:bg-gray-800">
+                <h3 class="text-xl font-bold">Keputusan Semakan</h3>
+                <button onclick="closePublicModal()" class="text-2xl text-gray-500 hover:text-red-500">&times;</button>
+            </div>
+            <div class="p-6">
+                <div id="publicResultHeader"></div>
+                <div class="flex border-b border-gray-200 dark:border-gray-700 mb-4">
+                    <button onclick="switchPublicTab('leaves')" id="tabBtn-leaves" class="px-4 py-2 font-bold border-b-2">Rekod Cuti</button>
+                    <button onclick="switchPublicTab('holidays')" id="tabBtn-holidays" class="px-4 py-2 font-bold">Rekod Gantian</button>
+                </div>
+                <div id="tab-content-leaves" class="block"></div>
+                <div id="tab-content-holidays" class="hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- THEME ---
+        function toggleTheme(){ const h=document.documentElement; h.classList.contains('dark') ? (h.classList.remove('dark'),localStorage.setItem('theme','light')) : (h.classList.add('dark'),localStorage.setItem('theme','dark')); }
+        (function(){ const t=localStorage.getItem('theme'); if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark'); })();
+
+        // --- DATA & API ---
+        let localData = { users:[], officers:[], leaves:[], balances:{}, holidayTypes:[], holidayRecords:[], appState:{currentYear:2026} };
+        let currentUser = null;
+
+        async function apiCall(action, payload={}){
+            showLoading(true);
+            try {
+                let response;
+                if(action === 'READ_ALL') response = await fetch(CONFIG.APP_URL + '?action=READ_ALL&t=' + Date.now());
+                else {
+                    const p = new URLSearchParams(); p.append('action', action); p.append('data', JSON.stringify(payload)); p.append('sheetId', CONFIG.SHEET_ID);
+                    response = await fetch(CONFIG.APP_URL, { method:'POST', body:p });
+                }
+                const res = await response.json();
+                if(!res.success) throw new Error(res.message);
+                return res;
+            } catch(e) { showToast(e.message||"Ralat Sambungan", "error"); return null; }
+            finally { showLoading(false); }
+        }
+
+        async function refreshData(){
+            const res = await apiCall('READ_ALL');
+            if(res && res.data){
+                localData = res.data;
+                ['users','officers','leaves','holidayTypes','holidayRecords'].forEach(k => localData[k] = localData[k]||[]);
+                localData.balances = localData.balances||{};
+                const yr = localData.appState.currentYear || 2026;
+                document.querySelectorAll('.currentYearSpan').forEach(el=>el.innerText=yr);
+                document.getElementById('stat-current-year').innerText = yr;
+                updateDashboardStats();
+            }
+        }
+
+        // --- UTILS ---
+        function showLoading(show){ document.getElementById('loader').classList.toggle('hidden', !show); }
+        function showToast(msg, type){
+            const d = document.createElement('div');
+            d.className = `toast ${type==='success'?'toast-success':'toast-error'}`; d.innerText = msg;
+            document.getElementById('toast-container').appendChild(d);
+            setTimeout(()=>{ d.style.opacity='0'; setTimeout(()=>d.remove(),500); },3000);
+        }
+        function formatDate(dStr){ if(!dStr)return'-'; const p=dStr.split('-'); return p.length<3 ? dStr : `${p[2]}.${p[1]}.${p[0].slice(-2)}`; }
+        
+        function showSection(id){
+            document.querySelectorAll('.content-section').forEach(el=>el.classList.add('hidden-section'));
+            document.querySelectorAll('aside nav a').forEach(el=>el.classList.remove('sidebar-active'));
+            document.getElementById('sec-'+id).classList.remove('hidden-section');
+            document.getElementById('nav-'+id).classList.add('sidebar-active');
+            if(id==='pegawai') renderOfficerTable();
+            if(id==='cuti') populateSelects();
+            if(id==='jenis-kelepasan') renderHolidayTypes();
+            if(id==='rekod-kelepasan') populateSelects();
+            if(id==='admin-reg') renderAdminTable();
+        }
+
+        let confirmCB=null;
+        function showConfirmModal(m,c){ document.getElementById('confirmMessage').innerText=m; document.getElementById('confirmModal').classList.remove('hidden'); confirmCB=c; }
+        function closeConfirmModal(){ document.getElementById('confirmModal').classList.add('hidden'); confirmCB=null; }
+        document.getElementById('confirmBtnAction').onclick = ()=>{ if(confirmCB) confirmCB(); closeConfirmModal(); };
+
+        // --- PDF ---
+        function generatePDF(elId, title){
+            const el = document.getElementById(elId);
+            const w = document.createElement('div'); w.style.padding='20px'; w.style.backgroundColor='#fff';
+            
+            const h = document.createElement('div');
+            h.innerHTML = `
+                <div style="text-align:center; margin-bottom:15px; border-bottom:2px solid #ea580c; padding-bottom:10px;">
+                    <img src="https://i.postimg.cc/595wB3cy/HOSPITAL_BINTULU.png" style="height:70px; margin:0 auto 10px; display:block;">
+                    <h1 style="font-size:16px; font-weight:bold; color:#c2410c; text-transform:uppercase; margin:0;">${title}</h1>
+                    <h2 style="font-size:12px; color:#4b5563; margin:5px 0;">Unit Hemodialisis Hospital Bintulu</h2>
+                    <p style="font-size:9px; color:#9ca3af;">Dicetak: ${new Date().toLocaleDateString()}</p>
+                </div>`;
+            
+            const style = document.createElement('style');
+            style.innerHTML = `table{width:100%;border-collapse:collapse;font-size:10px;font-family:sans-serif} th,td{border:1px solid #ccc;padding:5px;text-align:left;color:#000} th{background:#f3f4f6;font-weight:bold}`;
+            w.appendChild(style); w.appendChild(h);
+            
+            const content = el.tagName==='TBODY' ? el.parentElement.cloneNode(true) : el.cloneNode(true);
+            content.querySelectorAll('*').forEach(e=>e.style.color='#000');
+            w.appendChild(content);
+
+            html2pdf().set({ margin:10, filename:title.replace(/\s+/g,'_')+'.pdf', image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2,useCORS:true}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'} }).from(w).save();
+        }
+
+        window.onload = async ()=>{ document.querySelectorAll('.auto-year').forEach(el=>el.innerText=new Date().getFullYear()); await refreshData(); };
+
+        // --- AUTH ---
+        function handleLogin(e){
+            e.preventDefault();
+            const em=document.getElementById('loginEmail').value, pw=document.getElementById('loginPassword').value;
+            const fb={name:'Super Admin',email:'rickeers@moh.gov.my',pass:'135881Andres@'};
+            let u = localData.users.find(x=>x.email===em && String(x.pass)===String(pw));
+            if(!u && em===fb.email && pw===fb.pass) u=fb;
+            if(u){ currentUser=u; document.getElementById('public-view').classList.add('hidden'); document.getElementById('admin-view').classList.remove('hidden'); document.getElementById('adminInfoDisplay').innerHTML=`Log Masuk: <b>${u.name}</b>`; showSection('dashboard'); }
+            else showToast("Gagal Log Masuk", "error");
+        }
+        function logout(){ currentUser=null; document.getElementById('admin-view').classList.add('hidden'); document.getElementById('public-view').classList.remove('hidden'); }
+
+        // --- CORE FUNCTIONS ---
+        function populateSelects(){
+            const h = '<option value="">-- Sila Pilih Pegawai --</option>' + localData.officers.map(o=>`<option value="${o.id}">${o.name} (${o.grade})</option>`).join('');
+            document.getElementById('leaveOfficerSelect').innerHTML = h;
+            document.getElementById('holRecordOfficerSelect').innerHTML = h;
+        }
+
+        async function registerOfficer(e){
+            e.preventDefault();
+            const p = { id:Date.now().toString(), name:document.getElementById('regName').value, ic:document.getElementById('regIC').value, position:document.getElementById('regPosition').value, grade:document.getElementById('regGrade').value };
+            if(localData.officers.find(o=>o.ic===p.ic)) return showToast("No. KP wujud!", "error");
+            if(await apiCall('CREATE_OFFICER', p)){ showToast("Berjaya Didaftar", "success"); e.target.reset(); refreshData().then(renderOfficerTable); }
+        }
+        function renderOfficerTable(){
+            document.getElementById('officerTableBody').innerHTML = localData.officers.map(o=>`
+                <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-orange-50 dark:hover:bg-gray-700">
+                    <td class="px-6 py-4 font-bold">${o.name}</td><td class="px-6 py-4">${o.ic}</td><td class="px-6 py-4 text-xs">${o.position} (${o.grade})</td>
+                    <td class="px-6 py-4"><button onclick="preDeleteOfficer('${o.id}')" class="text-red-600 hover:underline"><i class="fas fa-trash"></i></button></td>
+                </tr>`).join('');
+        }
+        function preDeleteOfficer(id){ showConfirmModal("Padam pegawai ini?", async()=>{ if(await apiCall('DELETE_OFFICER',{id})){ showToast("Dipadam","success"); refreshData().then(renderOfficerTable); } }); }
+
+        // --- CUTI TAHUNAN ---
+        function loadOfficerLeaveData(){
+            const id = document.getElementById('leaveOfficerSelect').value;
+            const panel = document.getElementById('leaveActionPanel');
+            if(!id){ panel.classList.add('hidden'); return; }
+            panel.classList.remove('hidden');
+            
+            const yr = localData.appState.currentYear;
+            const bal = localData.balances[`${id}_${yr}`] || {entitlement:25, carryForward:0, takenAnnual:0, takenMC:0, takenUnrecorded:0, takenMaternity:0, takenPaternity:0};
+            document.getElementById('bal_entitlement').value = bal.entitlement;
+            document.getElementById('bal_carryForward').value = bal.carryForward;
+            document.getElementById('display_balanceAnnual').innerText = (parseInt(bal.entitlement)+parseInt(bal.carryForward)) - (parseInt(bal.takenAnnual)||0);
+            ['mc','unrecorded','maternity','paternity'].forEach(k => document.getElementById(`display_${k}`).innerText = (bal[`taken${k.charAt(0).toUpperCase()+k.slice(1)}`]||0) + (k==='unrecorded'?'/20': k==='paternity'?'/7':'/90'));
+            
+            renderLeaveHistory(id);
+        }
+
+        async function submitLeave(e){
+            e.preventDefault();
+            const offId = document.getElementById('leaveOfficerSelect').value;
+            const p = {
+                id: Date.now(), offId: offId, type: document.getElementById('leaveType').value,
+                start: document.getElementById('leaveStart').value, end: document.getElementById('leaveEnd').value,
+                days: document.getElementById('previewDays').innerText, reason: document.getElementById('leaveReason').value,
+                mcNo: document.getElementById('mcNo').value || '-', otherName: document.getElementById('otherLeaveName').value || '-',
+                recordedBy: currentUser.name, year: localData.appState.currentYear
+            };
+            
+            // Basic Val
+            if(p.days <= 0) return showToast("Tarikh tidak sah", "error");
+            
+            if(await apiCall('CREATE_LEAVE', p)){
+                showToast("Disimpan", "success"); e.target.reset(); document.getElementById('previewDays').innerText='0';
+                await refreshData(); loadOfficerLeaveData(); // IMMEDIATE REFRESH
+            }
+        }
+        
+        function renderLeaveHistory(id){
+            const recs = localData.leaves.filter(r=>r.offId===id).sort((a,b)=>b.id-a.id);
+            document.getElementById('leaveHistoryTableBody').innerHTML = recs.map(r=>`
+                <tr class="border-b dark:border-gray-700 hover:bg-orange-50 dark:hover:bg-gray-700">
+                    <td class="p-3 font-bold">${r.type}</td><td class="p-3">${formatDate(r.start)} - ${formatDate(r.end)}</td>
+                    <td class="p-3 text-center">${r.days}</td><td class="p-3"><button onclick="preDeleteLeave('${r.id}','${id}')" class="text-red-500 hover:underline"><i class="fas fa-trash"></i></button></td>
+                </tr>`).join('');
+        }
+        function preDeleteLeave(id, offId){ showConfirmModal("Batalkan cuti?", async()=>{ if(await apiCall('DELETE_LEAVE',{id, offId, year:localData.appState.currentYear})){ showToast("Dibatalkan","success"); await refreshData(); loadOfficerLeaveData(); } }); }
+        
+        // --- HELPERS FOR LEAVE ---
+        function getWorkingDays(s,e){ let c=0; const d=new Date(s), f=new Date(e); while(d<=f){ if(d.getDay()!==0) c++; d.setDate(d.getDate()+1); } return c; }
+        function calcDaysPreview(){ const s=document.getElementById('leaveStart').value, e=document.getElementById('leaveEnd').value; document.getElementById('previewDays').innerText = (s&&e)?getWorkingDays(s,e):0; }
+        function toggleLeaveInputs(){ const t=document.getElementById('leaveType').value; document.getElementById('mcDiv').classList.toggle('hidden',t!=='Sakit'); document.getElementById('otherLeaveDiv').classList.toggle('hidden',t!=='Lain-Lain'); }
+        async function updateBalanceSettings(){ const id=document.getElementById('leaveOfficerSelect').value; if(id) await apiCall('UPDATE_BALANCE_SETTINGS',{officerId:id, year:localData.appState.currentYear, entitlement:document.getElementById('bal_entitlement').value, carryForward:document.getElementById('bal_carryForward').value}); refreshData().then(loadOfficerLeaveData); }
+
+        // --- CUTI GANTIAN ---
+        function loadOfficerHolidayData(){
+            const id = document.getElementById('holRecordOfficerSelect').value;
+            const panel = document.getElementById('holidayRecordPanel');
+            const histDiv = document.getElementById('holidayHistoryDiv');
+            if(!id){ panel.classList.add('hidden'); histDiv.classList.add('hidden'); return; }
+            panel.classList.remove('hidden'); histDiv.classList.remove('hidden');
+
+            // Logic: Filter out taken holidays
+            const myRecs = localData.holidayRecords.filter(r => r.offId === id);
+            const takenIds = myRecs.map(r => String(r.holidayTypeId));
+            const available = localData.holidayTypes.filter(t => !takenIds.includes(String(t.id))).sort((a,b)=>new Date(a.date)-new Date(b.date));
+
+            document.getElementById('holidaySelectionList').innerHTML = available.length ? available.map(t=>`
+                <div onclick="selectHol('${t.id}','${t.name}','${t.date}')" class="p-3 border rounded mb-2 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 bg-white dark:bg-gray-600 dark:border-gray-500 flex justify-between">
+                    <span class="text-sm"><b class="text-indigo-600 dark:text-indigo-400">${formatDate(t.date)}</b> ${t.name}</span><i class="far fa-circle"></i>
+                </div>`).join('') : '<div class="text-gray-500 italic text-sm text-center">Tiada cuti bertugas.</div>';
+
+            document.getElementById('replacementHistoryTableBody').innerHTML = myRecs.map(r=>{
+                const h = localData.holidayTypes.find(t=>String(t.id)===String(r.holidayTypeId));
+                return `<tr class="border-b dark:border-gray-700"><td class="p-3">${h?h.name:'?'}</td><td class="p-3">${h?formatDate(h.date):'?'}</td><td class="p-3 font-bold text-green-600">${formatDate(r.replacementDate)}</td><td class="p-3"><button onclick="preDeleteRep('${r.id}')" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`;
+            }).join('');
+            document.getElementById('holBalanceDisplay').innerText = myRecs.length;
+        }
+
+        function selectHol(id, name, date){
+            document.getElementById('selectedHolidayId').value = id;
+            document.getElementById('displaySelectedHol').value = `${name} (${formatDate(date)})`;
+            document.getElementById('btnSaveReplacement').disabled = false;
+        }
+
+        async function submitHolidayReplacement(e){
+            e.preventDefault();
+            const offId = document.getElementById('holRecordOfficerSelect').value;
+            const rDate = document.getElementById('replacementDate').value;
+            // Check duplicate replacement date for this officer
+            if(localData.holidayRecords.find(r=>r.offId===offId && r.replacementDate===rDate)){ return showToast("Tarikh ini sudah diambil!","error"); }
+
+            const p = { id:Date.now(), offId:offId, holidayTypeId:document.getElementById('selectedHolidayId').value, replacementDate:rDate };
+            if(await apiCall('CREATE_HOLIDAY_RECORD', p)){
+                showToast("Disimpan", "success"); e.target.reset(); document.getElementById('btnSaveReplacement').disabled=true;
+                await refreshData(); loadOfficerHolidayData(); // IMMEDIATE REFRESH
+            }
+        }
+        function preDeleteRep(id){ showConfirmModal("Batal rekod?", async()=>{ if(await apiCall('DELETE_HOLIDAY_RECORD',{id})){ showToast("Dibatalkan","success"); await refreshData(); loadOfficerHolidayData(); } }); }
+
+        // --- SETTINGS (HOLIDAYS & ADMIN) ---
+        async function addHolidayType(e){ e.preventDefault(); if(await apiCall('CREATE_HOLIDAY_TYPE',{id:Date.now(), date:document.getElementById('holDate').value, name:document.getElementById('holName').value})){ e.target.reset(); showToast("Ditambah","success"); refreshData().then(renderHolidayTypes); } }
+        function renderHolidayTypes(){ document.getElementById('holidayTypeTable').innerHTML = localData.holidayTypes.sort((a,b)=>new Date(a.date)-new Date(b.date)).map(t=>`<tr class="border-b dark:border-gray-700"><td class="px-6 py-3 font-mono">${formatDate(t.date)}</td><td class="px-6 py-3">${t.name}</td><td class="px-6 py-3"><button onclick="delHol('${t.id}')" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`).join(''); }
+        function delHol(id){ showConfirmModal("Padam?", async()=>{ if(await apiCall('DELETE_HOLIDAY_TYPE',{id})){ showToast("Dipadam","success"); refreshData().then(renderHolidayTypes); } }); }
+
+        async function registerAdmin(e){ e.preventDefault(); if(await apiCall('CREATE_ADMIN',{name:document.getElementById('newAdminName').value, email:document.getElementById('newAdminEmail').value, pass:document.getElementById('newAdminPass').value})){ showToast("Admin Ditambah","success"); e.target.reset(); refreshData().then(renderAdminTable); } }
+        function renderAdminTable(){ document.getElementById('adminTableBody').innerHTML = localData.users.map(u=>`<tr class="border-b dark:border-gray-700"><td class="px-6 py-3">${u.name}</td><td class="px-6 py-3 text-blue-500">${u.email}</td></tr>`).join(''); }
+
+        // --- PUBLIC CHECK ---
+        function handlePublicCheck(e){
+            e.preventDefault(); const ic=document.getElementById('checkIC').value, off=localData.officers.find(o=>o.ic===ic);
+            if(!off) return showToast("Tiada Rekod","error");
+            
+            const bal = localData.balances[`${off.id}_${localData.appState.currentYear}`] || {entitlement:0,carryForward:0,takenAnnual:0};
+            const lvs = localData.leaves.filter(r=>r.offId===off.id).sort((a,b)=>b.id-a.id);
+            const hols = localData.holidayRecords.filter(r=>r.offId===off.id);
+            
+            document.getElementById('publicResultHeader').innerHTML = `
+                <div class="bg-blue-50 dark:bg-gray-700 p-4 rounded mb-4"><h3 class="font-bold text-xl text-blue-900 dark:text-white">${off.name}</h3><p class="text-sm">${off.position}</p></div>
+                <div class="grid grid-cols-3 gap-2 text-center mb-6"><div class="bg-gray-100 dark:bg-gray-600 p-2 rounded"><div>LAYAK</div><b>${parseInt(bal.entitlement)+parseInt(bal.carryForward)}</b></div><div class="bg-gray-100 dark:bg-gray-600 p-2 rounded"><div>AMBIL</div><b class="text-red-500">${bal.takenAnnual||0}</b></div><div class="bg-green-100 dark:bg-green-900 p-2 rounded"><div>BAKI</div><b class="text-green-600 dark:text-green-400">${(parseInt(bal.entitlement)+parseInt(bal.carryForward))-(bal.takenAnnual||0)}</b></div></div>`;
+            
+            // Tab 1: Leaves Table + PDF Button
+            document.getElementById('tab-content-leaves').innerHTML = `
+                <div class="flex justify-end mb-2"><button onclick="generatePDF('public-leaves-table', 'Rekod Cuti - ${off.name}')" class="bg-red-600 text-white text-xs px-3 py-1 rounded hover:bg-red-700 flex items-center"><i class="fas fa-file-pdf mr-1"></i> Muat Turun PDF</button></div>
+                <div class="overflow-x-auto border dark:border-gray-600 rounded">
+                    <table id="public-leaves-table" class="w-full text-xs text-left"><thead><tr><th class="p-2">Jenis</th><th class="p-2">Tarikh</th><th class="p-2">Hari</th></tr></thead><tbody>${lvs.length?lvs.map(r=>`<tr><td class="p-2">${r.type}</td><td class="p-2">${formatDate(r.start)}</td><td class="p-2">${r.days}</td></tr>`).join(''):'<tr><td colspan="3" class="p-3 text-center">Tiada rekod</td></tr>'}</tbody></table>
+                </div>`;
+            
+            // Tab 2: Holidays Table + PDF Button
+            document.getElementById('tab-content-holidays').innerHTML = `
+                <div class="flex justify-end mb-2"><button onclick="generatePDF('public-holidays-table', 'Rekod Gantian - ${off.name}')" class="bg-red-600 text-white text-xs px-3 py-1 rounded hover:bg-red-700 flex items-center"><i class="fas fa-file-pdf mr-1"></i> Muat Turun PDF</button></div>
+                <div class="overflow-x-auto border dark:border-gray-600 rounded">
+                    <table id="public-holidays-table" class="w-full text-xs text-left"><thead><tr><th class="p-2">Asal</th><th class="p-2">Tarikh Asal</th><th class="p-2">Ganti</th></tr></thead><tbody>${hols.length?hols.map(r=>{ const h=localData.holidayTypes.find(t=>String(t.id)===String(r.holidayTypeId)); return `<tr><td class="p-2">${h?h.name:'?'}</td><td class="p-2">${h?formatDate(h.date):'?'}</td><td class="p-2 font-bold text-green-600">${formatDate(r.replacementDate)}</td></tr>`; }).join(''):'<tr><td colspan="3" class="p-3 text-center">Tiada rekod</td></tr>'}</tbody></table>
+                </div>`;
+            
+            switchPublicTab('leaves'); document.getElementById('publicResultModal').classList.remove('hidden');
+        }
+        
+        function switchPublicTab(t){
+            const bl=document.getElementById('tabBtn-leaves'), bh=document.getElementById('tabBtn-holidays');
+            const cl=document.getElementById('tab-content-leaves'), ch=document.getElementById('tab-content-holidays');
+            if(t==='leaves'){ cl.classList.remove('hidden'); ch.classList.add('hidden'); bl.className='px-4 py-2 font-bold border-b-2 border-teal-600 text-teal-600'; bh.className='px-4 py-2 font-bold text-gray-500'; }
+            else { cl.classList.add('hidden'); ch.classList.remove('hidden'); bh.className='px-4 py-2 font-bold border-b-2 border-teal-600 text-teal-600'; bl.className='px-4 py-2 font-bold text-gray-500'; }
+        }
+        function closePublicModal(){ document.getElementById('publicResultModal').classList.add('hidden'); }
+        function updateDashboardStats(){ document.getElementById('stat-total-pegawai').innerText=localData.officers.length; document.getElementById('stat-total-holidays').innerText=localData.holidayTypes.length; document.getElementById('stat-cuti-today').innerText=localData.leaves.filter(r=>r.start<=new Date().toISOString().split('T')[0]&&r.end>=new Date().toISOString().split('T')[0]).length; }
+    </script>
+</body>
+</html>
+
+
