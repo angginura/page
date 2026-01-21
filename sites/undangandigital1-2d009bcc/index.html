@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Brand & Market</title>
+    <title>GEMINIDIGITAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -15,7 +15,6 @@
         .text-red-main { color: #d90429; }
         .hidden-page { display: none; }
         
-        /* Loading Animation */
         #loader {
             position: fixed; inset: 0; background: #001d3d;
             display: flex; flex-direction: column; align-items: center;
@@ -35,7 +34,6 @@
         .market-card { transition: all 0.3s ease; border: 1px solid rgba(0,0,0,0.1); }
         .market-card:hover { transform: translateY(-10px); box-shadow: 0 20px 25px -5px rgba(217, 4, 41, 0.2); border-color: #d90429; }
 
-        /* Gallery Style */
         .gallery-item { position: relative; overflow: hidden; border-radius: 1rem; }
         .gallery-overlay {
             position: absolute; inset: 0; background: rgba(217, 4, 41, 0.8);
@@ -45,24 +43,35 @@
         .gallery-item:hover .gallery-overlay { opacity: 1; }
         .gallery-item img { transition: transform 0.5s ease; }
         .gallery-item:hover img { transform: scale(1.1); }
+        .gallery-caption { margin-top: 10px; font-weight: bold; color: #001d3d; font-size: 0.9rem; }
+
+        .social-link {
+            width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; background: #f3f4f6; transition: all 0.3s ease; color: #001d3d;
+        }
+        .social-link:hover { transform: translateY(-5px); color: white; }
+        .link-ig:hover { background: #e1306c; }
+        .link-in:hover { background: #0077b5; }
+        .link-be:hover { background: #1769ff; }
+        .link-wa:hover { background: #25d366; }
     </style>
 </head>
 <body class="bg-gray-50 font-sans text-gray-900 overflow-x-hidden">
 
     <div id="loader">
-        <div class="loader-logo">MY<span class="text-red-500">MARKET.</span></div>
+        <div class="loader-logo">MY<span class="text-red-500">GEMINIDIGITAL.</span></div>
         <div class="loader-bar"><div class="loader-progress"></div></div>
     </div>
 
     <nav class="bg-navy text-white p-4 sticky top-0 z-50 shadow-2xl">
         <div class="container mx-auto flex justify-between items-center">
             <div class="text-2xl font-black italic cursor-pointer" onclick="showPage('home')">
-                MY<span class="text-red-500">MARKET.</span>
+                GEMINI<span class="text-red-500">DIGITAL.</span>
             </div>
             <div class="hidden md:flex space-x-8 font-medium">
                 <a href="javascript:void(0)" onclick="showPage('home')" class="hover:text-red-500 transition">Beranda</a>
                 <a href="javascript:void(0)" onclick="showPage('profile')" class="hover:text-red-500 transition">Profil</a>
-                <a href="#market" class="hover:text-red-500 transition">Market</a>
+                <a href="#market" class="hover:text-red-500 transition">Produk</a>
                 <a href="#gallery" class="hover:text-red-500 transition">Galeri</a>
             </div>
             <a href="https://wa.me/628511927625" class="bg-red-main px-6 py-2 rounded-full font-bold hover:bg-white hover:text-navy transition shadow-lg">Chat Me</a>
@@ -83,17 +92,16 @@
                     </div>
                 </div>
                 <div class="md:w-1/2 mt-12 md:mt-0 flex justify-center" data-aos="zoom-in" data-aos-delay="2500">
-                    <img src="foto/foto.jpg" class="rounded-full border-8 border-white shadow-2xl w-64 h-64 md:w-80 md:h-80 object-cover relative z-10">
+                    <img src="fotoprofil1.jpg" class="rounded-full border-8 border-white shadow-2xl w-64 h-64 md:w-80 md:h-80 object-cover relative z-10">
                 </div>
             </div>
         </header>
 
         <section id="market" class="py-24 bg-white">
             <div class="container mx-auto px-6 text-center mb-16" data-aos="fade-up">
-                <h2 class="text-4xl font-black text-navy uppercase italic">Exclusive Market</h2>
+                <h2 class="text-4xl font-black text-navy uppercase italic">Exclusive Product</h2>
                 <div class="w-24 h-2 bg-red-main mx-auto mt-3 rounded-full"></div>
             </div>
-
             <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10">
                 <div class="market-card bg-white rounded-3xl p-8 text-center" data-aos="fade-up" data-aos-delay="200">
                     <i class="fas fa-envelope-open-text text-red-main text-3xl mb-6"></i>
@@ -116,14 +124,114 @@
         <section id="gallery" class="py-24 bg-gray-100">
             <div class="container mx-auto px-6">
                 <div class="text-center mb-16" data-aos="fade-up">
-                    <h2 class="text-4xl font-black text-navy uppercase italic">Portofolio Kami</h2>
-                    <p class="text-gray-500 mt-2">Lihat beberapa hasil karya desain terbaik yang pernah kami kerjakan.</p>
+                    <h2 class="text-4xl font-black text-navy uppercase italic">GALLERY</h2>
+                    <p class="text-gray-500 mt-2">karya Desain Saya</p>
                 </div>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="gallery-item h-64" data-aos="flip-left"><img src="http://googleusercontent.com/image_collection/image_retrieval/3712658034455998125_0" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div>
-                    <div class="gallery-item h-64" data-aos="flip-left" data-aos-delay="100"><img src="http://googleusercontent.com/image_collection/image_retrieval/5946130542199354502_0" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div>
-                    <div class="gallery-item h-64" data-aos="flip-left" data-aos-delay="200"><img src="http://googleusercontent.com/image_collection/image_retrieval/3712658034455998125_1" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div>
-                    <div class="gallery-item h-64" data-aos="flip-left" data-aos-delay="300"><img src="http://googleusercontent.com/image_collection/image_retrieval/5946130542199354502_2" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                    
+                    <div class="text-center" data-aos="flip-left">
+                        <div class="gallery-item h-64 shadow-lg">
+                            <img src="banner (1).jpg" class="w-full h-full object-cover">
+                            <div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div>
+                        </div>
+                        <p class="gallery-caption">Karya Desain 1</p>
+                    </div>
+                    <div class="text-center" data-aos="flip-left" data-aos-delay="100">
+                        <div class="gallery-item h-64 shadow-lg">
+                            <img src="banner (3).jpg" class="w-full h-full object-cover">
+                            <div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div>
+                        </div>
+                        <p class="gallery-caption">Karya Desain 2</p>
+                    </div>
+                    <div class="text-center" data-aos="flip-left" data-aos-delay="200">
+                        <div class="gallery-item h-64 shadow-lg">
+                            <img src="banner (5).jpg" class="w-full h-full object-cover">
+                            <div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div>
+                        </div>
+                        <p class="gallery-caption">Karya Desain 3</p>
+                    </div>
+                    <div class="text-center" data-aos="flip-left" data-aos-delay="300">
+                        <div class="gallery-item h-64 shadow-lg">
+                            <img src="banner (6).jpg" class="w-full h-full object-cover">
+                            <div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div>
+                        </div>
+                        <p class="gallery-caption">Karya Desain 4</p>
+                    </div>
+                    <div class="text-center" data-aos="flip-left">
+                        <div class="gallery-item h-64 shadow-lg">
+                            <img src="undangan (1).png" class="w-full h-full object-cover">
+                            <div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div>
+                        </div>
+                        <p class="gallery-caption">Karya Desain 5</p>
+                    </div>
+                    <div class="text-center" data-aos="flip-left" data-aos-delay="100">
+                        <div class="gallery-item h-64 shadow-lg">
+                            <img src="undangan (2).png" class="w-full h-full object-cover">
+                            <div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div>
+                        </div>
+                        <p class="gallery-caption">Karya Desain 6</p>
+                    </div>
+                    <div class="text-center" data-aos="flip-left" data-aos-delay="200">
+                        <div class="gallery-item h-64 shadow-lg">
+                            <img src="undangan (3).png" class="w-full h-full object-cover">
+                            <div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div>
+                        </div>
+                        <p class="gallery-caption">Karya Desain 7</p>
+                    </div>
+                    <div class="text-center" data-aos="flip-left" data-aos-delay="300">
+                        <div class="gallery-item h-64 shadow-lg">
+                            <img src="https://picsum.photos/400/500?random=8" class="w-full h-full object-cover">
+                            <div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div>
+                        </div>
+                        <p class="gallery-caption">Karya Desain 8</p>
+                    </div>
+                    <div class="text-center" data-aos="flip-left">
+                        <div class="gallery-item h-64 shadow-lg">
+                            <img src="https://picsum.photos/400/500?random=9" class="w-full h-full object-cover">
+                            <div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div>
+                        </div>
+                        <p class="gallery-caption">Karya Desain 9</p>
+                    </div>
+                    <div class="text-center" data-aos="flip-left" data-aos-delay="100">
+                        <div class="gallery-item h-64 shadow-lg">
+                            <img src="https://picsum.photos/400/500?random=10" class="w-full h-full object-cover">
+                            <div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div>
+                        </div>
+                        <p class="gallery-caption">Karya Desain 10</p>
+                    </div>
+                    <div class="text-center" data-aos="flip-left" data-aos-delay="200">
+                        <div class="gallery-item h-64 shadow-lg">
+                            <img src="https://picsum.photos/400/500?random=11" class="w-full h-full object-cover">
+                            <div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div>
+                        </div>
+                        <p class="gallery-caption">Karya Desain 11</p>
+                    </div>
+                    <div class="text-center" data-aos="flip-left" data-aos-delay="300">
+                        <div class="gallery-item h-64 shadow-lg">
+                            <img src="https://picsum.photos/400/500?random=12" class="w-full h-full object-cover">
+                            <div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div>
+                        </div>
+                        <p class="gallery-caption">Karya Desain 12</p>
+                    </div>
+                    <div class="text-center" data-aos="flip-left"><div class="gallery-item h-64 shadow-lg"><img src="https://picsum.photos/400/500?random=13" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div><p class="gallery-caption">Karya Desain 13</p></div>
+                    <div class="text-center" data-aos="flip-left"><div class="gallery-item h-64 shadow-lg"><img src="https://picsum.photos/400/500?random=14" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div><p class="gallery-caption">Karya Desain 14</p></div>
+                    <div class="text-center" data-aos="flip-left"><div class="gallery-item h-64 shadow-lg"><img src="https://picsum.photos/400/500?random=15" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div><p class="gallery-caption">Karya Desain 15</p></div>
+                    <div class="text-center" data-aos="flip-left"><div class="gallery-item h-64 shadow-lg"><img src="https://picsum.photos/400/500?random=16" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div><p class="gallery-caption">Karya Desain 16</p></div>
+                    <div class="text-center" data-aos="flip-left"><div class="gallery-item h-64 shadow-lg"><img src="https://picsum.photos/400/500?random=17" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div><p class="gallery-caption">Karya Desain 17</p></div>
+                    <div class="text-center" data-aos="flip-left"><div class="gallery-item h-64 shadow-lg"><img src="https://picsum.photos/400/500?random=18" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div><p class="gallery-caption">Karya Desain 18</p></div>
+                    <div class="text-center" data-aos="flip-left"><div class="gallery-item h-64 shadow-lg"><img src="https://picsum.photos/400/500?random=19" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div><p class="gallery-caption">Karya Desain 19</p></div>
+                    <div class="text-center" data-aos="flip-left"><div class="gallery-item h-64 shadow-lg"><img src="https://picsum.photos/400/500?random=20" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div><p class="gallery-caption">Karya Desain 20</p></div>
+                    <div class="text-center" data-aos="flip-left"><div class="gallery-item h-64 shadow-lg"><img src="https://picsum.photos/400/500?random=21" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div><p class="gallery-caption">Karya Desain 21</p></div>
+                    <div class="text-center" data-aos="flip-left"><div class="gallery-item h-64 shadow-lg"><img src="https://picsum.photos/400/500?random=22" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div><p class="gallery-caption">Karya Desain 22</p></div>
+                    <div class="text-center" data-aos="flip-left"><div class="gallery-item h-64 shadow-lg"><img src="https://picsum.photos/400/500?random=23" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div><p class="gallery-caption">Karya Desain 23</p></div>
+                    <div class="text-center" data-aos="flip-left"><div class="gallery-item h-64 shadow-lg"><img src="https://picsum.photos/400/500?random=24" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div><p class="gallery-caption">Karya Desain 24</p></div>
+                    <div class="text-center" data-aos="flip-left"><div class="gallery-item h-64 shadow-lg"><img src="https://picsum.photos/400/500?random=25" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div><p class="gallery-caption">Karya Desain 25</p></div>
+                    <div class="text-center" data-aos="flip-left"><div class="gallery-item h-64 shadow-lg"><img src="https://picsum.photos/400/500?random=26" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div><p class="gallery-caption">Karya Desain 26</p></div>
+                    <div class="text-center" data-aos="flip-left"><div class="gallery-item h-64 shadow-lg"><img src="https://picsum.photos/400/500?random=27" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div><p class="gallery-caption">Karya Desain 27</p></div>
+                    <div class="text-center" data-aos="flip-left"><div class="gallery-item h-64 shadow-lg"><img src="https://picsum.photos/400/500?random=28" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div><p class="gallery-caption">Karya Desain 28</p></div>
+                    <div class="text-center" data-aos="flip-left"><div class="gallery-item h-64 shadow-lg"><img src="https://picsum.photos/400/500?random=29" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div><p class="gallery-caption">Karya Desain 29</p></div>
+                    <div class="text-center" data-aos="flip-left"><div class="gallery-item h-64 shadow-lg"><img src="https://picsum.photos/400/500?random=30" class="w-full h-full object-cover"><div class="gallery-overlay"><i class="fas fa-search-plus text-white text-3xl"></i></div></div><p class="gallery-caption">Karya Desain 30</p></div>
+
                 </div>
             </div>
         </section>
@@ -131,17 +239,23 @@
 
     <main id="profile-page" class="hidden-page py-20 bg-white">
         <div class="container mx-auto px-6">
-            <button onclick="showPage('home')" class="mb-10 font-bold text-navy flex items-center"><i class="fas fa-arrow-left mr-2"></i> Kembali</button>
+            <button onclick="showPage('home')" class="mb-10 font-bold text-navy flex items-center" data-aos="fade-right"><i class="fas fa-arrow-left mr-2"></i> Kembali</button>
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div class="bg-navy p-12 rounded-[3rem] text-white text-center shadow-2xl relative overflow-hidden" data-aos="zoom-in-right">
                     <div class="absolute top-0 left-0 w-full h-4 bg-red-main"></div>
-                    <img src="foto/foto profil.jpg" class="w-48 h-48 rounded-full border-4 border-red-main mx-auto mb-6 object-cover">
+                    <img src="fotoprofil2.jpeg" class="w-48 h-48 rounded-full border-4 border-red-main mx-auto mb-6 object-cover">
                     <h2 class="text-3xl font-bold text-white">Halmi Sofyan</h2>
                     <p class="text-red-500 tracking-widest uppercase mt-2 font-bold text-sm">Creative Designer</p>
                 </div>
                 <div data-aos="fade-left">
-                    <h2 class="text-4xl font-black text-navy mb-6 italic uppercase">Mengapa Saya?</h2>
-                    <p class="text-gray-600 text-lg leading-relaxed mb-8">Berpengalaman menciptakan desain eksklusif untuk membantu klien tumbuh lebih cepat secara digital.</p>
+                    <h2 class="text-4xl font-black text-navy mb-6 italic uppercase">Boleh kenalan?</h2>
+                    <p class="text-gray-600 text-lg leading-relaxed mb-6">"Selamat datang! Perkenalkan nama saya Halmi Sofyan , seorang pekerja dibidang F&b yang juga sedang menempuh studi disebuah Universitas di Jakarta. Memiliki latar belakang pekerjaan dan akademis memberikan saya perspektif yang luas dalam memecahkan masalah. Saya memiliki ketertarikan mendalam pada desain grafis, Web dan lain - lain di mana saya sering mengintegrasikan kemampuan visual saya untuk meningkatkan kualitas setiap proyek yang saya kerjakan. Multitasking dan kreativitas adalah dua hal yang mendefinisikan perjalanan karier saya saat ini."</p>
+                    <div class="flex space-x-4">
+                        <a href="https://instagram.com/halmisofyan" target="_blank" class="social-link link-ig" data-aos="zoom-in" data-aos-delay="300"><i class="fab fa-instagram text-xl"></i></a>
+                        <a href="https://linkedin.com/in/halmisofyan" target="_blank" class="social-link link-in" data-aos="zoom-in" data-aos-delay="400"><i class="fab fa-linkedin-in text-xl"></i></a>
+                        <a href="https://behance.net/halmisofyan" target="_blank" class="social-link link-be" data-aos="zoom-in" data-aos-delay="500"><i class="fab fa-behance text-xl"></i></a>
+                        <a href="https://wa.me/628511927625" target="_blank" class="social-link link-wa" data-aos="zoom-in" data-aos-delay="600"><i class="fab fa-whatsapp text-xl"></i></a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -156,8 +270,8 @@
     </div>
 
     <footer class="bg-navy text-white py-12 text-center">
-        <p class="text-2xl font-black italic mb-2 uppercase">MY<span class="text-red-500">MARKET.</span></p>
-        <p class="text-xs opacity-30">&copy; 2026 MyMarket Digital. All rights reserved.</p>
+        <p class="text-2xl font-black italic mb-2 uppercase">GEMINI<span class="text-red-500">DIGITAL.</span></p>
+        <p class="text-xs opacity-30">&copy; gemini2026.my.id.</p>
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -174,7 +288,8 @@
         function showPage(page) {
             document.getElementById('home-page').classList.toggle('hidden-page', page !== 'home');
             document.getElementById('profile-page').classList.toggle('hidden-page', page !== 'profile');
-            AOS.refresh(); window.scrollTo(0,0);
+            setTimeout(() => { AOS.refresh(); }, 100);
+            window.scrollTo(0,0);
         }
 
         function openModal(cat) {
@@ -192,7 +307,7 @@
 
         function closeModal() { document.getElementById('productModal').classList.remove('active'); }
         function closeModalOutside(e) { if(e.target.id === "productModal") closeModal(); }
-        function orderWA(item) { window.open(`https://wa.me/628123456789?text=Halo, saya ingin memesan: *${item}*`, '_blank'); }
+        function orderWA(item) { window.open(`https://wa.me/628511927625?text=Halo, saya ingin memesan: *${item}*`, '_blank'); }
     </script>
 </body>
 </html>
