@@ -252,6 +252,7 @@
         let currentPublicTab = 'annual';
         let currentAdminReportTab = 'annual';
         let currentAdminViewIC = null; 
+        let currentPublicPerson = null; // New global for public check
         
         // Cached Data
         let globalStaff = [];
@@ -418,6 +419,7 @@
 
         function closePublicView() {
             document.getElementById('public-view').classList.add('hidden');
+            currentPublicPerson = null; // Clear session
         }
 
         // --- ADMIN NAVIGATION ---
@@ -668,16 +670,6 @@
                 .sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
             const phTaken = globalPHTaken.filter(p => p.ic === person.ic && p.year == currentYear);
 
-            if (typeof person.entitlements === 'string') {
-                try { person.entitlements = JSON.parse(person.entitlements); } catch(e){ person.entitlements = {}; }
-            }
-
-            let entitlement = person.entitlements && person.entitlements[currentYear] 
-                ? person.entitlements[currentYear] 
-                : { annual: 25, carry: 0, taken_annual: 0 }; 
-            
-            const balanceAnnual = (entitlement.annual + entitlement.carry) - entitlement.taken_annual;
-
             container.innerHTML = `
                 <div id="admin-pdf-content" class="p-4 bg-white dark:bg-gray-800 dark:text-white rounded-lg">
                     <div class="flex flex-col items-center mb-6 border-b pb-4">
@@ -695,9 +687,9 @@
                         </div>
                         <div class="text-right">
                              <p><strong>Tahun:</strong> ${currentYear}</p>
-                             <p><strong id="admin-sum-lbl-1">Kelayakan Cuti Rehat:</strong> <span id="admin-sum-val-1">${entitlement.annual}</span></p>
-                             <p><strong id="admin-sum-lbl-2">Bawa Tahun Lepas:</strong> <span id="admin-sum-val-2">${entitlement.carry}</span></p>
-                             <p class="text-lg font-bold text-primary"><span id="admin-sum-lbl-3">Baki Cuti Rehat:</span> <span id="admin-sum-val-3">${balanceAnnual}</span></p>
+                             <p><strong id="admin-sum-lbl-1"></strong> <span id="admin-sum-val-1"></span></p>
+                             <p><strong id="admin-sum-lbl-2"></strong> <span id="admin-sum-val-2"></span></p>
+                             <p class="text-lg font-bold text-primary"><span id="admin-sum-lbl-3"></span> <span id="admin-sum-val-3"></span></p>
                         </div>
                     </div>
 
@@ -778,7 +770,9 @@
                     </button>
                 </div>
             `;
-            currentAdminReportTab = 'annual';
+            
+            // Trigger calculation for default view
+            switchAdminReportTab('annual');
         }
 
         function updateAdminStats(tabName) {
@@ -791,16 +785,16 @@
                 if(typeof ent === 'string') try { ent = JSON.parse(ent); } catch(e){ ent = {}; }
                 let stats = ent[currentYear] || { annual: 25, carry: 0, taken_annual: 0 };
                 let balance = (stats.annual + stats.carry) - stats.taken_annual;
-                label1 = "Kelayakan Cuti Rehat:"; val1 = stats.annual;
-                label2 = "Bawa Tahun Lepas:"; val2 = stats.carry;
-                label3 = "Baki Cuti Rehat:"; val3 = balance;
+                label1 = "Kelayakan Cuti Rehat:"; val1 = stats.annual + " Hari";
+                label2 = "Bawa Tahun Lepas:"; val2 = stats.carry + " Hari";
+                label3 = "Baki Cuti Rehat:"; val3 = balance + " Hari";
             } else {
                 const totalPH = globalHolidays.filter(h => h.date && h.date.toString().startsWith(currentYear)).length;
                 const takenPH = globalPHTaken.filter(p => p.ic === currentAdminViewIC && p.year == currentYear).length;
                 const balancePH = totalPH - takenPH;
-                label1 = "Jum. Kelepasan Am:"; val1 = totalPH;
-                label2 = "Telah Diambil:"; val2 = takenPH;
-                label3 = "Baki Belum Diambil:"; val3 = balancePH;
+                label1 = "Jum. Kelepasan Am:"; val1 = totalPH + " Hari";
+                label2 = "Telah Diambil:"; val2 = takenPH + " Hari";
+                label3 = "Baki Belum Diambil:"; val3 = balancePH + " Hari";
             }
             const elL1 = document.getElementById('admin-sum-lbl-1');
             const elV1 = document.getElementById('admin-sum-val-1');
@@ -1407,6 +1401,10 @@
         // --- PUBLIC REPORT & PDF ---
         window.showPublicTab = function(tabName) {
             currentPublicTab = tabName;
+            
+            // NEW: Call updatePublicStats function
+            updatePublicStats(tabName);
+
             document.getElementById('btn-view-annual').classList.remove('bg-primary', 'text-white');
             document.getElementById('btn-view-ph').classList.remove('bg-primary', 'text-white');
             document.getElementById('btn-view-annual').classList.add('bg-gray-200', 'text-gray-700');
@@ -1426,7 +1424,62 @@
             }
         }
 
+        // NEW: Function to dynamically update Public Stats based on tab
+        function updatePublicStats(tabName) {
+            if (!currentPublicPerson) return;
+            
+            const person = currentPublicPerson; // Uses global variable set in renderPublicReport
+            let label1, val1, label2, val2, label3, val3;
+
+            if (tabName === 'annual') {
+                let ent = {};
+                if(typeof person.entitlements === 'string') try { ent = JSON.parse(person.entitlements); } catch(e){} else ent = person.entitlements || {};
+                
+                let stats = ent[currentYear] || { annual: 25, carry: 0, taken_annual: 0 };
+                let balance = (stats.annual + stats.carry) - stats.taken_annual;
+
+                label1 = "Kelayakan Cuti Rehat:";
+                val1 = stats.annual;
+                label2 = "Bawa Tahun Lepas:";
+                val2 = stats.carry;
+                label3 = "Baki Cuti Rehat:";
+                val3 = balance;
+            } else {
+                // PH Stats Logic
+                const totalPH = globalHolidays.filter(h => h.date && h.date.toString().startsWith(currentYear)).length;
+                const takenPH = globalPHTaken.filter(p => p.ic === person.ic && p.year == currentYear).length;
+                const balancePH = totalPH - takenPH;
+
+                label1 = "Jum. Kelepasan Am:";
+                val1 = totalPH;
+                label2 = "Telah Diambil:";
+                val2 = takenPH;
+                label3 = "Baki Belum Diambil:";
+                val3 = balancePH;
+            }
+
+            // Update DOM Elements
+            const elL1 = document.getElementById('pub-stat-lbl-1');
+            const elV1 = document.getElementById('pub-stat-val-1');
+            const elL2 = document.getElementById('pub-stat-lbl-2');
+            const elV2 = document.getElementById('pub-stat-val-2');
+            const elL3 = document.getElementById('pub-stat-lbl-3');
+            const elV3 = document.getElementById('pub-stat-val-3');
+
+            if (elL1) elL1.innerText = label1;
+            if (elV1) elV1.innerText = val1;
+            if (elL2) elL2.innerText = label2;
+            if (elV2) elV2.innerText = val2;
+            if (elL3) elL3.innerText = label3;
+            if (elV3) elV3.innerText = val3;
+        }
+
+
         function renderPublicReport(person) {
+            // Set global variable for switching
+            currentPublicPerson = person;
+
+            // Parse entitlement again if needed
             let entitlement = {};
             if(typeof person.entitlements === 'string') {
                 try { entitlement = JSON.parse(person.entitlements); } catch(e){}
@@ -1434,15 +1487,15 @@
                 entitlement = person.entitlements || {};
             }
             
+            // Get current year record
             let yrEntitlement = entitlement[currentYear] || { annual: 25, carry: 0, taken_annual: 0 };
+            const balanceAnnual = (yrEntitlement.annual + yrEntitlement.carry) - yrEntitlement.taken_annual;
 
             const leaves = globalLeaves.filter(l => l.ic === person.ic && l.year == currentYear)
                 .sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
             
             const phTaken = globalPHTaken.filter(p => p.ic === person.ic && p.year == currentYear);
             
-            const totalAnnualEntitlement = yrEntitlement.annual + yrEntitlement.carry;
-            const balanceAnnual = totalAnnualEntitlement - yrEntitlement.taken_annual;
 
             const content = document.getElementById('public-result-content');
             content.innerHTML = `
@@ -1462,9 +1515,9 @@
                         </div>
                         <div class="text-right">
                              <p><strong>Tahun:</strong> ${currentYear}</p>
-                             <p><strong>Kelayakan Cuti Rehat:</strong> ${yrEntitlement.annual}</p>
-                             <p><strong>Bawa Tahun Lepas:</strong> ${yrEntitlement.carry}</p>
-                             <p class="text-lg font-bold text-primary">Baki Cuti Rehat: ${balanceAnnual}</p>
+                             <p><strong id="pub-stat-lbl-1">Kelayakan Cuti Rehat:</strong> <span id="pub-stat-val-1">${yrEntitlement.annual}</span></p>
+                             <p><strong id="pub-stat-lbl-2">Bawa Tahun Lepas:</strong> <span id="pub-stat-val-2">${yrEntitlement.carry}</span></p>
+                             <p class="text-lg font-bold text-primary"><span id="pub-stat-lbl-3">Baki Cuti Rehat:</span> <span id="pub-stat-val-3">${balanceAnnual}</span></p>
                         </div>
                     </div>
 
@@ -1548,7 +1601,10 @@
                     </button>
                 </div>
             `;
+            
+            // Set initial tab and update stats
             currentPublicTab = 'annual';
+            updatePublicStats('annual');
         }
 
         async function generatePDF(ic, containerId, activeTab) {
