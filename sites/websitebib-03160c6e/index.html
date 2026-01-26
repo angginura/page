@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TranSwa - Layanan Penerjemah Profesional & Tersumpah</title>
+    
+    <!-- Framework & Icons -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
+        :root {
+            --brand-pink: #d12e8c;
+            --brand-dark: #0f172a;
+        }
+
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Hero Background */
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), 
+                        url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        /* Navbar Styling */
+        .navbar-custom {
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar-custom.scrolled {
+            background-color: rgba(255, 255, 255, 0.98);
+            padding: 10px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .navbar-custom.scrolled .nav-link, 
+        .navbar-custom.scrolled .wa-text,
+        .navbar-custom.scrolled .lang-btn {
+            color: var(--brand-dark);
+        }
+
+        .nav-link {
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--brand-pink);
+        }
+
+        .logo-main {
+            font-style: italic;
+            font-weight: 900;
+            color: #ff4db8;
+            line-height: 1;
+            text-shadow: 0 0 20px rgba(255, 77, 184, 0.3);
+        }
+
+        /* Reveal Animation (Slow Motion) */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Lang Button Styling */
+        .lang-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .navbar-custom.scrolled .lang-btn {
+            background: rgba(0,0,0,0.05);
+            border-color: rgba(0,0,0,0.1);
+        }
+
+        .lang-btn:hover {
+            background: var(--brand-pink);
+            border-color: var(--brand-pink);
+            color: white !important;
+        }
+
+        /* Floating WA */
+        .wa-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25d366;
+            color: white;
+            width: 65px;
+            height: 65px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
+            z-index: 9999;
+            transition: all 0.4s ease;
+        }
+        .wa-float:hover { transform: scale(1.1); }
+
+        .section-header-top {
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body class="bg-white">
+
+    <!-- NAVIGATION BAR -->
+    <nav id="mainNav" class="navbar-custom fixed top-0 w-full z-[1000] px-6 lg:px-12 py-5 flex items-center justify-between">
+        <!-- Logo & Contact -->
+        <div class="flex items-center space-x-8">
+            <div class="flex flex-col cursor-pointer" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+                <span class="text-3xl logo-main">TranSwa</span>
+                <span class="text-[9px] text-white/70 tracking-[0.2em] font-bold uppercase" id="navTagline">Penerjemah Terbaik</span>
+            </div>
+            <div class="hidden md:flex items-center space-x-3 border-l border-white/20 pl-8 wa-text text-white">
+                <i class="fab fa-whatsapp text-2xl text-green-400"></i>
+                <div class="flex flex-col">
+                    <span class="text-sm font-extrabold leading-none">0821-10104-711</span>
+                    <span class="text-[10px] opacity-60" id="waLabel">Hubungi via Whatsapp</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu Navigation -->
+        <div class="hidden lg:flex items-center space-x-8">
+            <a href="#home" class="nav-link active" id="mHome">Beranda</a>
+            <a href="#layanan" class="nav-link" id="mLayanan">Layanan</a>
+            <a href="#klien" class="nav-link" id="mKlien">Klien</a>
+            <a href="#testimoni" class="nav-link" id="mTestimoni">Testimoni</a>
+            <a href="#kontak" class="nav-link" id="mKontak">Kontak</a>
+        </div>
+
+        <!-- Language Switcher (DI KANAN ATAS) -->
+        <button onclick="toggleLang()" class="lang-btn" id="langSwitcher">
+            <img id="flagImg" src="https://flagcdn.com/w20/id.png" class="w-5 h-auto rounded-sm" alt="Flag">
+            <span id="langName" class="text-xs font-bold uppercase tracking-wider">ID</span>
+        </button>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section id="home" class="hero-section flex items-center px-6 lg:px-24">
+        <div class="max-w-4xl text-white mt-20 reveal">
+            <h1 class="text-5xl md:text-8xl font-black mb-10 leading-[1.1]" id="heroTitle">Kami Menyediakan</h1>
+            
+            <ul class="space-y-5 mb-12">
+                <li class="flex items-center space-x-4">
+                    <i class="fas fa-bookmark text-xl text-pink-500"></i>
+                    <span class="text-lg md:text-2xl font-medium opacity-90" id="list1">Terjemahan Tersumpah Express (Hitungan Jam / 1 Hari Selesai)</span>
+                </li>
+                <li class="flex items-center space-x-4">
+                    <i class="fas fa-bookmark text-xl text-pink-500"></i>
+                    <span class="text-lg md:text-2xl font-medium opacity-90" id="list2">Apostille Express</span>
+                </li>
+                <li class="flex items-center space-x-4">
+                    <i class="fas fa-bookmark text-xl text-pink-500"></i>
+                    <span class="text-lg md:text-2xl font-medium opacity-90" id="list3">Interpreting Simultan, Consecutive, & Telephonic</span>
+                </li>
+            </ul>
+
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="flex items-center space-x-3 bg-white/10 p-4 rounded-2xl backdrop-blur-md">
+                    <i class="fas fa-check-circle text-green-400"></i>
+                    <span class="text-sm font-bold uppercase" id="usp1">Layanan Cepat, Sah & Terpercaya</span>
+                </div>
+                <div class="flex items-center space-x-3 bg-white/10 p-4 rounded-2xl backdrop-blur-md">
+                    <i class="fas fa-check-circle text-green-400"></i>
+                    <span class="text-sm font-bold uppercase" id="usp2">Kami layani pesanan Anda secepat kilat.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LAYANAN SECTION -->
+    <section id="layanan" class="py-32 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20 reveal">
+                <p class="section-header-top mb-4" id="breadLayanan">BERANDA | LAYANAN</p>
+                <h2 class="text-6xl font-black text-slate-900 uppercase" id="titleLayanan">LAYANAN</h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-10 rounded-[30px] shadow-xl hover:-translate-y-3 transition-all duration-500 reveal">
+                    <i class="fas fa-file-contract text-4xl text-pink-600 mb-6"></i>
+                    <h3 class="text-2xl font-bold mb-4" id="srv1Title">Penerjemah Tersumpah</h3>
+                    <p class="text-slate-500" id="srv1Desc">Dokumen hukum, akta lahir, ijazah, dan kontrak bisnis diterjemahkan secara sah dengan stempel resmi.</p>
+                </div>
+                <div class="bg-white p-10 rounded-[30px] shadow-xl hover:-translate-y-3 transition-all duration-500 reveal">
+                    <i class="fas fa-microphone-alt text-4xl text-pink-600 mb-6"></i>
+                    <h3 class="text-2xl font-bold mb-4" id="srv2Title">Interpreting</h3>
+                    <p class="text-slate-500" id="srv2Desc">Layanan lisan untuk konferensi internasional, pertemuan bisnis, dan urusan pengadilan profesional.</p>
+                </div>
+                <div class="bg-white p-10 rounded-[30px] shadow-xl hover:-translate-y-3 transition-all duration-500 reveal">
+                    <i class="fas fa-passport text-4xl text-pink-600 mb-6"></i>
+                    <h3 class="text-2xl font-bold mb-4" id="srv3Title">Apostille</h3>
+                    <p class="text-slate-500" id="srv3Desc">Pengurusan dokumen di Kemenkumham, Kemenlu, dan Kedutaan dengan proses yang sangat cepat.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- KLIEN SECTION -->
+    <section id="klien" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <p class="section-header-top mb-4" id="breadKlien">BERANDA | KLIEN</p>
+                <h2 class="text-5xl font-black text-slate-900 uppercase" id="titleKlien">KLIEN KAMI</h2>
+            </div>
+            <div class="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-40 grayscale reveal">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" class="h-8" alt="Google">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" class="h-8" alt="Microsoft">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg" class="h-8" alt="IBM">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" class="h-8" alt="Netflix">
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONI SECTION -->
+    <section id="testimoni" class="py-32 bg-slate-900 text-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20 reveal">
+                <p class="section-header-top mb-4 text-pink-500" id="breadTesti">BERANDA | TESTIMONI</p>
+                <h2 class="text-5xl font-black uppercase" id="titleTesti">APA KATA MEREKA</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white/5 p-10 rounded-[30px] border border-white/10 reveal">
+                    <div class="flex text-yellow-400 mb-6 text-sm">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <p class="text-xl italic mb-8" id="testi1">"Pengerjaan sangat cepat, dokumen tersumpah saya selesai dalam hitungan jam. Luar biasa!"</p>
+                    <div class="font-bold">- Budi Santoso, CEO Global Corp</div>
+                </div>
+                <div class="bg-white/5 p-10 rounded-[30px] border border-white/10 reveal">
+                    <div class="flex text-yellow-400 mb-6 text-sm">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <p class="text-xl italic mb-8" id="testi2">"Sangat membantu untuk urusan Apostille ke luar negeri. Admin sangat responsif dan ramah."</p>
+                    <div class="font-bold">- Sarah Wijaya, Lawyer</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- KONTAK KAMI SECTION -->
+    <section id="kontak" class="py-32 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20 reveal">
+                <p class="section-header-top mb-4" id="breadKontak">BERANDA | KONTAK</p>
+                <h2 class="text-5xl font-black text-slate-900 uppercase" id="titleKontak">HUBUNGI KAMI</h2>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-20">
+                <div class="reveal">
+                    <h3 class="text-3xl font-bold mb-6" id="kontakTitle">Siap Memulai?</h3>
+                    <p class="text-slate-500 text-lg mb-10" id="kontakDesc">Kirimkan dokumen Anda atau tanya harga terlebih dahulu melalui form atau WhatsApp.</p>
+                    <div class="space-y-6">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center text-pink-600">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <span class="font-bold">0821-10104-711</span>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center text-pink-600">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <span class="font-bold">info@transwa.id</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-50 p-10 rounded-[40px] reveal">
+                    <form class="space-y-4">
+                        <input type="text" id="formName" placeholder="Nama Anda" class="w-full p-4 rounded-xl border-none outline-none focus:ring-2 focus:ring-pink-500 font-bold shadow-sm">
+                        <input type="email" id="formEmail" placeholder="Email" class="w-full p-4 rounded-xl border-none outline-none focus:ring-2 focus:ring-pink-500 font-bold shadow-sm">
+                        <textarea id="formMessage" placeholder="Pesan" rows="4" class="w-full p-4 rounded-xl border-none outline-none focus:ring-2 focus:ring-pink-500 font-bold shadow-sm"></textarea>
+                        <button type="button" class="w-full bg-pink-600 text-white font-black py-4 rounded-xl uppercase tracking-widest hover:bg-pink-700 transition-all shadow-lg shadow-pink-500/30" id="btnKirim">Kirim Pesan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-black py-10 text-center border-t border-white/10">
+        <p class="text-slate-600 text-[10px] font-black uppercase tracking-[0.5em]">&copy; 2026 TRAN SWA GLOBAL. THE BEST TRANSLATOR.</p>
+    </footer>
+
+    <!-- WHATSAPP FLOAT -->
+    <a href="https://wa.me/6282110104711" class="wa-float">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script>
+        // Reveal Logic (Scroll Animations)
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+
+        window.addEventListener("scroll", function() {
+            const nav = document.getElementById('mainNav');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const scrollPos = window.scrollY;
+
+            // Navbar background transition
+            if (scrollPos > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+
+            // Highlighting Menu based on scroll
+            const sections = ['home', 'layanan', 'klien', 'testimoni', 'kontak'];
+            sections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.offsetTop - 150 <= scrollPos && el.offsetTop + el.offsetHeight - 150 > scrollPos) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === '#' + id) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+
+            reveal();
+        });
+
+        // Language Switcher Logic (ID & EN)
+        let currentLang = 'id';
+        function toggleLang() {
+            const flag = document.getElementById('flagImg');
+            const langName = document.getElementById('langName');
+            
+            if(currentLang === 'id') {
+                currentLang = 'en';
+                flag.src = 'https://flagcdn.com/w20/gb.png';
+                langName.innerText = 'EN';
+                
+                // --- English Translation ---
+                // Navbar
+                document.getElementById('navTagline').innerText = 'THE BEST TRANSLATOR';
+                document.getElementById('waLabel').innerText = 'Contact via Whatsapp';
+                document.getElementById('mHome').innerText = 'Home';
+                document.getElementById('mLayanan').innerText = 'Services';
+                document.getElementById('mKlien').innerText = 'Clients';
+                document.getElementById('mTestimoni').innerText = 'Testimonials';
+                document.getElementById('mKontak').innerText = 'Contact';
+
+                // Hero
+                document.getElementById('heroTitle').innerText = 'We Provide';
+                document.getElementById('list1').innerText = 'Express Sworn Translation (Hours / 1 Day Completion)';
+                document.getElementById('list2').innerText = 'Express Apostille Service';
+                document.getElementById('list3').innerText = 'Simultaneous, Consecutive, & Telephonic Interpreting';
+                document.getElementById('usp1').innerText = 'Fast, Legal & Trusted Service';
+                document.getElementById('usp2').innerText = 'We process your order lightning fast.';
+
+                // Services
+                document.getElementById('breadLayanan').innerText = 'HOME | SERVICES';
+                document.getElementById('titleLayanan').innerText = 'OUR SERVICES';
+                document.getElementById('srv1Title').innerText = 'Sworn Translation';
+                document.getElementById('srv1Desc').innerText = 'Legal documents, birth certificates, and business contracts translated officially.';
+                document.getElementById('srv2Title').innerText = 'Interpreting';
+                document.getElementById('srv2Desc').innerText = 'Oral translation services for conferences, business meetings, and legal affairs.';
+                document.getElementById('srv3Title').innerText = 'Apostille Service';
+                document.getElementById('srv3Desc').innerText = 'Document processing at Kemenkumham, Kemenlu, and Embassies with fast turnaround.';
+
+                // Clients & Testimonials
+                document.getElementById('breadKlien').innerText = 'HOME | CLIENTS';
+                document.getElementById('titleKlien').innerText = 'OUR CLIENTS';
+                document.getElementById('breadTesti').innerText = 'HOME | TESTIMONIALS';
+                document.getElementById('titleTesti').innerText = 'CLIENT STORIES';
+                document.getElementById('testi1').innerText = '"Very fast work, my sworn documents were finished in hours. Amazing!"';
+                document.getElementById('testi2').innerText = '"Great help for overseas Apostille. Very responsive and friendly admin."';
+
+                // Contact
+                document.getElementById('breadKontak').innerText = 'HOME | CONTACT';
+                document.getElementById('titleKontak').innerText = 'GET IN TOUCH';
+                document.getElementById('kontakTitle').innerText = 'Ready to Start?';
+                document.getElementById('kontakDesc').innerText = 'Send your documents or ask for a quote via the form or WhatsApp.';
+                document.getElementById('formName').placeholder = 'Your Name';
+                document.getElementById('formEmail').placeholder = 'Email';
+                document.getElementById('formMessage').placeholder = 'Message';
+                document.getElementById('btnKirim').innerText = 'SEND MESSAGE';
+
+            } else {
+                currentLang = 'id';
+                flag.src = 'https://flagcdn.com/w20/id.png';
+                langName.innerText = 'ID';
+
+                // --- Indonesian Translation ---
+                // Navbar
+                document.getElementById('navTagline').innerText = 'PENERJEMAH TERBAIK';
+                document.getElementById('waLabel').innerText = 'Hubungi via Whatsapp';
+                document.getElementById('mHome').innerText = 'Beranda';
+                document.getElementById('mLayanan').innerText = 'Layanan';
+                document.getElementById('mKlien').innerText = 'Klien';
+                document.getElementById('mTestimoni').innerText = 'Testimoni';
+                document.getElementById('mKontak').innerText = 'Kontak';
+
+                // Hero
+                document.getElementById('heroTitle').innerText = 'Kami Menyediakan';
+                document.getElementById('list1').innerText = 'Terjemahan Tersumpah Express (Hitungan Jam / 1 Hari Selesai)';
+                document.getElementById('list2').innerText = 'Apostille Express';
+                document.getElementById('list3').innerText = 'Interpreting Simultan, Consecutive, & Telephonic';
+                document.getElementById('usp1').innerText = 'Layanan Cepat, Sah & Terpercaya';
+                document.getElementById('usp2').innerText = 'Kami layani pesanan Anda secepat kilat.';
+
+                // Services
+                document.getElementById('breadLayanan').innerText = 'BERANDA | LAYANAN';
+                document.getElementById('titleLayanan').innerText = 'LAYANAN';
+                document.getElementById('srv1Title').innerText = 'Penerjemah Tersumpah';
+                document.getElementById('srv1Desc').innerText = 'Dokumen hukum, akta lahir, ijazah, dan kontrak bisnis diterjemahkan secara sah dengan stempel resmi.';
+                document.getElementById('srv2Title').innerText = 'Interpreting';
+                document.getElementById('srv2Desc').innerText = 'Layanan lisan untuk konferensi internasional, pertemuan bisnis, dan urusan pengadilan profesional.';
+                document.getElementById('srv3Title').innerText = 'Apostille';
+                document.getElementById('srv3Desc').innerText = 'Pengurusan dokumen di Kemenkumham, Kemenlu, dan Kedutaan dengan proses yang sangat cepat.';
+
+                // Clients & Testimonials
+                document.getElementById('breadKlien').innerText = 'BERANDA | KLIEN';
+                document.getElementById('titleKlien').innerText = 'KLIEN KAMI';
+                document.getElementById('breadTesti').innerText = 'BERANDA | TESTIMONI';
+                document.getElementById('titleTesti').innerText = 'APA KATA MEREKA';
+                document.getElementById('testi1').innerText = '"Pengerjaan sangat cepat, dokumen tersumpah saya selesai dalam hitungan jam. Luar biasa!"';
+                document.getElementById('testi2').innerText = '"Sangat membantu untuk urusan Apostille ke luar negeri. Admin sangat responsif dan ramah."';
+
+                // Contact
+                document.getElementById('breadKontak').innerText = 'BERANDA | KONTAK';
+                document.getElementById('titleKontak').innerText = 'HUBUNGI KAMI';
+                document.getElementById('kontakTitle').innerText = 'Siap Memulai?';
+                document.getElementById('kontakDesc').innerText = 'Kirimkan dokumen Anda atau tanya harga terlebih dahulu melalui form atau WhatsApp.';
+                document.getElementById('formName').placeholder = 'Nama Anda';
+                document.getElementById('formEmail').placeholder = 'Email';
+                document.getElementById('formMessage').placeholder = 'Pesan';
+                document.getElementById('btnKirim').innerText = 'KIRIM PESAN';
+            }
+        }
+
+        window.onload = function() {
+            reveal();
+        };
+    </script>
+</body>
+</html>
