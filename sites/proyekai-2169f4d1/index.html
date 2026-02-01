@@ -1,120 +1,386 @@
 <!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EduGen AI - Generator Soal</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Modul Ajar Kokurikuler Deep Learning</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: {
-                50: '#f0f9ff',
-                100: '#e0f2fe',
-                200: '#bae6fd',
-                300: '#7dd3fc',
-                400: '#38bdf8',
-                500: '#0ea5e9',
-                600: '#0284c7',
-                700: '#0369a1',
-                800: '#075985',
-                900: '#0c4a6e',
-              },
-            },
-            fontFamily: {
-              sans: ['Inter', 'system-ui', 'sans-serif'],
-            },
-          },
-        },
-      };
-    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Marked.js untuk render Markdown ke HTML -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-      /* Custom print styles */
-      @media print {
-        @page {
-          size: portrait;
-          margin: 2cm;
-        }
-
-        /* Define a named page for landscape */
-        @page landscape-page {
-          size: landscape;
-          margin: 1cm;
-        }
-
-        body {
-          background: white;
-          color: black;
-          font-size: 12pt;
-        }
-
-        .no-print {
-          display: none !important;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap');
         
-        .print-only {
-          display: block !important;
-        }
-
-        /* Layout containers */
-        .print-container {
-          width: 100%;
-        }
-
-        /* Force landscape for specific section */
-        .print-section-landscape {
-          page: landscape-page;
-          width: 100%;
-          break-before: page;
-          break-after: page;
-        }
-
-        .print-section-portrait {
-          page: portrait;
-          break-before: page;
-        }
-
-        /* Ensure tables fit nicely */
-        .markdown-body table {
-          width: 100% !important;
-          border-collapse: collapse;
-          font-size: 10pt; /* Smaller font for tables */
-        }
+        body { font-family: 'Inter', sans-serif; }
         
-        .markdown-body th, .markdown-body td {
-          border: 1px solid #000 !important;
-          padding: 6px;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #3b82f6;
+            width: 16px; height: 16px;
+            animation: spin 1s linear infinite;
         }
 
-        /* Remove browser default headers/footers if possible (requires browser setting usually, but this helps clean up) */
-        h1, h2, h3 {
-          page-break-after: avoid;
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Style Tampilan Word-like */
+        #wordPreview {
+            font-family: 'Lora', serif; /* Font mirip cetakan dokumen */
+            line-height: 1.6;
+            color: #333;
+            background: white;
+            min-height: 100%;
+            padding: 40px;
         }
+
+        #wordPreview h1 { font-size: 24pt; font-weight: bold; margin-bottom: 20px; border-bottom: 2px solid #333; }
+        #wordPreview h2 { font-size: 18pt; font-weight: bold; margin-top: 25px; margin-bottom: 10px; color: #2c3e50; }
+        #wordPreview h3 { font-size: 14pt; font-weight: bold; margin-top: 15px; }
+        #wordPreview p { margin-bottom: 12px; font-size: 11pt; }
+        #wordPreview ul, #wordPreview ol { margin-left: 25px; margin-bottom: 15px; }
+        #wordPreview li { margin-bottom: 5px; }
         
-        tr {
-          page-break-inside: avoid;
+        /* Styling Tabel agar mirip Word */
+        #wordPreview table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 10pt; }
+        #wordPreview th, #wordPreview td { border: 1px solid #999; padding: 8px; text-align: left; }
+        #wordPreview th { background-color: #f2f2f2; font-weight: bold; }
+
+        .paper-shadow {
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
         }
-      }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "@google/genai": "https://esm.sh/@google/genai@^1.35.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-markdown": "https://esm.sh/react-markdown@^10.1.0",
-    "remark-gfm": "https://esm.sh/remark-gfm@^4.0.1"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
 </head>
-  <body class="bg-gray-50 text-gray-900 font-sans antialiased">
-    <div id="root"></div>
-  <script type="module" src="/index.tsx"></script>
+<body class="bg-gray-100 text-gray-800 h-screen flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 py-3 px-6 flex justify-between items-center shadow-sm z-10">
+        <div class="flex items-center gap-3">
+            <div class="bg-blue-600 text-white p-2 rounded-lg">
+                <i class="fas fa-file-word text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold text-gray-900 leading-tight">ModulGen <span class="text-blue-600">Pro AI</span></h1>
+                <p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Document Preview Mode</p>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="resetForm()" class="text-sm text-gray-500 hover:text-red-500 px-3 py-1 transition">
+                <i class="fas fa-undo mr-1"></i> Reset
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden">
+        
+        <!-- Left Panel: Input Form -->
+        <div class="w-full md:w-1/3 bg-white border-r border-gray-200 overflow-y-auto p-5">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xs uppercase tracking-widest text-gray-400 font-black">Parameter Modul</h2>
+                <button onclick="suggestIdeia()" class="text-[9px] bg-purple-600 text-white px-3 py-1 rounded-full hover:bg-purple-700 transition font-bold shadow-sm">
+                    ✨ SARAN IDE
+                </button>
+            </div>
+            
+            <form id="moduleForm" class="space-y-4" onsubmit="event.preventDefault(); generateModule();">
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-500 uppercase mb-1">Jenjang</label>
+                        <select id="jenjang" class="w-full border border-gray-200 bg-gray-50 rounded p-2 focus:ring-2 focus:ring-blue-500 text-sm">
+                            <option value="PAUD">PAUD</option>
+                            <option value="SD">SD</option>
+                            <option value="SMP" selected>SMP</option>
+                            <option value="SMA">SMA</option>
+                            <option value="SMK">SMK</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-500 uppercase mb-1">Fase/Kelas</label>
+                        <input type="text" id="fase" value="Fase D / Kelas 7" class="w-full border border-gray-200 bg-gray-50 rounded p-2 focus:ring-2 focus:ring-blue-500 text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-black text-gray-500 uppercase mb-1">Tema Kokurikuler</label>
+                    <select id="tema" class="w-full border border-gray-200 bg-gray-50 rounded p-2 focus:ring-2 focus:ring-blue-500 text-sm">
+                        <option value="Gaya Hidup Berkelanjutan" selected>Gaya Hidup Berkelanjutan</option>
+                        <option value="Kearifan Lokal">Kearifan Lokal</option>
+                        <option value="Bhinneka Tunggal Ika">Bhinneka Tunggal Ika</option>
+                        <option value="Bangunlah Jiwa dan Raganya">Bangunlah Jiwa dan Raganya</option>
+                        <option value="Suara Demokrasi">Suara Demokrasi</option>
+                        <option value="Rekayasa dan Teknologi">Rekayasa dan Teknologi</option>
+                        <option value="Kewirausahaan">Kewirausahaan</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-black text-gray-500 uppercase mb-1">Judul Projek</label>
+                    <input type="text" id="judul" placeholder="Masukkan judul..." class="w-full border border-gray-200 bg-gray-50 rounded p-2 focus:ring-2 focus:ring-blue-500 text-sm">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-500 uppercase mb-1">Alokasi (JP)</label>
+                        <input type="text" id="waktu" value="24 JP" class="w-full border border-gray-200 bg-gray-50 rounded p-2 focus:ring-2 focus:ring-blue-500 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-500 uppercase mb-1">Pertemuan</label>
+                        <input type="number" id="pertemuan" value="6" min="1" max="20" class="w-full border border-gray-200 bg-gray-50 rounded p-2 focus:ring-2 focus:ring-blue-500 text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-black text-gray-500 uppercase mb-1">Produk Akhir</label>
+                    <input type="text" id="produk" placeholder="Hasil karya..." class="w-full border border-gray-200 bg-gray-50 rounded p-2 focus:ring-2 focus:ring-blue-500 text-sm">
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-[10px] font-black text-gray-500 uppercase">Konteks</label>
+                        <button type="button" onclick="improveContext()" class="text-[9px] text-blue-600 font-bold hover:underline">
+                            ✨ PERBAIKI
+                        </button>
+                    </div>
+                    <textarea id="konteks" rows="3" class="w-full border border-gray-200 bg-gray-50 rounded p-2 focus:ring-2 focus:ring-blue-500 text-sm" placeholder="Situasi sekolah..."></textarea>
+                </div>
+
+                <button type="submit" id="generateBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded shadow-lg transition flex justify-center items-center gap-2 mt-2">
+                    <span id="btnIcon"><i class="fas fa-magic"></i></span>
+                    <span id="btnText">Buat Modul Ajar</span>
+                    <div id="btnLoader" class="loader hidden"></div>
+                </button>
+            </form>
+        </div>
+
+        <!-- Right Panel: Output Visual Word -->
+        <div class="w-full md:w-2/3 bg-gray-200 flex flex-col h-full overflow-hidden relative">
+            
+            <!-- Toolbar -->
+            <div class="bg-white border-b border-gray-300 px-6 py-2 flex justify-between items-center z-10">
+                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Preview Dokumen (Tampilan Word)</span>
+                <div class="flex gap-2">
+                    <button onclick="copyToClipboard()" class="p-2 text-gray-600 hover:bg-gray-100 rounded transition" title="Salin Teks">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <button onclick="downloadWord()" class="bg-blue-600 text-white px-4 py-1.5 rounded text-xs font-bold hover:bg-blue-700 transition flex items-center gap-2">
+                        <i class="fas fa-file-word"></i> UNDUH .DOC
+                    </button>
+                </div>
+            </div>
+
+            <!-- Area Kertas -->
+            <div class="flex-1 overflow-y-auto p-8 flex justify-center bg-gray-300">
+                <div id="paper" class="w-full max-w-[800px] bg-white paper-shadow min-h-[1100px] relative">
+                    <div id="wordPreview" class="prose max-w-none">
+                        <!-- Konten akan di-render di sini -->
+                        <div class="h-full flex flex-col items-center justify-center text-gray-300 italic py-40 text-center">
+                            <i class="fas fa-file-alt text-6xl mb-4"></i>
+                            <p>Modul belum digenerate. Isi parameter dan klik tombol di kiri.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pesan Status Overlay (Fixed the Missing Element) -->
+            <div id="statusMessage" class="hidden absolute bottom-10 left-1/2 -translate-x-1/2 text-white text-[10px] font-bold px-6 py-2 rounded-full z-30 shadow-xl transition-all duration-300"></div>
+
+            <!-- Hidden Raw Output for copying -->
+            <textarea id="hiddenRaw" class="hidden"></textarea>
+        </div>
+    </main>
+
+    <script>
+        const apiKey = ""; 
+
+        // Fungsi Helper untuk render Markdown ke Preview Visual
+        function renderPreview(text) {
+            const previewEl = document.getElementById('wordPreview');
+            const hiddenRaw = document.getElementById('hiddenRaw');
+            
+            hiddenRaw.value = text;
+            // Gunakan marked.js untuk merubah Markdown ke HTML
+            previewEl.innerHTML = marked.parse(text);
+        }
+
+        async function fetchWithRetry(url, options, maxRetries = 5) {
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            for (let i = 0; i <= maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) throw new Error("API Error");
+                    return await response.json();
+                } catch (err) {
+                    if (i === maxRetries) throw err;
+                    await new Promise(r => setTimeout(r, delays[i]));
+                }
+            }
+        }
+
+        async function suggestIdeia() {
+            const konteks = document.getElementById('konteks').value;
+            const jenjang = document.getElementById('jenjang').value;
+            const tema = document.getElementById('tema').value;
+
+            showStatus("Mencari ide...", "info");
+
+            const prompt = `Berikan ide Judul dan Produk untuk Tema "${tema}", Jenjang "${jenjang}", Konteks "${konteks || 'Umum'}". Format JSON: {"judul": "...", "produk": "..."}`;
+
+            try {
+                const result = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: { responseMimeType: "application/json" }
+                    })
+                });
+
+                const contentText = result.candidates[0].content.parts[0].text;
+                const content = JSON.parse(contentText);
+                document.getElementById('judul').value = content.judul;
+                document.getElementById('produk').value = content.produk;
+                showStatus("Ide didapatkan!", "success");
+            } catch (e) { 
+                console.error(e);
+                showStatus("Gagal ambil ide.", "error"); 
+            }
+        }
+
+        async function improveContext() {
+            const konteks = document.getElementById('konteks').value;
+            if (!konteks) return showStatus("Isi konteks dulu!", "error");
+            
+            showStatus("Memperbaiki...", "info");
+            const prompt = `Perbaiki deskripsi konteks ini agar profesional dan mendalam: "${konteks}"`;
+
+            try {
+                const result = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+
+                document.getElementById('konteks').value = result.candidates[0].content.parts[0].text.trim();
+                showStatus("Konteks diperbarui!", "success");
+            } catch (e) { 
+                console.error(e);
+                showStatus("Gagal perbaiki.", "error"); 
+            }
+        }
+
+        async function generateModule() {
+            const btn = document.getElementById('generateBtn');
+            const outputArea = document.getElementById('wordPreview');
+
+            const data = {
+                jenjang: document.getElementById('jenjang').value,
+                fase: document.getElementById('fase').value,
+                tema: document.getElementById('tema').value,
+                judul: document.getElementById('judul').value,
+                waktu: document.getElementById('waktu').value,
+                pertemuan: document.getElementById('pertemuan').value,
+                produk: document.getElementById('produk').value,
+                konteks: document.getElementById('konteks').value
+            };
+
+            if (!data.judul) return showStatus("Isi judul dulu!", "error");
+
+            // UI State
+            btn.disabled = true;
+            document.getElementById('btnLoader').classList.remove('hidden');
+            outputArea.innerHTML = `<div class="p-20 text-center animate-pulse text-gray-400 h-full flex flex-col items-center justify-center"><i class="fas fa-spinner fa-spin text-4xl mb-4"></i><p>Menyusun dokumen modul ajar...</p></div>`;
+
+            const prompt = `Buat Modul Ajar Kokurikuler Lengkap. Tema: ${data.tema}, Judul: ${data.judul}, Fase: ${data.fase}, JP: ${data.waktu}, Pertemuan: ${data.pertemuan}, Produk: ${data.produk}, Konteks: ${data.konteks}. Gunakan format terstruktur A-L. Wajib ada tabel rubrik di bagian Asesmen. Gunakan Markdown. Teks dalam Bahasa Indonesia.`;
+
+            try {
+                const result = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+
+                const text = result.candidates[0].content.parts[0].text;
+                renderPreview(text);
+                showStatus("Dokumen siap!", "success");
+            } catch (e) { 
+                console.error(e);
+                showStatus("Gagal generate.", "error");
+                outputArea.innerHTML = `<div class='p-20 text-center text-red-500'><i class="fas fa-exclamation-triangle text-4xl mb-2"></i><p>Gagal membuat dokumen. Silakan coba lagi.</p></div>`;
+            } finally {
+                btn.disabled = false;
+                document.getElementById('btnLoader').classList.add('hidden');
+            }
+        }
+
+        function downloadWord() {
+            const content = document.getElementById("wordPreview").innerHTML;
+            if (content.includes("belum digenerate")) return;
+
+            const html = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head><meta charset='utf-8'><title>Modul Ajar</title>
+                <style>
+                    body { font-family: 'Times New Roman', serif; }
+                    table { border-collapse: collapse; width: 100%; border: 1px solid black; }
+                    th, td { border: 1px solid black; padding: 5pt; text-align: left; }
+                </style>
+                </head>
+                <body>${content}</body></html>
+            `;
+
+            const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "Modul_Ajar_AI.doc";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showStatus("File Word diunduh!", "success");
+        }
+
+        function copyToClipboard() {
+            const rawText = document.getElementById("hiddenRaw").value;
+            if (!rawText) return;
+            const el = document.createElement('textarea');
+            el.value = rawText;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showStatus("Teks disalin!", "success");
+        }
+
+        function showStatus(msg, type) {
+            const s = document.getElementById('statusMessage');
+            if (!s) return;
+            
+            s.textContent = msg;
+            s.classList.remove('hidden');
+            
+            const colorClasses = {
+                success: 'bg-green-600',
+                error: 'bg-red-600',
+                info: 'bg-blue-600'
+            };
+            
+            // Remove previous color classes
+            s.classList.remove('bg-green-600', 'bg-red-600', 'bg-blue-600');
+            s.classList.add(colorClasses[type] || 'bg-gray-800');
+            
+            setTimeout(() => s.classList.add('hidden'), 3000);
+        }
+
+        function resetForm() {
+            if(confirm("Reset semua data?")) location.reload();
+        }
+    </script>
 </body>
 </html>
