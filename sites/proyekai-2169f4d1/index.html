@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduGen AI - Generator Soal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: '#f0f9ff',
+                100: '#e0f2fe',
+                200: '#bae6fd',
+                300: '#7dd3fc',
+                400: '#38bdf8',
+                500: '#0ea5e9',
+                600: '#0284c7',
+                700: '#0369a1',
+                800: '#075985',
+                900: '#0c4a6e',
+              },
+            },
+            fontFamily: {
+              sans: ['Inter', 'system-ui', 'sans-serif'],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* Custom print styles */
+      @media print {
+        @page {
+          size: portrait;
+          margin: 2cm;
+        }
+
+        /* Define a named page for landscape */
+        @page landscape-page {
+          size: landscape;
+          margin: 1cm;
+        }
+
+        body {
+          background: white;
+          color: black;
+          font-size: 12pt;
+        }
+
+        .no-print {
+          display: none !important;
+        }
+        
+        .print-only {
+          display: block !important;
+        }
+
+        /* Layout containers */
+        .print-container {
+          width: 100%;
+        }
+
+        /* Force landscape for specific section */
+        .print-section-landscape {
+          page: landscape-page;
+          width: 100%;
+          break-before: page;
+          break-after: page;
+        }
+
+        .print-section-portrait {
+          page: portrait;
+          break-before: page;
+        }
+
+        /* Ensure tables fit nicely */
+        .markdown-body table {
+          width: 100% !important;
+          border-collapse: collapse;
+          font-size: 10pt; /* Smaller font for tables */
+        }
+        
+        .markdown-body th, .markdown-body td {
+          border: 1px solid #000 !important;
+          padding: 6px;
+        }
+
+        /* Remove browser default headers/footers if possible (requires browser setting usually, but this helps clean up) */
+        h1, h2, h3 {
+          page-break-after: avoid;
+        }
+        
+        tr {
+          page-break-inside: avoid;
+        }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.35.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-markdown": "https://esm.sh/react-markdown@^10.1.0",
+    "remark-gfm": "https://esm.sh/remark-gfm@^4.0.1"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-gray-50 text-gray-900 font-sans antialiased">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
